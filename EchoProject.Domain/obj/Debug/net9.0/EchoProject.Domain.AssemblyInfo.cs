@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EchoProject.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ba23b737db37d4c6470643e810c70ba9d81ee25")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc7fb6e2b05df1bf023f39c53945ef7c355ef7e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("EchoProject.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EchoProject.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
