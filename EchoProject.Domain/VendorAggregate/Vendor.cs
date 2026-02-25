@@ -1,8 +1,7 @@
 using EchoProject.Domain.Common;
-using EchoProject.Domain.Enums;
 using EchoProject.Domain.ValueObjects;
 
-namespace EchoProject.Domain.Models
+namespace EchoProject.Domain.VendorAggregate
 {
     public class Vendor : Entity
 {

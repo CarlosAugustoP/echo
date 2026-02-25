@@ -1,4 +1,4 @@
-namespace EchoProject.Domain.Enums
+namespace EchoProject.Domain.VendorAggregate
 {
     public enum VendorStatus
     {

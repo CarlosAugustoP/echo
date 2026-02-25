@@ -1,4 +1,5 @@
 using EchoProject.Domain.Common;
+using EchoProject.Domain.ProjectAggregate;
 
 namespace EchoProject.Domain.Models
 {
@@ -21,9 +22,9 @@ namespace EchoProject.Domain.Models
             ManagerId = managerId;
         }
 
-        public void AddGoal(string title, long target, int goalTypeId)
+        public void AddGoal(string title, long target, GoalType goalType)
         {
-            var goal = new Goal(Id, title, target, goalTypeId);
+            var goal = new Goal(Id, title, target, goalType);
             _goals.Add(goal);
         }
     }
