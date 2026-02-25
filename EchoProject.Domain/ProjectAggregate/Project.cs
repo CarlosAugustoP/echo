@@ -1,5 +1,6 @@
 using EchoProject.Domain.Common;
 using EchoProject.Domain.ProjectAggregate;
+using EchoProject.Domain.UserAggregate;
 
 namespace EchoProject.Domain.Models
 {
@@ -8,8 +9,10 @@ namespace EchoProject.Domain.Models
         public string Title { get; private set; }
         public string Description { get; private set; }
         public Guid ManagerId { get; private set; }
+        public virtual User Manager { get; private set; } = null!;
         private readonly List<Goal> _goals = [];
         public IReadOnlyCollection<Goal> Goals => _goals.AsReadOnly();
+        private Project() { } // EF Core
         public Project(string title, string description, Guid managerId)
         {
             Id = Guid.NewGuid();

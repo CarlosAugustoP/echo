@@ -1,0 +1,45 @@
+using EchoProject.Domain.VendorAggregate;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace EchoProject.Infrastructure.Configuration
+{
+    public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
+    {
+        public void Configure(EntityTypeBuilder<Vendor> builder)
+        {
+            builder.ToTable("vendors");
+            builder.HasKey(v => v.Id);
+
+            builder.Property(v => v.Name)
+                .HasColumnName("name")
+                .IsRequired()
+                .HasMaxLength(200);
+
+            builder.Property(v => v.Status)
+                .HasColumnName("status")
+                .HasConversion<int>()
+                .IsRequired();
+
+            builder.Property(v => v.ApprovedById)
+                .HasColumnName("approved_by_id")
+                .IsRequired(false);
+
+            builder.HasOne(p => p.ApprovedBy)
+                .WithMany()
+                .HasForeignKey(v => v.ApprovedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.OwnsOne(v => v.Document, d =>
+            {
+                d.Property(p => p.Value).HasColumnName("tax_id").HasMaxLength(14).IsRequired();
+                d.HasIndex(p => p.Value).IsUnique(); 
+            });
+
+            builder.OwnsOne(v => v.Wallet, w =>
+            {
+                w.Property(p => p.Address).HasColumnName("wallet_address").HasMaxLength(42).IsRequired();
+            });
+        }
+    }
+}

@@ -8,9 +8,9 @@ namespace EchoProject.Domain.ValueObjects
 {
     public class TaxId : ValueObject
     {
-        public string Number { get; }
-        public bool IsCpf => Number.Length == 11;
-        public bool IsCnpj => Number.Length == 14;
+        public string Value { get; }
+        public bool IsCpf => Value.Length == 11;
+        public bool IsCnpj => Value.Length == 14;
 
         public TaxId(string number)
         {
@@ -24,14 +24,14 @@ namespace EchoProject.Domain.ValueObjects
                 if (!IsValidCpf(digits))
                     throw new ArgumentException("Invalid CPF.");
 
-                Number = digits;
+                Value = digits;
             }
             else if (digits.Length == 14)
             {
                 if (!IsValidCnpj(digits))
                     throw new ArgumentException("Invalid CNPJ.");
 
-                Number = digits;
+                Value = digits;
             }
             else
             {
@@ -41,7 +41,7 @@ namespace EchoProject.Domain.ValueObjects
 
         protected override IEnumerable<object?> GetEqualityComponents()
         {
-            yield return Number;
+            yield return Value;
         }
 
         private static bool IsValidCpf(string cpf)

@@ -1,5 +1,6 @@
 using EchoProject.Domain.Common;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
+using EchoProject.Domain.Models;
 using EchoProject.Domain.VendorAggregate;
 
 namespace EchoProject.Domain.ProjectAggregate
@@ -9,6 +10,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public Guid ProjectId { get; private set; }
         public Guid GoalTypeId { get; private set; }
         public virtual GoalType GoalType { get; private set; }  
+        public virtual Project Project { get; private set; } = null!;
         public string Title { get; private set; }
         public long TargetAmount { get; private set; }
         public long CurrentAmount { get; private set; } = 0;
@@ -33,6 +35,8 @@ namespace EchoProject.Domain.ProjectAggregate
         }
 
         public bool RequiresVendor() => GoalType.Name != PresetName.Money;
+        public bool MoneyPendingOnTrustedVendorLiberation() => GoalType.Name != PresetName.Money;
+        private Goal() { } // EF Core
 
         public void AssignVendor(Vendor vendor)
         {

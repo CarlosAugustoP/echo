@@ -7,7 +7,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public string Name { get; private set; }
         public string Description { get; private set; }
         public bool IsActive { get; private set; }
-
+        private GoalType() { } // EF Core
         public GoalType(string name, string description)
         {
             Name = name.Length < 50 && name.Length > 0
