@@ -1,0 +1,24 @@
+using EchoProject.Domain.Common;
+
+namespace EchoProject.Domain.ValueObjects
+{
+    public class WalletAddress : ValueObject
+    {
+        public string Address { get; }
+
+        public WalletAddress(string? address)
+        {
+            if (string.IsNullOrEmpty(address) || !address.StartsWith("0x"))
+            {
+                throw new ArgumentException("Invalid wallet address format.", nameof(address));
+            }
+            Address = address;
+        }
+
+        protected override IEnumerable<object?> GetEqualityComponents()
+        {
+            yield return Address;
+        }
+
+    }
+}
