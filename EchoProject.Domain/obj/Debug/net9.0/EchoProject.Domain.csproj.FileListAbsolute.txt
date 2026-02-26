@@ -1,0 +1,12 @@
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\bin\Debug\net9.0\EchoProject.Domain.deps.json
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\bin\Debug\net9.0\EchoProject.Domain.dll
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\bin\Debug\net9.0\EchoProject.Domain.pdb
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\EchoProject.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\EchoProject.Domain.AssemblyInfoInputs.cache
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\EchoProject.Domain.AssemblyInfo.cs
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\EchoProject.Domain.csproj.CoreCompileInputs.cache
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\EchoProject.Domain.sourcelink.json
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\EchoProject.Domain.dll
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\refint\EchoProject.Domain.dll
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\EchoProject.Domain.pdb
+C:\Users\capv2\TCC\echo-solution\EchoProject.Domain\obj\Debug\net9.0\ref\EchoProject.Domain.dll

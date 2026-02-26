@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EchoProject.BlockchainWorker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ba23b737db37d4c6470643e810c70ba9d81ee25")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41bd9a683e92b2c70304b04d2889194074e05f24")]
 [assembly: System.Reflection.AssemblyProductAttribute("EchoProject.BlockchainWorker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EchoProject.BlockchainWorker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

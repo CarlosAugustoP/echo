@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EchoProject.Domain\EchoProject.Domain.csproj" />
+    <ProjectReference Include="..\EchoProject.Infrastructure\EchoProject.Infrastructure.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

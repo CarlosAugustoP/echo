@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "PraQtM2nMIs=",
+  "dgSpecHash": "PXHHdTAOgxY=",
   "success": true,
   "projectFilePath": "C:\\Users\\capv2\\TCC\\echo-solution\\EchoProject.Infrastructure\\EchoProject.Infrastructure.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\capv2\\.nuget\\packages\\adraffy.ensnormalize\\0.3.1\\adraffy.ensnormalize.0.3.1.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\microsoft.build.framework\\17.8.3\\microsoft.build.framework.17.8.3.nupkg.sha512",
@@ -30,6 +32,25 @@
     "C:\\Users\\capv2\\.nuget\\packages\\microsoft.extensions.options\\9.0.0\\microsoft.extensions.options.9.0.0.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.0\\microsoft.extensions.primitives.9.0.0.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\mono.texttemplating\\3.0.0\\mono.texttemplating.3.0.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nbitcoin.secp256k1\\3.1.1\\nbitcoin.secp256k1.3.1.1.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.abi\\5.8.0\\nethereum.abi.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.accounts\\5.8.0\\nethereum.accounts.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.blockchainprocessing\\5.8.0\\nethereum.blockchainprocessing.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.contracts\\5.8.0\\nethereum.contracts.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.hex\\5.8.0\\nethereum.hex.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.jsonrpc.client\\5.8.0\\nethereum.jsonrpc.client.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.jsonrpc.rpcclient\\5.8.0\\nethereum.jsonrpc.rpcclient.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.keystore\\5.8.0\\nethereum.keystore.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.merkle.patricia\\5.8.0\\nethereum.merkle.patricia.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.model\\5.8.0\\nethereum.model.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.rlp\\5.8.0\\nethereum.rlp.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.rpc\\5.8.0\\nethereum.rpc.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.signer\\5.8.0\\nethereum.signer.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.signer.eip712\\5.8.0\\nethereum.signer.eip712.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.util\\5.8.0\\nethereum.util.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.util.rest\\5.8.0\\nethereum.util.rest.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\nethereum.web3\\5.8.0\\nethereum.web3.5.8.0.nupkg.sha512",
+    "C:\\Users\\capv2\\.nuget\\packages\\newtonsoft.json\\11.0.2\\newtonsoft.json.11.0.2.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\npgsql\\9.0.0\\npgsql.9.0.0.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\9.0.0\\npgsql.entityframeworkcore.postgresql.9.0.0.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
@@ -46,5 +67,16 @@
     "C:\\Users\\capv2\\.nuget\\packages\\system.text.json\\9.0.0\\system.text.json.9.0.0.nupkg.sha512",
     "C:\\Users\\capv2\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Newtonsoft.Json' 11.0.2 has a known high severity vulnerability, https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
+      "libraryId": "Newtonsoft.Json",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
 }
