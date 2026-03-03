@@ -1,0 +1,23 @@
+/echo-solution/EchoProject.Api/appsettings.json
+/echo-solution/EchoProject.Api/bin
+/echo-solution/EchoProject.Application/bin
+/echo-solution/EchoProject.BlockchainWorker/bin
+/echo-solution/EchoProject.Domain/bin
+/echo-solution/EchoProject.Infrastructure/bin
+EchoProject.Api/appsettings.json
+[Bb]in/
+[Oo]bj/
+
+# .NET Core
+[Bb]in/
+[Oo]bj/
+*.dll
+*.exe
+*.pdb
+*.user
+.vs/
+.vscode/
+
+# Configurações sensíveis
+appsettings.json
+appsettings.Development.json

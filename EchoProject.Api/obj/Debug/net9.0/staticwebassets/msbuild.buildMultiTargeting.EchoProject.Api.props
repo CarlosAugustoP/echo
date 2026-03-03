@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\EchoProject.Api.props" />
-</Project>
