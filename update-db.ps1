@@ -1,0 +1,1 @@
+dotnet ef database update --project EchoProject.Infrastructure --startup-project EchoProject.Api

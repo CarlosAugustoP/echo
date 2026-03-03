@@ -43,8 +43,9 @@ namespace EchoProject.Infrastructure.Configuration
                     j => j.HasOne<Goal>().WithMany().HasForeignKey("goal_id")
                 );
 
-            builder.Metadata.FindNavigation(nameof(Goal.Vendors))!
-                .SetPropertyAccessMode(PropertyAccessMode.Field);
+            builder.Navigation(g => g.Vendors)
+                .HasField("_vendors")
+                .UsePropertyAccessMode(PropertyAccessMode.PreferField);
         }
     }
 }

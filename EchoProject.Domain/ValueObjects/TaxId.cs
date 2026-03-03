@@ -12,12 +12,12 @@ namespace EchoProject.Domain.ValueObjects
         public bool IsCpf => Value.Length == 11;
         public bool IsCnpj => Value.Length == 14;
 
-        public TaxId(string number)
+        public TaxId(string value)
         {
-            if (string.IsNullOrWhiteSpace(number))
+            if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("TaxId cannot be empty.");
 
-            var digits = Helpers.OnlyDigits(number);
+            var digits = Helpers.OnlyDigits(value);
 
             if (digits.Length == 11)
             {

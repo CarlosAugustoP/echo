@@ -1,0 +1,1 @@
+dotnet ef migrations add InitialCreate --project EchoProject.Infrastructure --startup-project EchoProject.Api --verbose
