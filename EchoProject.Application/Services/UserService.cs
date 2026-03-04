@@ -51,6 +51,7 @@ namespace EchoProject.Application.Services
             (
                 request.Name, 
                 request.Email, 
+                hashedPassword,
                 new TaxId(request.TaxId), 
                 new WalletAddress(request.WalletAddress), 
                 new Address(address.ZipCode, address.Street, address.Number, address.City, address.State, address.CountryCode), 

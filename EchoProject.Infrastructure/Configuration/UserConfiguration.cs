@@ -20,6 +20,11 @@
                     .HasColumnName("email")
                     .IsRequired()
                     .HasMaxLength(100);
+                    
+                builder.Property(u => u.PasswordHash)
+                    .HasColumnName("password_hash")
+                    .IsRequired()
+                    .HasMaxLength(255);
                 
                 builder.HasIndex(u => u.Email).IsUnique();
 
