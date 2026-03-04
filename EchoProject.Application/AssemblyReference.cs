@@ -1,6 +1,3 @@
 ﻿namespace EchoProject.Application;
 
-public class Class1
-{
-
-}
+public sealed class AssemblyReference;

@@ -22,5 +22,5 @@ namespace EchoProject.Infrastructure.Database
             
             base.OnModelCreating(modelBuilder);
         }
-    }
+    } 
 }
