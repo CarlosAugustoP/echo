@@ -28,12 +28,22 @@ namespace EchoProject.Infrastructure.Configuration
             builder.HasOne(g => g.Project)
                 .WithMany(p => (IEnumerable<Goal>?)p.Goals)
                 .HasForeignKey(g => g.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("project_id");
+
+            builder.Property(g => g.ProjectId)
+                .HasColumnName("project_id")
+                .IsRequired();
 
             builder.HasOne(g => g.GoalType)
                 .WithMany()
                 .HasForeignKey(g => g.GoalTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("goal_type_id");
+
+            builder.Property(g => g.GoalTypeId)
+                .HasColumnName("goal_type_id")
+                .IsRequired();
 
             builder.HasMany(g => g.Vendors)
                 .WithMany()

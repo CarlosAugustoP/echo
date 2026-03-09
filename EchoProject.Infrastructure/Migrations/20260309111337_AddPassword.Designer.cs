@@ -3,6 +3,7 @@ using System;
 using EchoProject.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EchoProject.Infrastructure.Migrations
 {
     [DbContext(typeof(EchoDbContext))]
-    partial class EchoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260309111337_AddPassword")]
+    partial class AddPassword
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,8 +83,7 @@ namespace EchoProject.Infrastructure.Migrations
                         .HasColumnName("description");
 
                     b.Property<Guid>("ManagerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("manager_id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -109,12 +111,10 @@ namespace EchoProject.Infrastructure.Migrations
                         .HasColumnName("current_amount");
 
                     b.Property<Guid>("GoalTypeId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("goal_type_id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("project_id");
+                        .HasColumnType("uuid");
 
                     b.Property<long>("TargetAmount")
                         .HasColumnType("bigint")
@@ -270,8 +270,7 @@ namespace EchoProject.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ManagerId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("manager_id");
+                        .IsRequired();
 
                     b.Navigation("Manager");
                 });
@@ -282,15 +281,13 @@ namespace EchoProject.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("GoalTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("goal_type_id");
+                        .IsRequired();
 
                     b.HasOne("EchoProject.Domain.Models.Project", "Project")
                         .WithMany("Goals")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("project_id");
+                        .IsRequired();
 
                     b.Navigation("GoalType");
 
@@ -356,9 +353,7 @@ namespace EchoProject.Infrastructure.Migrations
 
                             b1.Property<string>("Neighborhood")
                                 .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)")
-                                .HasColumnName("neighbourhood");
+                                .HasColumnType("text");
 
                             b1.Property<string>("PostCode")
                                 .IsRequired()

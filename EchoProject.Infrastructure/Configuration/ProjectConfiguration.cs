@@ -26,7 +26,11 @@ namespace EchoProject.Infrastructure.Configuration
                 .WithMany()
                 .HasForeignKey(p => p.ManagerId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("manager_id");
+
+            builder.Property(p => p.ManagerId)
+                .HasColumnName("manager_id");
 
             builder.Metadata.FindNavigation(nameof(Project.Goals))!
                 .SetPropertyAccessMode(PropertyAccessMode.Field);

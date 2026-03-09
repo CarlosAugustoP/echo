@@ -36,7 +36,7 @@ namespace EchoProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<UserDTO> RegisterUserAsync(SignupRequest request)
+        public async Task<UserDTO> RegisterUserAsync(SignupRequest request, UserRole role = UserRole.Donor)
         {
             var existingUser = await _unitOfWork.Users.FindByEmailAsync(request.Email);
             if (existingUser != null)
@@ -55,13 +55,13 @@ namespace EchoProject.Application.Services
                 new TaxId(request.TaxId), 
                 new WalletAddress(request.WalletAddress), 
                 new Address(address.ZipCode, address.Street, address.Number, address.City, address.State, address.CountryCode), 
-                UserRole.Donor);
+                role
+            );
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
 
-            return _mapper.Map<UserDTO>(user);
-            
+            return _mapper.Map<UserDTO>(user);     
         }
     }
 }
