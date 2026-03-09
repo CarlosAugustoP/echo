@@ -2,6 +2,7 @@ using EchoProject.Api.DependencyInjection;
 using EchoProject.Application.Common.Password;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Infrastructure.UnitOfWork;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddAutoMapper(cgp => {}, typeof(EchoProject.Application.Assembl
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddAppServices(
     typeof(EchoProject.Application.AssemblyReference).Assembly);
+builder.Services.AddAuth(builder.Configuration);
+builder.Services.AddValidatorsFromAssemblyContaining<EchoProject.Application.AssemblyReference>();
 
 var app = builder.Build();
 
