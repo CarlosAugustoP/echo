@@ -6,8 +6,8 @@ namespace EchoProject.Api.DependencyInjection
     {
         public static WebApplication AddMiddlewares(this WebApplication app)
         {
-            app.UseMiddleware<UserValidationMiddleware>();
             app.UseMiddleware<ExceptionsCatchingMiddleware>();
+            app.UseMiddleware<UserValidationMiddleware>();
             return app;
         }
     }

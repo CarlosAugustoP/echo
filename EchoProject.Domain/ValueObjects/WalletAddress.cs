@@ -20,5 +20,7 @@ namespace EchoProject.Domain.ValueObjects
             yield return Address;
         }
 
+        public static implicit operator string(WalletAddress wallet) => wallet.Address;
+
     }
 }

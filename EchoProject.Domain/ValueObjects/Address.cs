@@ -10,8 +10,9 @@ namespace EchoProject.Domain.ValueObjects
         public string City { get; set; }
         public string State { get; set; }
         public string CountryCode { get; set; }
+        public int? Number { get; set; }
 
-        public Address(string postCode, string street, string neighborhood, string city, string state, string countryCode)
+        public Address(string postCode, string street, string neighborhood, string city, string state, string countryCode, int? number = null)
          {
             PostCode = ValidatePostCode(postCode);
             Street = street;
@@ -19,6 +20,7 @@ namespace EchoProject.Domain.ValueObjects
             City = city;
             State = ValidateState(state);
             CountryCode = ValidateCountryCode(countryCode);
+            Number = number;
          }
 
         protected override IEnumerable<object?> GetEqualityComponents()
@@ -29,6 +31,7 @@ namespace EchoProject.Domain.ValueObjects
             yield return City;
             yield return State;
             yield return CountryCode;
+            yield return Number;
         }
         private static string ValidatePostCode(string postCode)
         {

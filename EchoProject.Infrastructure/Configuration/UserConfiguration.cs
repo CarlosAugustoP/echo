@@ -51,6 +51,7 @@
                     a.Property(p => p.PostCode).HasColumnName("zip_code").HasMaxLength(20);
                     a.Property(p => p.CountryCode).HasColumnName("country_code").HasMaxLength(2);
                     a.Property(p => p.Neighborhood).HasColumnName("neighbourhood").HasMaxLength(100);
+                    a.Property(p => p.Number).HasColumnName("number");
                 });
             }
         }

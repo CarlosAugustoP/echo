@@ -11,7 +11,11 @@ builder.Services.AddPostgresDatabase(builder.Configuration);
 builder.Services.ConfigureBlockChain(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddRepositoriesAndUnitOfWork();    
-builder.Services.AddAutoMapper(cgp => {}, typeof(EchoProject.Application.AssemblyReference).Assembly);
+builder.Services.AddAutoMapper
+(
+    cfg => { cfg.LicenseKey = builder.Configuration["AutoMapper:LicenseKey"]; 
+        }, typeof(EchoProject.Application.AssemblyReference).Assembly
+);
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddAppServices(
     typeof(EchoProject.Application.AssemblyReference).Assembly);
@@ -24,6 +28,8 @@ if (app.Environment.IsDevelopment())
 {
     app.AddSwagger();
 }
-
+app.UseAuthentication();
+app.UseAuthorization();
+app.AddMiddlewares();
 app.MapControllers();
 app.Run();
