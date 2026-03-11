@@ -34,6 +34,16 @@ namespace EchoProject.Api.Middlewares
 
                 await context.Response.WriteAsJsonAsync(response);
             }
+            catch (ArgumentException ex)
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                var response = ApiResult<string?>
+                    .Failure(ex.Message, "INVALID_ARGUMENT");
+
+                await context.Response.WriteAsJsonAsync(response);
+            }
             catch (Exception)
             {
                 context.Response.ContentType = "application/json";
