@@ -21,6 +21,7 @@ namespace EchoProject.Domain.ValueObjects
         }
 
         public static implicit operator string(WalletAddress wallet) => wallet.Address;
+        public override string ToString() => Address;
 
     }
 }

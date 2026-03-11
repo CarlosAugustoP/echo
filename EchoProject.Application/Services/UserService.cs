@@ -89,7 +89,7 @@ namespace EchoProject.Application.Services
 
             var userDto = _mapper.Map<UserDTO>(user);
         
-            return _jwt.GenerateToken(userDto);;
+            return _jwt.GenerateToken(userDto);
         }
     }
 }

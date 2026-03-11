@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using EchoProject.Api.DependencyInjection;
 using EchoProject.Application.Common.Password;
 using EchoProject.Domain.Interfaces;
@@ -28,6 +29,7 @@ if (app.Environment.IsDevelopment())
 {
     app.AddSwagger();
 }
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 app.UseAuthentication();
 app.UseAuthorization();
 app.AddMiddlewares();

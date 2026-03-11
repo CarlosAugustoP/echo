@@ -22,15 +22,15 @@ namespace EchoProject.Api.Middlewares
             {
                 var userName = user.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
                 var userEmail = user.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
-                var userRoleStr = user.FindFirst(ClaimTypes.Role)?.Value ?? "Donator";
+                var userRoleStr = user.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
                 var wallet = user.FindFirst("walletAddress")?.Value ?? string.Empty;
                 var taxId = user.FindFirst("taxId")?.Value ?? string.Empty;
 
-                if (Enum.TryParse<UserRole>(userRoleStr, out var roleEnum))
+                if (Enum.TryParse<UserRole>(userRoleStr, true, out var roleEnum))
                 {
                     var userDto = new UserDTO(userName, userEmail, wallet, new TaxId(taxId), roleEnum);
-                    context.Items["User"] = userDto;    
+                    context.Items["User"] = userDto;
                 }
             }
 

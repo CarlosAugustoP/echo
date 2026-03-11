@@ -31,6 +31,7 @@ namespace EchoProject.Application.Common.Auth
                     new Claim("walletAddress", user.WalletAddress),
                     new Claim("taxId", user.TaxId.Value)
                 ]),
+                Issuer = _settings.Issuer,
                 Expires = DateTime.UtcNow.AddHours(double.TryParse(_settings.Expiration, out var exp) ? exp : 8),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key), 

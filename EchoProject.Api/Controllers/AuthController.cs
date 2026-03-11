@@ -3,6 +3,7 @@ using EchoProject.Api.Middlewares;
 using EchoProject.Application.Requests.Login;
 using EchoProject.Application.Requests.Signup;
 using EchoProject.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EchoProject.Api.Controllers
@@ -27,11 +28,12 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
-        [HttpPost("protected-route")]
+        [HttpPost("me")]
+        [Authorize]
         [MandatoryUserFilter]
-        public IActionResult a()
+        public IActionResult Me()
         {
-            return Success("You have accessed a protected route!");
+            return Success(CurrentUser);
         }
     }
 }
