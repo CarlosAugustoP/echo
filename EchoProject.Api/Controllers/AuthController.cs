@@ -3,6 +3,7 @@ using EchoProject.Api.Middlewares;
 using EchoProject.Application.Requests.Login;
 using EchoProject.Application.Requests.Signup;
 using EchoProject.Application.Services;
+using EchoProject.Domain.UserAggregate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +15,10 @@ namespace EchoProject.Api.Controllers
     {
         private readonly UserService _authService = authService;
 
-        [HttpPost("signup")]
-        public async Task<IActionResult> Signup([FromBody] SignupRequest request)
+        [HttpPost("signup/{type}")]
+        public async Task<IActionResult> Signup([FromBody] SignupRequest request, [FromRoute] UserRole type)
         {
-            var result = await _authService.RegisterUserAsync(request);
+            var result = await _authService.RegisterUserAsync(request, type);
             return Success(result);
         }
 
