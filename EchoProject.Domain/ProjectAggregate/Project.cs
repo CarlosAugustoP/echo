@@ -2,7 +2,7 @@ using EchoProject.Domain.Common;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 
-namespace EchoProject.Domain.Models
+namespace EchoProject.Domain.ProjectAggregate
 {
     public class Project : Entity
     {

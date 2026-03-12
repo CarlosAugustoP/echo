@@ -1,4 +1,4 @@
-namespace EchoProject.Application.Requests.Project
+namespace EchoProject.Application.Requests.Projects
 {
     public record GoalRequest
     (

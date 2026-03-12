@@ -28,6 +28,9 @@ namespace EchoProject.Domain.UserAggregate
             if (string.IsNullOrWhiteSpace(passwordHash))
                 throw new ArgumentException("Password cannot be empty.");
 
+            if (role == UserRole.NGO && taxId?.IsCpf == true)
+                throw new ArgumentException("NGOs must have a CNPJ TaxId.");
+
             Name = name;
             Address = address;
             Role = role;

@@ -1,4 +1,4 @@
-using EchoProject.Domain.Models;
+using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

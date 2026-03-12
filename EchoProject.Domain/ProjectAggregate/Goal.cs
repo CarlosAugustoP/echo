@@ -1,6 +1,5 @@
 using EchoProject.Domain.Common;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
-using EchoProject.Domain.Models;
 using EchoProject.Domain.VendorAggregate;
 
 namespace EchoProject.Domain.ProjectAggregate

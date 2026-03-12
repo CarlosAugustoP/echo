@@ -1,5 +1,4 @@
 using EchoProject.Domain.DonationAggregate;
-using EchoProject.Domain.Models;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Domain.VendorAggregate;

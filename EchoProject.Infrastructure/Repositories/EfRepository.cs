@@ -14,20 +14,31 @@ namespace EchoProject.Infrastructure.Repositories
             _context = context;
             _model = context.Set<T>();
         }
+        protected virtual IQueryable<T> Query => _model;
 
         public async Task<T?> FindByIdAsync(Guid id, CancellationToken ct = default)
-            => await _model.FindAsync([id], ct);
+        {
+            var keyName = _context.Model.FindEntityType(typeof(T))!
+                .FindPrimaryKey()!
+                .Properties
+                .Select(x => x.Name)
+                .Single();
+
+            return await Query.FirstOrDefaultAsync(
+                e => EF.Property<Guid>(e, keyName) == id,
+                ct);
+        }
 
         public async Task<T?> FindAsync(
             Expression<Func<T, bool>> predicate,
             CancellationToken ct = default)
-            => await _model.FirstOrDefaultAsync(predicate, ct);
+            => await Query.FirstOrDefaultAsync(predicate, ct);
 
         public async Task<List<T>> ListAsync(
             Expression<Func<T, bool>>? predicate = null,
             CancellationToken ct = default)
         {
-            IQueryable<T> query = _model;
+            IQueryable<T> query = Query;
 
             if (predicate is not null)
                 query = query.Where(predicate);

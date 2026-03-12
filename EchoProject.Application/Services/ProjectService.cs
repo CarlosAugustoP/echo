@@ -2,12 +2,11 @@ using AutoMapper;
 using EchoProject.Application.Common;
 using EchoProject.Application.Common.PaginatedList;
 using EchoProject.Application.DTO;
+using EchoProject.Application.DTO.Projects;
 using EchoProject.Application.Exception;
-using EchoProject.Application.Requests.Project;
+using EchoProject.Application.Requests.Projects;
 using EchoProject.Domain.Interfaces;
-using EchoProject.Domain.Models;
-using Nethereum.Contracts.Standards.ENS.ENSRegistry.ContractDefinition;
-
+using EchoProject.Domain.ProjectAggregate;
 namespace EchoProject.Application.Services
 {
     [AppService]
