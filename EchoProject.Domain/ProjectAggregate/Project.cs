@@ -25,10 +25,27 @@ namespace EchoProject.Domain.ProjectAggregate
             ManagerId = managerId;
         }
 
-        public void AddGoal(string title, long target, GoalType goalType)
+        public Goal AddGoal(string title, long target, GoalType goalType)
         {
             var goal = new Goal(Id, title, target, goalType);
             _goals.Add(goal);
+            return goal;
+        }
+
+        public void RemoveGoal(Guid goalId)
+        {
+            var goal = _goals.FirstOrDefault(g => g.Id == goalId);
+            if (goal is not null) _goals.Remove(goal);
+        }
+
+        public void UpdateDetails(string title, string description)
+        {
+            Title = title.Length < 100 && title.Length > 0 
+                ? title 
+                : throw new ArgumentException("Title must be between 1 and 100 characters long.");
+            Description = (description.Length < 500 && description.Length > 0)  
+                ? description
+                : throw new ArgumentException("Description cannot exceed 500 characters and must be bigger than 0");
         }
     }
 }

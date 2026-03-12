@@ -1,6 +1,6 @@
 namespace EchoProject.Application.Requests.Projects
 {
-    public record ProjectRequest
+    public record CreateProjectRequest
     (
         string Title, 
         string Description, 
