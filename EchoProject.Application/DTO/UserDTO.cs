@@ -5,8 +5,9 @@ using EchoProject.Domain.ValueObjects;
 namespace EchoProject.Application.DTO
 {
     [AutoMap(typeof(User))]
-    public class UserDTO(string name, string email, string walletAddress, TaxId taxId, UserRole role)
+    public class UserDTO(Guid id, string name, string email, string walletAddress, TaxId taxId, UserRole role)
     {
+        public Guid Id { get; set; } = id;  
         public string Name { get; set; } = name;
         public string Email { get; set; } = email;
         public string WalletAddress { get; set; } = walletAddress;
