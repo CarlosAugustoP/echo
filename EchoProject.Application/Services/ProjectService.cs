@@ -76,6 +76,7 @@ namespace EchoProject.Application.Services
                 throw new UnauthorizedException("Only the project manager can remove goals from the project.");
 
             var goal = project.RemoveGoal(goalId);
+            _unitOfWork.Goals.Remove(goal);
             await _unitOfWork.CommitAsync();
         }
 
