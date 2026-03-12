@@ -13,7 +13,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public string Title { get; private set; }
         public long TargetAmount { get; private set; }
         public long CurrentAmount { get; private set; } = 0;
-        
+        public long? CostPerUnit { get; private set; }
         private readonly List<Vendor> _vendors = [];
         public IReadOnlyCollection<Vendor> Vendors => _vendors.AsReadOnly();
 
@@ -23,6 +23,11 @@ namespace EchoProject.Domain.ProjectAggregate
             ProjectId = projectId;
             GoalType = goalType ?? throw new ArgumentNullException(nameof(goalType));
             GoalTypeId = goalType.Id;
+
+            if (goalType.Name == PresetName.Money && CostPerUnit is not null)
+            {
+                throw new ArgumentException("Cost per unit cannot be defined for money goals.");
+            }
             
             Title = title.Length is > 0 and < 50 
                 ? title 
