@@ -32,10 +32,15 @@ namespace EchoProject.Domain.ProjectAggregate
             return goal;
         }
 
-        public void RemoveGoal(Guid goalId)
+        public Goal RemoveGoal(Guid goalId)
         {
             var goal = _goals.FirstOrDefault(g => g.Id == goalId);
-            if (goal is not null) _goals.Remove(goal);
+            if (goal is not null)
+            { 
+                _goals.Remove(goal);
+                return goal;
+            }
+            throw new ArgumentException("Goal not found.");
         }
 
         public void UpdateDetails(string title, string description)
