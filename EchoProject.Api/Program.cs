@@ -4,6 +4,7 @@ using EchoProject.Application.Common.Password;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Infrastructure.UnitOfWork;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddAppServices(
     typeof(EchoProject.Application.AssemblyReference).Assembly);
 builder.Services.AddAuth(builder.Configuration);
+builder.Services.AddFluentValidationAutoValidation(); 
+builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<EchoProject.Application.AssemblyReference>();
 
 var app = builder.Build();

@@ -12,7 +12,7 @@ namespace EchoProject.Infrastructure.Repositories
         
         public IEnumerable<Project> FindByManager(Guid managerId)
         {
-            return _model.Where(p => p.ManagerId == managerId);
+            return Query.Where(p => p.ManagerId == managerId);
         }
     }
 }

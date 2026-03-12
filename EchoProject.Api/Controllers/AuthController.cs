@@ -15,10 +15,16 @@ namespace EchoProject.Api.Controllers
     {
         private readonly UserService _authService = authService;
 
-        [HttpPost("signup/{type}")]
-        public async Task<IActionResult> Signup([FromBody] SignupRequest request, [FromRoute] UserRole type)
+        /// <summary>
+        /// Register a new user (donor or NGO). The user role is determined by the "type" route parameter (1 for donor, 2 for NGO).
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [HttpPost("signup")]
+        public async Task<IActionResult> Signup([FromBody] SignupRequest request)
         {
-            var result = await _authService.RegisterUserAsync(request, type);
+            var result = await _authService.RegisterUserAsync(request);
             return Success(result);
         }
 

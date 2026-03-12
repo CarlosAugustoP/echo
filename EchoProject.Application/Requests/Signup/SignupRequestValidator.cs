@@ -1,4 +1,5 @@
 using EchoProject.Domain.Common;
+using EchoProject.Domain.UserAggregate;
 using FluentValidation;
 
 namespace EchoProject.Application.Requests.Signup
@@ -16,6 +17,10 @@ namespace EchoProject.Application.Requests.Signup
                 .NotEmpty()
                 .EmailAddress()
                 .WithMessage("Valid email is required.");
+
+            RuleFor(x => x.Role)
+                .Must(x => x != UserRole.EchoAdmin)
+                .WithMessage("Role must be either Donor or NGO.");
 
             RuleFor(x => x.Password)
                 .NotEmpty()

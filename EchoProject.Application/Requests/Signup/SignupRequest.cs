@@ -1,3 +1,5 @@
+using EchoProject.Domain.UserAggregate;
+
 namespace EchoProject.Application.Requests.Signup
 {
     public record SignupRequest
@@ -7,7 +9,8 @@ namespace EchoProject.Application.Requests.Signup
         string Password, 
         string TaxId, 
         string WalletAddress, 
-        AddressRequest Address
+        AddressRequest Address, 
+        UserRole Role = UserRole.Donor
     );
     
 }

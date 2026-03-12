@@ -44,8 +44,9 @@ namespace EchoProject.Api.Middlewares
 
                 await context.Response.WriteAsJsonAsync(response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("An unexpected error occurred: " + ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 

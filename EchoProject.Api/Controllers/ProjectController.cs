@@ -15,6 +15,12 @@ namespace EchoProject.Api.Controllers
     {
         private readonly ProjectService _service = service;
 
+        /// <summary>
+        /// Get projects by NGO (manager) ID with pagination. Only accessible by authenticated users.
+        /// </summary>
+        /// <param name="managerId"></param>
+        /// <param name="pageRequest"></param>
+        /// <returns></returns>
         [HttpGet("manager/{managerId}")]
         [Authorize]
         [MandatoryUserFilter]
@@ -24,15 +30,23 @@ namespace EchoProject.Api.Controllers
             return Success(projects);
         }
 
+        /// <summary>
+        /// Get project by ID. 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize]
-        [MandatoryUserFilter]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var project = await _service.GetByIdAsync(id);
             return Success(project);
         }
 
+        /// <summary>
+        /// Create a new project. Only accessible by authenticated NGO users. The project manager is set to the current user.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
         [MandatoryUserFilter([UserRole.NGO])]
@@ -42,6 +56,12 @@ namespace EchoProject.Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = project.Id }, project);
         }
 
+        /// <summary>
+        /// Update project details (title and description). Only accessible by the project manager (NGO user who created the project).
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize]
         [MandatoryUserFilter]
@@ -51,6 +71,12 @@ namespace EchoProject.Api.Controllers
             return Success(project);
         }
 
+        /// <summary>
+        /// Add a goal to the project. Only accessible by the project manager (NGO user who created the project).
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns> 
         [HttpPost("{id}/goals")]
         [Authorize]
         [MandatoryUserFilter]
@@ -60,6 +86,12 @@ namespace EchoProject.Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = goal.Id }, goal);
         }
 
+        /// <summary>
+        /// Remove a goal from the project. Only accessible by the project manager (NGO user who created the project).
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="goalId"></param>
+        /// <returns></returns>
         [HttpDelete("{id}/goals/{goalId}")]
         [Authorize]
         [MandatoryUserFilter]

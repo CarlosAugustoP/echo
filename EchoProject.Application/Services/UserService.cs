@@ -41,7 +41,7 @@ namespace EchoProject.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<UserDTO> RegisterUserAsync(SignupRequest request, UserRole role = UserRole.Donor)
+        public async Task<UserDTO> RegisterUserAsync(SignupRequest request)
         {
             var existingUser = await _unitOfWork.Users.FindByEmailAsync(request.Email);
             if (existingUser != null)
@@ -69,7 +69,7 @@ namespace EchoProject.Application.Services
                     address.CountryCode, 
                     address.Number
                 ), 
-                role
+                request.Role
             );
 
             await _unitOfWork.Users.AddAsync(user);
