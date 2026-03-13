@@ -18,13 +18,19 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             _web3 = new Web3(account, _settings.RpcUrl);
         }
 
+        public Task<string> DonateToProjectContractAsync(string donorWallet, string contractAddress, long amount)
+        {
+            throw new NotImplementedException();
+        }
+
+
         public async Task<long> GetBalanceAsync(string address)
         {
             var balance = await _web3.Eth.GetBalance.SendRequestAsync(address);
             return Web3.Convert.FromWei(balance.Value).ToLong();
         }
 
-        public Task<string> SendTransactionAsync(string fromAddress, string toAddress, long amount)
+        public Task<string> ReleaseFundsToSupplierAsync(string projectAddress, string supplierWallet, decimal amount)
         {
             throw new NotImplementedException();
         }
