@@ -20,11 +20,11 @@ namespace EchoProject.Application.Services
             if (donor.Role != UserRole.Donor)
                 throw new UnauthorizedException("Only users with the Donor role can make donations.");
 
-            _ = await _unitOfWork.Goals.FindByIdAsync(request.GoalId)
+            var goal = await _unitOfWork.Goals.FindByIdAsync(request.GoalId)
                 ?? throw new NotFoundException($"Goal with ID {request.GoalId} not found.");
             
             //TODO ETH service here 
-            var donation = new Donation(donor.Id, request.GoalId, request.Amount, "TransactionId", request.TotalAmount);
+            var donation = new Donation(donor.Id, goal, request.GoalId, request.Amount, "TransactionId", request.TotalAmount);
 
             await _unitOfWork.Donations.AddAsync(donation);
             await _unitOfWork.CommitAsync();

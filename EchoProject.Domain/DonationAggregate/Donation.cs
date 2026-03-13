@@ -20,21 +20,22 @@ namespace EchoProject.Domain.DonationAggregate
 
         private Donation() { }
 
-        public Donation(Guid donorId, Guid goalId, long amount, string txHash, long? costPurchase)
+        public Donation(Guid donorId, Goal goal, long amount, string txHash, long? costPurchase)
         {
-            if (amount <= 0)
-                throw new ArgumentException("O valor da doação deve ser maior que zero.");
 
             if (string.IsNullOrWhiteSpace(txHash))
                 throw new ArgumentException("O Hash da transação blockchain é obrigatório.");
 
             DonorId = donorId;
-            GoalId = goalId;
+            GoalId = goal.Id;
             Amount = amount > 0 ? amount : throw new ArgumentException("Amount must be greater than zero.");
             TransactionHash = txHash;
             CreatedAt = DateTime.UtcNow;
-            TotalCost = costPurchase ?? amount;
-            Status = Goal?.MoneyPendingOnTrustedVendorLiberation() == true
+            Goal = goal;
+            // 1st scenario: costPurchase is passed (not money) so user paid a total amount of money for the donation. 
+            // 2nd scenario: costPurchase is null (money) so we consider the amount of ETH donated as the total cost paid by the user.
+            TotalCost = costPurchase ?? amount; 
+            Status = goal.MoneyPendingOnTrustedVendorLiberation()
                 ? DonationStatus.PendingVendorRepass : DonationStatus.ImmediateTransferToNGO;
 
             ValidatePayment();
