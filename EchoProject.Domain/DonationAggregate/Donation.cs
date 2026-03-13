@@ -20,16 +20,12 @@ namespace EchoProject.Domain.DonationAggregate
 
         private Donation() { }
 
-        public Donation(Guid donorId, Goal goal, long amount, string txHash, long? costPurchase)
+        public Donation(Guid donorId, Goal goal, long amount, long? costPurchase)
         {
-
-            if (string.IsNullOrWhiteSpace(txHash))
-                throw new ArgumentException("O Hash da transação blockchain é obrigatório.");
-
             DonorId = donorId;
             GoalId = goal.Id;
             Amount = amount > 0 ? amount : throw new ArgumentException("Amount must be greater than zero.");
-            TransactionHash = txHash;
+            TransactionHash = string.Empty;
             CreatedAt = DateTime.UtcNow;
             Goal = goal;
             // 1st scenario: costPurchase is passed (not money) so user paid a total amount of money for the donation. 
@@ -40,6 +36,14 @@ namespace EchoProject.Domain.DonationAggregate
 
             ValidatePayment();
 
+        }
+
+        public void SetTransactionHash(string transactionHash)
+        {
+            if (string.IsNullOrWhiteSpace(transactionHash))
+                throw new ArgumentException("Transaction hash cannot be null or empty.");
+
+            TransactionHash = transactionHash;
         }
 
         private void ValidatePayment()

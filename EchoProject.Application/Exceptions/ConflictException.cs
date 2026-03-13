@@ -1,6 +1,6 @@
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 
-namespace EchoProject.Application.Exception
+namespace EchoProject.Application.Exceptions
 {
     public class ConflictException : DomainException
     {

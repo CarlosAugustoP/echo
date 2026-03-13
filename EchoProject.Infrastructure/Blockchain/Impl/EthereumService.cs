@@ -24,5 +24,9 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             return Web3.Convert.FromWei(balance.Value).ToLong();
         }
 
+        public Task<string> SendTransactionAsync(string fromAddress, string toAddress, long amount)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
