@@ -3,7 +3,7 @@ using EchoProject.Application.Common;
 using EchoProject.Application.Common.PaginatedList;
 using EchoProject.Application.DTO;
 using EchoProject.Application.DTO.Projects;
-using EchoProject.Application.Exception;
+using EchoProject.Application.Exceptions;
 using EchoProject.Application.Requests.Projects;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.ProjectAggregate;
