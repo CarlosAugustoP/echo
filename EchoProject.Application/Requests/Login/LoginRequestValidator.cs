@@ -1,3 +1,4 @@
+using EchoProject.Domain.Common;
 using FluentValidation;
 
 namespace EchoProject.Application.Requests.Login
@@ -15,8 +16,8 @@ namespace EchoProject.Application.Requests.Login
                 .NotEmpty()
                 .MinimumLength(8)
                 .WithMessage("Password must be at least 8 characters long.")
-                .Must(x=> x.Any(char.IsDigit) && x.Any(char.IsLetter) && x.Any(char.IsSymbol))
-                .WithMessage("Password must contain at least one letter, one number and one symbol.");
+                .Must(x=> x.Any(char.IsDigit) && x.Any(char.IsLetter) && x.Any(c => char.IsSymbol(c) || char.IsPunctuation(c)))
+                .WithMessage("Password must contain at least one letter, one number and one special character.");
         }
     }
 }

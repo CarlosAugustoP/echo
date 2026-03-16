@@ -34,7 +34,7 @@ namespace EchoProject.Application.Services
 
         public async Task<VendorDTO> CreateAsync(VendorRequest request)
         {
-            var existingByTaxId = await _unitOfWork.Vendors.FindAsync(x => x.Document == request.TaxId);
+            var existingByTaxId = await _unitOfWork.Vendors.FindAsync(x => x.Document.Value == request.TaxId);
             
             if (existingByTaxId != null)
             {
@@ -61,7 +61,20 @@ namespace EchoProject.Application.Services
             return _mapper.Map<VendorDTO>(vendor);
         }
 
-        
+        public async Task<bool> AssignVendorToGoalAsync(Guid vendorId, Guid goalId, UserDTO ngo)
+        {
+            var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
+                ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
+            
+            var goal = await _unitOfWork.Goals.FindByIdAsync(goalId)
+                ?? throw new NotFoundException($"Goal with ID {goalId} not found.");
+            
+            if (goal.Project.ManagerId != ngo.Id)
+                throw new UnauthorizedException("Only the project manager can assign vendors to goals.");
 
+            goal.AssignVendor(vendor);
+            await _unitOfWork.CommitAsync();
+            return true;
+        }
     }
 }

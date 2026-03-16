@@ -1,14 +1,16 @@
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.Repositories;
 using EchoProject.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace EchoProject.Infrastructure.Repositories
 {
     public class GoalRepository(EchoDbContext context) : EfRepository<Goal>(context), IGoalRepository
     {
+        protected override IQueryable<Goal> Query => base.Query.Include(x => x.Project).Include(p => p.GoalType);
         public IEnumerable<Goal> FindByProjectId(Guid projectId)
         {
-            return _model.Where(g => g.ProjectId == projectId);
+            return Query.Where(g => g.ProjectId == projectId);
         }
 
     }

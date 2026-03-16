@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EchoProject.Api.Controllers
 {
     [ApiController]
+    [Route("api/vendors")]
     public class VendorController(VendorService vendorService) : EchoController
     {
         private readonly VendorService _vendorService = vendorService;   
@@ -40,6 +41,14 @@ namespace EchoProject.Api.Controllers
         public async Task<IActionResult> GetVendor([FromRoute] Guid vendorId)
         {
             var result = await _vendorService.GetByIdAsync(vendorId);
+            return Success(result);
+        }
+
+        [HttpPost("vendor/{vendorId}/goal/{goalId}")]
+        [MandatoryUserFilter([UserRole.NGO])]
+        public async Task<IActionResult> AssignVendorToGoal([FromRoute] Guid vendorId, [FromRoute] Guid goalId)
+        {
+            var result = await _vendorService.AssignVendorToGoalAsync(vendorId, goalId, CurrentUser!);
             return Success(result);
         }
     }

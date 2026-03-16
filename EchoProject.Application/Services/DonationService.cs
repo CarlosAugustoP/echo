@@ -23,8 +23,6 @@ namespace EchoProject.Application.Services
         private readonly IEthereumService _ethereumService = ethereumService;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<DonationService> _logger = logger;
-        private readonly string _contractAddress = conf["Blockchain:ContractAddress"]
-            ?? throw new ArgumentException("Contract address is not configured.");
 
         public async Task<bool> DonateAsync(DonationRequest request, UserDTO donor)
         {
@@ -36,7 +34,7 @@ namespace EchoProject.Application.Services
 
             bool isTransactionValid = await _ethereumService.VerifyTransactionAsync(
                 request.TransactionHash,
-                _contractAddress,
+                goal.Project.SmartContractAddress,
                 request.Amount
             );
 
@@ -70,6 +68,19 @@ namespace EchoProject.Application.Services
                 .FindUserHistory(userId, CancellationToken.None)
                 .Paginate(pr.PageNumber, pr.PageSize)
                 .Select(x => _mapper.Map<DonationDTO>(x));
+        }
+
+        public async Task<DonationDTO> GetByIdAsync(Guid donationId, UserDTO user)
+        {
+            var donation = await _unitOfWork.Donations.FindByIdAsync(donationId)
+                ?? throw new NotFoundException($"Donation with ID {donationId} not found.");
+
+            if (donation.DonorId != user.Id && user.Role != UserRole.EchoAdmin)
+            {
+                throw new UnauthorizedException("You are not the donor of this donation.");
+            }
+
+            return _mapper.Map<DonationDTO>(donation);
         }
 
         public async Task<PaginatedList<DonationDTO>> FindByProject(Guid projectId, PageRequest pr, UserDTO user)

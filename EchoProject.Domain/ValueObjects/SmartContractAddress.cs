@@ -19,6 +19,8 @@ namespace EchoProject.Domain.ValueObjects
         {
             yield return Value;
         }
+        
+        public static implicit operator string(SmartContractAddress address) => address.Value;
 
     }
 }

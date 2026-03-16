@@ -77,6 +77,12 @@ namespace EchoProject.Domain.Common
             return digits.Length == 11 ? ValidCPF(digits) : digits.Length == 14 && ValidCNPJ(digits);
         }
 
+        public static bool IsSpecialCharacter(this char c)
+        {
+            return !char.IsLetterOrDigit(c);
+        }
+
+
     }
 
 }

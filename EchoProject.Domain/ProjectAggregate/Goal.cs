@@ -44,6 +44,9 @@ namespace EchoProject.Domain.ProjectAggregate
 
         public void AssignVendor(Vendor vendor)
         {
+            if (!RequiresVendor())
+                throw new DomainException("Could not set vendor for money goal.");
+            
             if (vendor.Status != VendorStatus.Approved)
                 throw new DomainException("Somente fornecedores aprovados podem ser vinculados a uma meta.");
                 

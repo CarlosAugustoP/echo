@@ -38,5 +38,13 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        [HttpGet("view-donation/{id}")]
+        [MandatoryUserFilter]
+        public async Task<IActionResult> GetDonationById(Guid id)
+        {
+            var result = await _donationService.GetByIdAsync(id, CurrentUser!);
+            return Success(result);
+        }
+
     }
 }
