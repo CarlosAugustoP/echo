@@ -53,6 +53,15 @@ namespace EchoProject.Infrastructure.Configuration
 
             builder.HasIndex(d => d.TransactionHash)
                 .IsUnique();
+
+            builder.HasOne(d => d.Vendor)
+                .WithMany()
+                .HasForeignKey(d => d.VendorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(d => d.VendorId)
+                .HasColumnName("vendor_id")
+                .IsRequired(false);
         }
     }
 }

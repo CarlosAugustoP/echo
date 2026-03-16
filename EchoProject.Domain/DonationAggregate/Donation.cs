@@ -2,6 +2,7 @@ using EchoProject.Domain.Common;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
+using EchoProject.Domain.VendorAggregate;
 
 namespace EchoProject.Domain.DonationAggregate
 {
@@ -16,6 +17,8 @@ namespace EchoProject.Domain.DonationAggregate
         public long Amount { get; private set; }
         public long TotalCost { get; private set; }
         public string TransactionHash { get; private set; }
+        public Guid? VendorId { get; private set; }
+        public Vendor? Vendor { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
         private Donation() { }
@@ -54,12 +57,14 @@ namespace EchoProject.Domain.DonationAggregate
             }
         }
 
-        public void TransferToVendor()
+        public void TransferToVendor(Vendor vendor)
         {
             if (Status != DonationStatus.PendingVendorRepass)
                 throw new DomainException("A doação não está em estado de transferência para fornecedor.");
 
             Status = DonationStatus.TransferredToVendor;
+            Vendor = vendor;
+            VendorId = vendor.Id;
         }
 
         public void MarkAsFailed()

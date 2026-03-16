@@ -41,5 +41,10 @@ namespace EchoProject.Domain.VendorAggregate
             Status = VendorStatus.Disabled;
             ApprovedById = adminId;
         }
+
+        public bool IsValid()
+        {
+            return Status == VendorStatus.Approved;
+        }
     }
 }
