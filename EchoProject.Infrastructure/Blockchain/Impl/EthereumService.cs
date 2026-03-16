@@ -30,9 +30,15 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             return Web3.Convert.FromWei(balance.Value).ToLong();
         }
 
-        public Task<string> ReleaseFundsToSupplierAsync(string projectAddress, string supplierWallet, decimal amount)
+        public Task<string> ReleaseFundsToSupplierAsync(string projectAddress, string supplierWallet, long amount)
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> VerifyTransactionAsync(string txHash, string expectedContractAddress, long expectedAmount)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

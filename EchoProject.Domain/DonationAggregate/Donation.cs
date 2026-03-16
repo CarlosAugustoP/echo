@@ -20,12 +20,12 @@ namespace EchoProject.Domain.DonationAggregate
 
         private Donation() { }
 
-        public Donation(Guid donorId, Goal goal, long amount, long? costPurchase)
+        public Donation(Guid donorId, Goal goal, long amount, long? costPurchase, string transactionHash)
         {
             DonorId = donorId;
             GoalId = goal.Id;
             Amount = amount > 0 ? amount : throw new ArgumentException("Amount must be greater than zero.");
-            TransactionHash = string.Empty;
+            TransactionHash = transactionHash;
             CreatedAt = DateTime.UtcNow;
             Goal = goal;
             // 1st scenario: costPurchase is passed (not money) so user paid a total amount of money for the donation. 
@@ -38,13 +38,6 @@ namespace EchoProject.Domain.DonationAggregate
 
         }
 
-        public void SetTransactionHash(string transactionHash)
-        {
-            if (string.IsNullOrWhiteSpace(transactionHash))
-                throw new ArgumentException("Transaction hash cannot be null or empty.");
-
-            TransactionHash = transactionHash;
-        }
 
         private void ValidatePayment()
         {

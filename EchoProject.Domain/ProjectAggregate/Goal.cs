@@ -49,5 +49,10 @@ namespace EchoProject.Domain.ProjectAggregate
                 
             if (!_vendors.Contains(vendor)) _vendors.Add(vendor);
         }
+
+        public void RegisterDonation(long amount)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

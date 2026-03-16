@@ -4,6 +4,7 @@ namespace EchoProject.Application.Requests.Donation
     (
         long Amount,
         long? TotalAmount, 
-        Guid GoalId
+        Guid GoalId,
+        string TransactionHash
     );
 }
