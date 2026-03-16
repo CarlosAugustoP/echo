@@ -17,8 +17,8 @@ namespace EchoProject.Domain.DonationAggregate
         public long Amount { get; private set; }
         public long TotalCost { get; private set; }
         public string TransactionHash { get; private set; }
-        public Guid? VendorId { get; private set; }
-        public Vendor? Vendor { get; private set; }
+        public Guid? TransferredToVendorId { get; private set; }
+        public Vendor? TransferredToVendor { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
         private Donation() { }
@@ -62,9 +62,15 @@ namespace EchoProject.Domain.DonationAggregate
             if (Status != DonationStatus.PendingVendorRepass)
                 throw new DomainException("A doação não está em estado de transferência para fornecedor.");
 
+            if (!Goal.Vendors.Contains(vendor))
+                throw new DomainException("O fornecedor não está vinculado à meta desta doação.");
+
+            if (!vendor.IsValid())
+                throw new DomainException("O fornecedor não é aprovado para receber a doação.");
+
             Status = DonationStatus.TransferredToVendor;
-            Vendor = vendor;
-            VendorId = vendor.Id;
+            TransferredToVendor = vendor;
+            TransferredToVendorId = vendor.Id;
         }
 
         public void MarkAsFailed()

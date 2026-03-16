@@ -54,13 +54,13 @@ namespace EchoProject.Infrastructure.Configuration
             builder.HasIndex(d => d.TransactionHash)
                 .IsUnique();
 
-            builder.HasOne(d => d.Vendor)
+            builder.HasOne(d => d.TransferredToVendor)
                 .WithMany()
-                .HasForeignKey(d => d.VendorId)
+                .HasForeignKey(d => d.TransferredToVendorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(d => d.VendorId)
-                .HasColumnName("vendor_id")
+            builder.Property(d => d.TransferredToVendorId)
+                .HasColumnName("transferred_to_vendor_id")
                 .IsRequired(false);
         }
     }
