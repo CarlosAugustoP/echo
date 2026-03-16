@@ -23,6 +23,13 @@ namespace EchoProject.Application.Services
             return true;
         }
 
-        public async Task
+        public async Task<bool> RejectVendorAsync(Guid vendorId, UserDTO admin)
+        {
+            var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
+                ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
+            vendor.Deny(admin.Id);
+            return true;
+        }
+
     }
 }
