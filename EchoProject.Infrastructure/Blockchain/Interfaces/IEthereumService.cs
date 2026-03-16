@@ -22,5 +22,10 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
         /// <param name="amount"></param>
         /// <returns></returns>
         Task<string> ReleaseFundsToSupplierAsync(string projectAddress, string supplierWallet, long amount);
+        /// <summary>
+        /// Deploys a new instance of the project smart contract to the Ethereum blockchain and returns its address.
+        /// </summary>
+        /// <returns></returns>
+        Task<string> DeployProjectContractAsync();
     }
 }

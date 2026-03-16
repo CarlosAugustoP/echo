@@ -4,14 +4,9 @@ using EchoProject.Infrastructure.Blockchain.Interfaces;
 namespace EchoProject.Application.Services
 {
     [AppService]
-    public class WalletService
+    public class WalletService(IEthereumService ethereumService)
     {
-        private readonly IEthereumService _ethereumService;
-
-        public WalletService(IEthereumService ethereumService)
-        {
-            _ethereumService = ethereumService;
-        }
+        private readonly IEthereumService _ethereumService = ethereumService;
 
         public async Task<long> GetWalletBalanceAsync(string walletAddress)
         {

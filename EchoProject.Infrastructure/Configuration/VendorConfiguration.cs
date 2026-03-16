@@ -36,6 +36,11 @@ namespace EchoProject.Infrastructure.Configuration
                 d.HasIndex(p => p.Value).IsUnique(); 
             });
 
+            builder.Property(v => v.TypeItemSupply)
+                .HasColumnName("type_item_supply")
+                .IsRequired()
+                .HasMaxLength(100);
+
             builder.OwnsOne(v => v.Wallet, w =>
             {
                 w.Property(p => p.Address).HasColumnName("wallet_address").HasMaxLength(42).IsRequired();

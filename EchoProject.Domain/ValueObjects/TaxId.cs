@@ -100,5 +100,8 @@ namespace EchoProject.Domain.ValueObjects
 
             return numbers[13] == digit2;
         }
+
+        public override string ToString() => Value;
+        public static implicit operator string(TaxId taxId) => taxId.Value;
     }
 }

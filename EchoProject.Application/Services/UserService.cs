@@ -3,7 +3,7 @@ using EchoProject.Application.Common;
 using EchoProject.Application.Common.Auth;
 using EchoProject.Application.Common.Password;
 using EchoProject.Application.DTO;
-using EchoProject.Application.Exception;
+using EchoProject.Application.Exceptions;
 using EchoProject.Application.Requests.Login;
 using EchoProject.Application.Requests.Signup;
 using EchoProject.Domain.Interfaces;

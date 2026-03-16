@@ -1,5 +1,6 @@
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
+using EchoProject.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -31,6 +32,14 @@ namespace EchoProject.Infrastructure.Configuration
 
             builder.Property(p => p.ManagerId)
                 .HasColumnName("manager_id");
+
+            builder.Property(x => x.SmartContractAddress)
+                .HasConversion(
+                    v => v.Value, 
+                    v => new SmartContractAddress(v)) 
+                .HasColumnName("smart_contract_address")
+                .IsRequired()
+                .HasMaxLength(42); 
 
             builder.Metadata.FindNavigation(nameof(Project.Goals))!
                 .SetPropertyAccessMode(PropertyAccessMode.Field);

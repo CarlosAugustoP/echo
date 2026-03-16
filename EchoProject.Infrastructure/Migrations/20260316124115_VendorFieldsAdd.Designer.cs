@@ -3,6 +3,7 @@ using System;
 using EchoProject.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EchoProject.Infrastructure.Migrations
 {
     [DbContext(typeof(EchoDbContext))]
-    partial class EchoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260316124115_VendorFieldsAdd")]
+    partial class VendorFieldsAdd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,12 +168,6 @@ namespace EchoProject.Infrastructure.Migrations
                     b.Property<Guid>("ManagerId")
                         .HasColumnType("uuid")
                         .HasColumnName("manager_id");
-
-                    b.Property<string>("SmartContractAddress")
-                        .IsRequired()
-                        .HasMaxLength(42)
-                        .HasColumnType("character varying(42)")
-                        .HasColumnName("smart_contract_address");
 
                     b.Property<string>("Title")
                         .IsRequired()

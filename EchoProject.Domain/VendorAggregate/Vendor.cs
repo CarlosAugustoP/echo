@@ -11,19 +11,21 @@ namespace EchoProject.Domain.VendorAggregate
         public TaxId Document { get; private set; }
         public WalletAddress Wallet { get; private set; }
         public VendorStatus Status { get; private set; } = VendorStatus.Pending;
+        public string TypeItemSupply { get; private set; }
         public Guid? ApprovedById { get; private set; }
         public User? ApprovedBy { get; private set; } = null;
         public DateTime? DecisionDate { get; private set; }
         private Vendor() { } // EF Core
 
-        public Vendor(string? name, TaxId document, WalletAddress wallet)
+        public Vendor(string? name, TaxId document, WalletAddress wallet, string typeItemSupply)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Name cannot be empty.");
 
             Name = name;
-            Document = document;
+            Document = document.IsCnpj ? document : throw new ArgumentException("Vendors must be registered as a company (CNPJ)");
             Wallet = wallet;
+            TypeItemSupply = typeItemSupply;
         }
 
         public void Approve(Guid adminId)
@@ -82,7 +84,7 @@ namespace EchoProject.Domain.VendorAggregate
                 throw new DomainException("Vendors can only be re-evaluated after 30 days from the last decision date.");
                 
             if (Status != VendorStatus.Disabled)
-                throw new DomainException("Only disabled vendors can be re-evaluated.");
+                throw new DomainException("Only disabled vendors can be submitted again for re-evaluation.");
 
             Status = VendorStatus.Pending;
             DecisionDate = DateTime.UtcNow;

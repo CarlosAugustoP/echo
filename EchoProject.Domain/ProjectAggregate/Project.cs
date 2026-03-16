@@ -1,6 +1,7 @@
 using EchoProject.Domain.Common;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
+using EchoProject.Domain.ValueObjects;
 
 namespace EchoProject.Domain.ProjectAggregate
 {
@@ -11,9 +12,10 @@ namespace EchoProject.Domain.ProjectAggregate
         public Guid ManagerId { get; private set; }
         public virtual User Manager { get; private set; } = null!;
         private readonly List<Goal> _goals = [];
+        public SmartContractAddress SmartContractAddress { get; private set; }
         public IReadOnlyCollection<Goal> Goals => _goals.AsReadOnly();
         private Project() { } // EF Core
-        public Project(string title, string description, Guid managerId)
+        public Project(string title, string description, Guid managerId, SmartContractAddress smartContractAddress)
         {
             Id = Guid.NewGuid();
             Title = title.Length < 100 && title.Length > 0 
@@ -23,6 +25,7 @@ namespace EchoProject.Domain.ProjectAggregate
                 ? description
                 : throw new ArgumentException("Description cannot exceed 500 characters and must be bigger than 0");
             ManagerId = managerId;
+            SmartContractAddress = smartContractAddress;
         }
 
         public Goal AddGoal(string title, long target, GoalType goalType)

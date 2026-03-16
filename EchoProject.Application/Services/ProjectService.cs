@@ -7,13 +7,16 @@ using EchoProject.Application.Exceptions;
 using EchoProject.Application.Requests.Projects;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.ProjectAggregate;
+using EchoProject.Domain.ValueObjects;
+using EchoProject.Infrastructure.Blockchain.Interfaces;
 namespace EchoProject.Application.Services
 {
     [AppService]
-    public class ProjectService(IUnitOfWork unitOfWork, IMapper mapper)
+    public class ProjectService(IUnitOfWork unitOfWork, IMapper mapper, IEthereumService ethereumService)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
+        private readonly IEthereumService _ethereumService = ethereumService;
 
         public PaginatedList<ProjectDTO> GetByNGO(Guid ngoId, int page, int pageSize)
         {
@@ -23,7 +26,10 @@ namespace EchoProject.Application.Services
 
         public async Task<ProjectDTO> CreateAsync(CreateProjectRequest projectRequest, UserDTO user)
         {
-            var project = new Project(projectRequest.Title, projectRequest.Description, user.Id);
+            var smcAddress = await _ethereumService.DeployProjectContractAsync();
+
+            var project = new Project(projectRequest.Title, 
+                projectRequest.Description, user.Id, new SmartContractAddress(smcAddress));
 
             foreach (var projectGoal in projectRequest.Goals)
             {

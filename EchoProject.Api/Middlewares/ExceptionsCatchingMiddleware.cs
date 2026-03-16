@@ -1,5 +1,5 @@
 using EchoProject.Api.Common;
-using EchoProject.Application.Exception;
+using EchoProject.Application.Exceptions;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 
 namespace EchoProject.Api.Middlewares

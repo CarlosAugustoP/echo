@@ -1,6 +1,5 @@
 using EchoProject.Api.Common;
 using EchoProject.Application.DTO;
-using EchoProject.Application.Exception;
 using EchoProject.Domain.UserAggregate;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
