@@ -10,6 +10,7 @@ namespace EchoProject.Domain.Interfaces
         IUserRepository Users { get; }
         IDonationRepository Donations { get; }
         IGoalTypeRepository GoalTypes { get; }
+        IVendorRepository Vendors { get; }
 
         int Commit();
         Task<int> CommitAsync(CancellationToken ct = default);
