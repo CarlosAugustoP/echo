@@ -14,5 +14,10 @@ namespace EchoProject.Application.Common.PaginatedList
             PageSize = pageSize;
             CurrentPage = currentPage;
         }
+    public PaginatedList<TDestination> Select<TDestination>(Func<T, TDestination> selector)
+    {
+        var selectedItems = Items.Select(selector).ToList();
+        return new PaginatedList<TDestination>(selectedItems, TotalCount, PageSize, CurrentPage);
+    }
     }
 }
