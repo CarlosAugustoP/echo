@@ -74,6 +74,7 @@ namespace EchoProject.Application.Services
 
             goal.AssignVendor(vendor);
             await _unitOfWork.CommitAsync();
+
             return true;
         }
     }

@@ -10,7 +10,7 @@ namespace EchoProject.Application.DTO.Vendor
       public Guid Id {get;set;}
       public string TypeItemSupply {get;set;} = string.Empty;
       public string Name {get;set;} = string.Empty;
-      public TaxId? TaxId {get;set;}
+      public TaxId Document {get;set;} = null!;
       public VendorStatus Status {get;set;}
     }
 }
