@@ -17,7 +17,7 @@ namespace EchoProject.Api.Controllers
 
         [HttpPost("types")]
         [MandatoryUserFilter([UserRole.NGO])]
-        public async Task<IActionResult> CreateGoalType([FromBody] GoalRequest req)
+        public async Task<IActionResult> CreateGoalType([FromBody] GoalTypeRequest req)
         {
             var goalType = await _service.CreateGoalType(req);
             return Success(goalType);
