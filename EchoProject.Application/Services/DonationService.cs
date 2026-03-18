@@ -23,7 +23,7 @@ namespace EchoProject.Application.Services
         private readonly IEthereumService _ethereumService = ethereumService;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<DonationService> _logger = logger;
-
+        
         public async Task<bool> DonateAsync(DonationRequest request, UserDTO donor)
         {
             if (donor.Role != UserRole.Donor)

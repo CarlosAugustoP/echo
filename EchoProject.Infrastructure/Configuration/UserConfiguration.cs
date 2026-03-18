@@ -36,6 +36,7 @@
                 builder.OwnsOne(u => u.TaxId, t =>
                 {
                     t.Property(p => p.Value).HasColumnName("tax_id").HasMaxLength(14).IsRequired();
+                    t.HasIndex(p => p.Value).IsUnique();
                 });
 
                 builder.OwnsOne(u => u.WalletAddress, w =>

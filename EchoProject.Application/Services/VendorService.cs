@@ -21,6 +21,7 @@ namespace EchoProject.Application.Services
             var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
                 ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
             vendor.Approve(admin.Id);
+            _unitOfWork.Commit();
             return true;
         }
 
@@ -29,6 +30,7 @@ namespace EchoProject.Application.Services
             var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
                 ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
             vendor.Deny(admin.Id);
+            _unitOfWork.Commit();
             return true;
         }
 
