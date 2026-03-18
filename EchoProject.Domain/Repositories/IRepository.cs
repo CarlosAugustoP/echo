@@ -11,6 +11,9 @@ namespace EchoProject.Domain.Repositories
         Task<List<T>> ListAsync(
             Expression<Func<T, bool>>? predicate = null,
             CancellationToken ct = default);
+
+        IEnumerable<T> FindAll(Expression<Func<T, bool>>? predicate = null);
+        
         Task AddAsync(T entity, CancellationToken ct = default);
         void Update(T entity);
         void Remove(T entity);

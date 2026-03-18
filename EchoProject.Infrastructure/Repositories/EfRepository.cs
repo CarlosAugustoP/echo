@@ -54,5 +54,10 @@ namespace EchoProject.Infrastructure.Repositories
 
         public void Remove(T entity)
             => _model.Remove(entity);
+
+        public IEnumerable<T> FindAll(Expression<Func<T, bool>>? predicate = null)
+        {
+            return Query;
+        }
     }
 }

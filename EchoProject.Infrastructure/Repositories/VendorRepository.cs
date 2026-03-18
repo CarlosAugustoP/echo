@@ -5,5 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EchoProject.Infrastructure.Repositories
 {
-    public class VendorRepository(EchoDbContext context) : EfRepository<Vendor>(context), IVendorRepository;
+    public class VendorRepository(EchoDbContext context) : EfRepository<Vendor>(context), IVendorRepository
+    {
+        
+    };
 }
