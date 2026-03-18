@@ -68,7 +68,7 @@ namespace EchoProject.Domain.ProjectAggregate
 
         public void RegisterDonation(long amount)
         {
-            throw new NotImplementedException();
+            CurrentAmount += amount;
         }
     }
 }

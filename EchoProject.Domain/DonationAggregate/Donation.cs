@@ -71,6 +71,7 @@ namespace EchoProject.Domain.DonationAggregate
             Status = DonationStatus.TransferredToVendor;
             TransferredToVendor = vendor;
             TransferredToVendorId = vendor.Id;
+            Goal.RegisterDonation(Amount);
         }
 
         public void MarkAsFailed()

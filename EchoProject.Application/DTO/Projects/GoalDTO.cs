@@ -8,7 +8,8 @@ namespace EchoProject.Application.DTO.Projects
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
-        public long Target { get; set; }
+        public long TargetAmount { get; set; }
+        public long CurrentAmount { get; set; }
         public GoalTypeDTO GoalType { get; set; } = new(); 
     }
 }
