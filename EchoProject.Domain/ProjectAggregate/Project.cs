@@ -15,7 +15,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public SmartContractAddress SmartContractAddress { get; private set; }
         public IReadOnlyCollection<Goal> Goals => _goals.AsReadOnly();
         private Project() { } // EF Core
-        public Project(string title, string description, Guid managerId, SmartContractAddress smartContractAddress)
+        public Project(string title, string description, Guid managerId)
         {
             Id = Guid.NewGuid();
             Title = title.Length < 100 && title.Length > 0 
@@ -25,7 +25,12 @@ namespace EchoProject.Domain.ProjectAggregate
                 ? description
                 : throw new ArgumentException("Description cannot exceed 500 characters and must be bigger than 0");
             ManagerId = managerId;
-            SmartContractAddress = smartContractAddress;
+            SmartContractAddress = new SmartContractAddress("TemporaryAddress");
+        }
+
+        public void SetSmartContractAddress(string address)
+        {
+            SmartContractAddress = new SmartContractAddress(address);
         }
 
         public Goal AddGoal(string title, long target, GoalType goalType)

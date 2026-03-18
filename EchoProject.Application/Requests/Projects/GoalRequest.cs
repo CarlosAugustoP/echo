@@ -5,7 +5,7 @@ namespace EchoProject.Application.Requests.Projects
         string Title,
         long TargetAmount,
         long CurrentAmount,
-        List<Guid> VendorIds,
+        List<Guid>? VendorIds,
         Guid GoalTypeId
     );
 }

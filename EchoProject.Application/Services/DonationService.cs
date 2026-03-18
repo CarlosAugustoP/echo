@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace EchoProject.Application.Services
 {
     [AppService]
-    public class DonationService(IUnitOfWork unitOfWork, IEthereumService ethereumService, IConfiguration conf, ILogger<DonationService> logger, IMapper mapper)
+    public class DonationService(IUnitOfWork unitOfWork, IEthereumService ethereumService, ILogger<DonationService> logger, IMapper mapper)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IEthereumService _ethereumService = ethereumService;

@@ -27,5 +27,6 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<string> DeployProjectContractAsync();
+        Task<bool> CancelSmartContractAsync(string projectAddress); 
     }
 }

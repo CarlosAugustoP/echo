@@ -16,7 +16,7 @@ namespace EchoProject.Api.Controllers
         private readonly GoalService _service = service;
 
         [HttpPost("types")]
-        [MandatoryUserFilter([UserRole.NGO])]
+        [MandatoryUserFilter([UserRole.EchoAdmin])]
         public async Task<IActionResult> CreateGoalType([FromBody] GoalTypeRequest req)
         {
             var goalType = await _service.CreateGoalType(req);
@@ -24,10 +24,10 @@ namespace EchoProject.Api.Controllers
         }
 
         [HttpGet("types")]
-        [MandatoryUserFilter([UserRole.NGO])]
-        public async Task<IActionResult> CreateGoalType([FromQuery] PageRequest pr)
+        [MandatoryUserFilter([UserRole.EchoAdmin])]
+        public IActionResult GetGoalTypes([FromQuery] PageRequest pr)
         {
-            var goalType = await _service.GetGoalTypes(pr.PageNumber, pr.PageSize);
+            var goalType = _service.GetGoalTypes(pr.PageNumber, pr.PageSize);
             return Success(goalType);
         }
 

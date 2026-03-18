@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace EchoProject.Application.Requests.GoalType
 {
-    public class GoalRequestValidator : AbstractValidator<GoalRequest>
+    public class GoalRequestValidator : AbstractValidator<GoalTypeRequest>
     {
         public GoalRequestValidator()
         {

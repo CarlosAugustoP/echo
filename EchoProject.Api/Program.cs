@@ -18,6 +18,11 @@ builder.Services.AddAutoMapper
     cfg => { cfg.LicenseKey = builder.Configuration["AutoMapper:LicenseKey"]; 
         }, typeof(EchoProject.Application.AssemblyReference).Assembly
 );
+builder.Services.AddLogging(config =>
+{
+    config.AddConsole();
+    config.AddDebug();
+});
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddAppServices(
     typeof(EchoProject.Application.AssemblyReference).Assembly);

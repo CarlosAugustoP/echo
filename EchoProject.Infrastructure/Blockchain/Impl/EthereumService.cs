@@ -6,6 +6,7 @@ using Nethereum.Web3.Accounts;
 using Nethereum.Hex.HexTypes;
 using Nethereum.Contracts;
 using EchoProject.Infrastructure.Blockchain.Contracts;
+using Microsoft.Extensions.Logging;
 
 namespace EchoProject.Infrastructure.Blockchain.Impl
 {
@@ -13,10 +14,12 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
     {
         private readonly Web3 _web3;
         private readonly BlockChainSettings _settings;
+        private readonly ILogger<EthereumService> _logger;
 
-        public EthereumService(IOptions<BlockChainSettings> settings)
+        public EthereumService(IOptions<BlockChainSettings> settings, ILogger<EthereumService> logger)
         {
             _settings = settings.Value;
+            _logger = logger;
             var account = new Account(_settings.EthereumPrivateKey, _settings.ChainId);
             _web3 = new Web3(account, _settings.RpcUrl);
         }
@@ -106,5 +109,44 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             return transactionReceipt.ContractAddress;
         }
 
+        public async Task<bool> CancelSmartContractAsync(string projectAddress)
+        {
+            try
+            {
+                const string abi = @"[{""constant"":false,""inputs"":[],""name"":""cancelProject"",""outputs"":[],""payable"":false,""stateMutability"":""nonpayable"",""type"":""function""}]";
+
+                var contract = _web3.Eth.GetContract(abi, projectAddress);
+                var cancelFunction = contract.GetFunction("cancelProject");
+
+                var gasLimit = new HexBigInteger(150000);
+                var valueToSend = new HexBigInteger(0);
+
+                var txHash = await cancelFunction.SendTransactionAsync(
+                    _settings.EthereumAccountAddress,
+                    gasLimit,
+                    valueToSend
+                );
+
+                // Em vez de SendTransactionAsync + GetTransactionReceipt
+                var receipt = await cancelFunction.SendTransactionAndWaitForReceiptAsync(
+                    _settings.EthereumAccountAddress,
+                    gasLimit,
+                    valueToSend,
+                    null // CancellationToken
+                );
+
+                return receipt != null && receipt.Status.Value == 1;
+            }
+            catch (Nethereum.JsonRpc.Client.RpcResponseException rpcEx)
+            {
+                // Isso vai te mostrar a mensagem do 'require' do Solidity (ex: "Only admin can cancel")
+                _logger.LogError("Erro no RPC: {Message}", rpcEx.Message);
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

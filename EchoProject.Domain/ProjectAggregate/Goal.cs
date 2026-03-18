@@ -28,6 +28,11 @@ namespace EchoProject.Domain.ProjectAggregate
             {
                 throw new ArgumentException("Cost per unit cannot be defined for money goals.");
             }
+
+            if (goalType.Name != PresetName.Money && Vendors.Count == 0)
+            {
+                throw new ArgumentException("Non-money goals must have at least one vendor assigned.");
+            }
             
             Title = title.Length is > 0 and < 50 
                 ? title 
@@ -51,6 +56,14 @@ namespace EchoProject.Domain.ProjectAggregate
                 throw new DomainException("Somente fornecedores aprovados podem ser vinculados a uma meta.");
                 
             if (!_vendors.Contains(vendor)) _vendors.Add(vendor);
+        }
+
+        public void AssignVendors(IEnumerable<Vendor> vendors)
+        {
+            foreach (var vendor in vendors)
+            {
+                AssignVendor(vendor);
+            }
         }
 
         public void RegisterDonation(long amount)
