@@ -7,6 +7,6 @@ namespace EchoProject.Api.Common
     {
         protected UserDTO? CurrentUser => HttpContext.Items["User"] as UserDTO;
         public IActionResult Success<T>(T data) => Ok(ApiResult<T>.Ok(data));
-        public IActionResult CreatedAtAction<T>(string actionName, object routeValues, T data) => CreatedAtAction(actionName, routeValues, ApiResult<T>.Ok(data));
+        public IActionResult CreatedAtAction<T>(string actionName, object routeValues, T data) => base.CreatedAtAction(actionName, routeValues, ApiResult<T>.Ok(data));
     }
 }
