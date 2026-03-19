@@ -2,9 +2,9 @@ using EchoProject.Domain.DonationAggregate;
 
 namespace EchoProject.Application.DTO.Donations
 {
-    public class MappingProfile : AutoMapper.Profile
+    public class DonationProfile : AutoMapper.Profile
     {
-        public MappingProfile()
+        public DonationProfile()
         {
             CreateMap<Donation, DonationDTO>()
                 .ForMember(dest => dest.NameItem, opt => opt.MapFrom(src => src.Goal.GoalType.Name))
