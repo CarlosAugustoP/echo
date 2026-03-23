@@ -1,3 +1,5 @@
+using EchoProject.Domain.DonationAggregate;
+
 namespace EchoProject.Infrastructure.Blockchain.Interfaces
 {
     public interface IEthereumService
@@ -16,7 +18,7 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
         /// <summary>
         /// Releases funds from the contract to the supplier's wallet 
         /// (after the amount has been transferred to a verified vendor). 
-    /// </summary>
+        /// </summary>
         /// <param name="projectAddress"></param>
         /// <param name="supplierWallet"></param>
         /// <param name="amount"></param>
@@ -28,5 +30,6 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
         /// <returns></returns>
         Task<string> DeployProjectContractAsync();
         Task<bool> CancelSmartContractAsync(string projectAddress); 
+        Task<DonationStatus> GetDonationStatus(string transactionId, string expectedReceivingVendorWallet, decimal expectedAmountInETH);
     }
 }

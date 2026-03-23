@@ -14,7 +14,8 @@ namespace EchoProject.Infrastructure.Repositories
                 .Include(x => x.Goal)
                 .ThenInclude(g => g.GoalType)
                 .Include(x => x.Goal)
-                .ThenInclude(g => g.Vendors);
+                .ThenInclude(g => g.Vendors)
+                .Include(x => x.TransferredToVendor);
 
         public IEnumerable<Donation> FindByProjectId(Guid projectId, CancellationToken ct = default)
         {
@@ -29,6 +30,11 @@ namespace EchoProject.Infrastructure.Repositories
         public IEnumerable<Donation> FindUserHistory(Guid userId, CancellationToken ct = default)
         {
             return Query.Where(d => d.DonorId == userId);
+        }
+
+        public IEnumerable<Donation> FindPendingConfirmations(CancellationToken ct = default)
+        {
+            return Query.Where(d => d.Status == DonationStatus.TransferredToVendorPending);
         }
 
     }

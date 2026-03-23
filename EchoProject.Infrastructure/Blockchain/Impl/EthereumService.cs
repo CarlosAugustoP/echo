@@ -9,6 +9,7 @@ using EchoProject.Infrastructure.Blockchain.Contracts;
 using Microsoft.Extensions.Logging;
 using Nethereum.JsonRpc.Client;
 using System.Text.Json;
+using EchoProject.Domain.DonationAggregate;
 
 namespace EchoProject.Infrastructure.Blockchain.Impl
 {
@@ -54,7 +55,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
                 var expectedAmountInWei = Web3.Convert.ToWei(expectedAmountinETH);
                 bool isCorrectAmount = transaction.Value.Value >= expectedAmountInWei;
 
-            return isCorrectAddress && isCorrectAmount;
+                return isCorrectAddress && isCorrectAmount;
             }
             catch (Exception)
             {
@@ -73,7 +74,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             var amountInWei = Web3.Convert.ToWei(amount);
 
             var gasLimit = new HexBigInteger(200000);
-            var valueToSend = new HexBigInteger(0); 
+            var valueToSend = new HexBigInteger(0);
 
             var transactionHash = await releaseFunction.SendTransactionAsync(
                 _settings.EthereumAccountAddress, // De: A carteira da aplicação (Admin)
@@ -92,7 +93,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
         {
             var deploymentMessage = new EchoEscrowDeployment()
             {
-                PlatformAdmin = _settings.EthereumAccountAddress, 
+                PlatformAdmin = _settings.EthereumAccountAddress,
                 Gas = new HexBigInteger(1500000),
                 FromAddress = _settings.EthereumAccountAddress
             };
@@ -132,7 +133,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
                     _settings.EthereumAccountAddress,
                     gasLimit,
                     valueToSend,
-                    CancellationToken.None  
+                    CancellationToken.None
                 );
 
                 _logger.LogInformation("Cancel transaction sent for project {ProjectAddress}. Transaction hash: {TxHash}", projectAddress, txHash);
@@ -150,5 +151,41 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
                 throw;
             }
         }
+
+        public async Task<DonationStatus> GetDonationStatus(
+            string transactionId,
+            string expectedReceivingVendorWallet, 
+            decimal expectedAmountInETH)
+        {
+            try
+            {
+                var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionId);
+
+                if (receipt == null) return DonationStatus.TransferredToVendorPending;
+
+                if (receipt.Status.Value == 0) return DonationStatus.Failed;
+
+                var releaseEvent = receipt.DecodeAllEvents<FundsReleasedEvent>();
+
+                var validLog = releaseEvent.FirstOrDefault(log =>
+                    string.Equals(log.Event.Vendor, expectedReceivingVendorWallet, StringComparison.OrdinalIgnoreCase) &&
+                    Web3.Convert.FromWei(log.Event.Amount) == expectedAmountInETH
+                );
+
+                if (validLog != null)
+                {
+                    return DonationStatus.TransferredToVendorConfirmed;
+                }
+
+                _logger.LogWarning("Transação {Hash} confirmada, mas logs não batem com esperado!", transactionId);
+                return DonationStatus.Failed;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro na auditoria de logs da transação {Hash}", transactionId);
+                return DonationStatus.TransferredToVendorPending;
+            }
+        }
+
     }
 }

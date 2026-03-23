@@ -20,6 +20,7 @@ namespace EchoProject.Domain.DonationAggregate
         public Guid? TransferredToVendorId { get; private set; }
         public Vendor? TransferredToVendor { get; private set; }
         public DateTime CreatedAt { get; private set; }
+        public virtual ICollection<DonationEvent> Events { get; private set; } = [];
 
         private Donation() { }
 
@@ -74,7 +75,37 @@ namespace EchoProject.Domain.DonationAggregate
             Goal.RegisterDonation(Amount);
         }
 
-        public void MarkAsFailed()
+        public void AddEvent(DonationEvent donationEvent)
+        {
+            Events.Add(donationEvent);
+        }
+
+        public void UpdateStatus(DonationStatus newStatus)
+        {
+            if (newStatus == DonationStatus.TransferredToVendorConfirmed)
+            {
+                CompleteTransfer();
+            }
+            else if (newStatus == DonationStatus.Failed)
+            {
+                MarkAsFailed();
+            }
+            else if (newStatus == DonationStatus.ExpiredAndRefunded)
+            {
+                MarkAsExpiredAndRefunded();
+            }
+            else
+            {
+                throw new DomainException("Invalid status update.");
+            }
+        }
+
+        private void CompleteTransfer()
+        {
+            Status = DonationStatus.TransferredToVendorConfirmed;
+        }
+
+        private void MarkAsFailed()
         {
             if (Status == DonationStatus.TransferredToVendorPending)
                 throw new DomainException("Não é possível marcar como falhada uma doação já transferida para o fornecedor.");
@@ -82,13 +113,14 @@ namespace EchoProject.Domain.DonationAggregate
             Status = DonationStatus.Failed;
         }
 
-        public void MarkAsExpiredAndRefunded()
+        private void MarkAsExpiredAndRefunded()
         {
             if (Status == DonationStatus.TransferredToVendorPending)
                 throw new DomainException("Não é possível marcar como expirada e reembolsada uma doação já transferida para o fornecedor.");
             
             Status = DonationStatus.ExpiredAndRefunded;
         }
+        
 
     }
 }
