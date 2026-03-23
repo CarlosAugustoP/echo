@@ -14,8 +14,8 @@ namespace EchoProject.Domain.DonationAggregate
         public Goal Goal { get; private set; } = null!;
         public DonationStatus Status { get; private set; }
         
-        public long Amount { get; private set; }
-        public long TotalCost { get; private set; }
+        public decimal Amount { get; private set; }
+        public decimal TotalCost { get; private set; }
         public string TransactionHash { get; private set; }
         public Guid? TransferredToVendorId { get; private set; }
         public Vendor? TransferredToVendor { get; private set; }
@@ -23,7 +23,7 @@ namespace EchoProject.Domain.DonationAggregate
 
         private Donation() { }
 
-        public Donation(Guid donorId, Goal goal, long amount, long? costPurchase, string transactionHash)
+        public Donation(Guid donorId, Goal goal, decimal amount, decimal? costPurchase, string transactionHash)
         {
             DonorId = donorId;
             GoalId = goal.Id;

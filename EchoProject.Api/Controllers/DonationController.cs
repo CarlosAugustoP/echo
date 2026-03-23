@@ -46,5 +46,13 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        [HttpPost("transfer-to-vendor/{donationId}/{vendorId}")]
+        [MandatoryUserFilter([UserRole.NGO])]
+        public async Task<IActionResult> TransferToVendor(Guid donationId, Guid vendorId)
+        {
+            var result = await _donationService.AssignDonationToVendorAsync(donationId, vendorId, CurrentUser!);
+            return Success(result);
+        }
+
     }
 }

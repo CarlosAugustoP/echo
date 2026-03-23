@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace EchoProject.Domain.Common
@@ -12,9 +13,10 @@ namespace EchoProject.Domain.Common
             return l / 100m;
         }
 
-        public static long ToLong(this decimal d)
+        public static BigInteger ToWei(this decimal d)
         {
-            return (long) (d * 100);
+           BigInteger weiPerEth = BigInteger.Pow(10, 18);
+           return (BigInteger)(d * (decimal)weiPerEth);
         }
 
         public static bool ValidCNPJ(string cnpj)

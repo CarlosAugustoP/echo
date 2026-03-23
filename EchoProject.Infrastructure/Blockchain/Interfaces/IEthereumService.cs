@@ -2,7 +2,7 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
 {
     public interface IEthereumService
     {
-        Task<long> GetBalanceAsync(string address);
+        Task<decimal> GetBalanceAsync(string address);
 
         /// <summary>
         /// Verifies that a transaction with the given hash exists, was successful, and matches the expected contract address and amount.
@@ -11,7 +11,7 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
         /// <param name="expectedContractAddress"></param>
         /// <param name="expectedAmount"></param>
         /// <returns></returns>
-        Task<bool> VerifyTransactionAsync(string txHash, string expectedContractAddress, long expectedAmount);
+        Task<bool> VerifyTransactionAsync(string txHash, string expectedContractAddress, decimal expectedAmountInETH);
 
         /// <summary>
         /// Releases funds from the contract to the supplier's wallet 
@@ -21,7 +21,7 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
         /// <param name="supplierWallet"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        Task<string> ReleaseFundsToSupplierAsync(string projectAddress, string supplierWallet, long amount);
+        Task<string> ReleaseFundsToSupplierAsync(string projectAddress, string supplierWallet, decimal amount);
         /// <summary>
         /// Deploys a new instance of the project smart contract to the Ethereum blockchain and returns its address.
         /// </summary>

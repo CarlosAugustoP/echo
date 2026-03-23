@@ -18,10 +18,12 @@ namespace EchoProject.Infrastructure.Configuration
 
             builder.Property(g => g.TargetAmount)
                 .HasColumnName("target_amount")
+                .HasColumnType("decimal(38,18)")
                 .IsRequired();
 
             builder.Property(g => g.CurrentAmount)
                 .HasColumnName("current_amount")
+                .HasColumnType("decimal(38,18)")
                 .IsRequired()
                 .HasDefaultValue(0);
 
@@ -44,6 +46,11 @@ namespace EchoProject.Infrastructure.Configuration
             builder.Property(g => g.GoalTypeId)
                 .HasColumnName("goal_type_id")
                 .IsRequired();
+
+            builder.Property(g => g.CostPerUnit)
+                .HasColumnName("cost_per_unit")
+                .HasColumnType("decimal(38,18)")
+                .IsRequired(false);
 
             builder.HasMany(g => g.Vendors)
                 .WithMany()

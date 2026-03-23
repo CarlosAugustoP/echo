@@ -2,8 +2,8 @@ namespace EchoProject.Application.DTO.Donations
 {
     public class DonationDTO
     {
-        public long Amount { get; set; }
-        public long TotalCost { get; set; }
+        public decimal Amount { get; set; }
+        public decimal TotalCost { get; set; }
         public string TransactionHash { get; set; } = string.Empty;
         public string NameItem { get; set; } = string.Empty;
         public Guid DonorId { get; set; }

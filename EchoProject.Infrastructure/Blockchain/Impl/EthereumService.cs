@@ -7,6 +7,8 @@ using Nethereum.Hex.HexTypes;
 using Nethereum.Contracts;
 using EchoProject.Infrastructure.Blockchain.Contracts;
 using Microsoft.Extensions.Logging;
+using Nethereum.JsonRpc.Client;
+using System.Text.Json;
 
 namespace EchoProject.Infrastructure.Blockchain.Impl
 {
@@ -24,13 +26,13 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             _web3 = new Web3(account, _settings.RpcUrl);
         }
 
-        public async Task<long> GetBalanceAsync(string address)
+        public async Task<decimal> GetBalanceAsync(string address)
         {
             var balance = await _web3.Eth.GetBalance.SendRequestAsync(address);
-            return Web3.Convert.FromWei(balance.Value).ToLong();
+            return Web3.Convert.FromWei(balance.Value);
         }
 
-        public async Task<bool> VerifyTransactionAsync(string txHash, string expectedContractAddress, long expectedAmount)
+        public async Task<bool> VerifyTransactionAsync(string txHash, string expectedContractAddress, decimal expectedAmountinETH)
         {
             try
             {
@@ -49,10 +51,10 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
 
                 // 4. Valida se o valor depositado é maior ou igual ao esperado.
                 // O valor no blockchain sempre trafega em Wei. Precisamos converter o expectedAmount (Ether) para Wei.
-                var expectedAmountInWei = Web3.Convert.ToWei(expectedAmount);
+                var expectedAmountInWei = Web3.Convert.ToWei(expectedAmountinETH);
                 bool isCorrectAmount = transaction.Value.Value >= expectedAmountInWei;
 
-                return isCorrectAddress && isCorrectAmount;
+            return isCorrectAddress && isCorrectAmount;
             }
             catch (Exception)
             {
@@ -61,24 +63,18 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             }
         }
 
-        public async Task<string> ReleaseFundsToSupplierAsync(string projectAddress, string supplierWallet, long amount)
+        public async Task<string> ReleaseFundsToSupplierAsync(string projectAddress, string supplierWallet, decimal amount)
         {
-            // A ABI (Application Binary Interface) ensina o C# como "conversar" com o método do Smart Contract.
-            // Aqui mapeamos apenas a função releaseFunds que desenhamos no Solidity.
             const string abi = @"[{""constant"":false,""inputs"":[{""name"":""_supplier"",""type"":""address""},{""name"":""_amount"",""type"":""uint256""}],""name"":""releaseFunds"",""outputs"":[],""payable"":false,""stateMutability"":""nonpayable"",""type"":""function""}]";
 
-            // Instancia a referência do contrato no blockchain
             var contract = _web3.Eth.GetContract(abi, projectAddress);
             var releaseFunction = contract.GetFunction("releaseFunds");
 
-            // O contrato inteligente espera receber o valor em Wei, não em Ether inteiro
             var amountInWei = Web3.Convert.ToWei(amount);
 
-            // Configura o limite de Gás (combustível da rede) para a operação não falhar no meio
             var gasLimit = new HexBigInteger(200000);
-            var valueToSend = new HexBigInteger(0); // A chamada da função em si não envia novos Ethers, apenas executa a lógica
+            var valueToSend = new HexBigInteger(0); 
 
-            // Dispara a transação. O Nethereum assina automaticamente usando a conta vinculada no construtor (_web3).
             var transactionHash = await releaseFunction.SendTransactionAsync(
                 _settings.EthereumAccountAddress, // De: A carteira da aplicação (Admin)
                 gasLimit,
@@ -87,24 +83,29 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
                 amountInWei     // Argumento 2 do Solidity: _amount
             );
 
+            _logger.LogInformation("Funds release transaction sent. Project: {ProjectAddress}, Supplier: {SupplierWallet}, Amount: {Amount}, TxHash: {TxHash}", projectAddress, supplierWallet, amount, transactionHash);
+
             return transactionHash;
         }
 
         public async Task<string> DeployProjectContractAsync()
         {
-            // 1. Instanciamos a nossa classe específica de deployment
             var deploymentMessage = new EchoEscrowDeployment()
             {
-                PlatformAdmin = _settings.EthereumAccountAddress, // O administrador do contrato é a carteira da aplicação
+                PlatformAdmin = _settings.EthereumAccountAddress, 
                 Gas = new HexBigInteger(1500000),
                 FromAddress = _settings.EthereumAccountAddress
             };
+
+            _logger.LogInformation("Deploying new project smart contract: {DeploymentMessage}", JsonSerializer.Serialize(deploymentMessage));
 
             // 2. O Handler agora usa a nossa classe concreta
             var deploymentHandler = _web3.Eth.GetContractDeploymentHandler<EchoEscrowDeployment>();
 
             // 3. Enviamos e aguardamos a mineração do bloco
             var transactionReceipt = await deploymentHandler.SendRequestAndWaitForReceiptAsync(deploymentMessage);
+
+            _logger.LogInformation("Project contract deployed at address: {ContractAddress}", transactionReceipt.ContractAddress);
 
             return transactionReceipt.ContractAddress;
         }
@@ -127,20 +128,21 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
                     valueToSend
                 );
 
-                // Em vez de SendTransactionAsync + GetTransactionReceipt
                 var receipt = await cancelFunction.SendTransactionAndWaitForReceiptAsync(
                     _settings.EthereumAccountAddress,
                     gasLimit,
                     valueToSend,
-                    null // CancellationToken
+                    CancellationToken.None  
                 );
+
+                _logger.LogInformation("Cancel transaction sent for project {ProjectAddress}. Transaction hash: {TxHash}", projectAddress, txHash);
+                _logger.LogInformation("Receipt: {Receipt}", JsonSerializer.Serialize(receipt));
 
                 return receipt != null && receipt.Status.Value == 1;
             }
-            catch (Nethereum.JsonRpc.Client.RpcResponseException rpcEx)
+            catch (RpcResponseException rpcEx)
             {
-                // Isso vai te mostrar a mensagem do 'require' do Solidity (ex: "Only admin can cancel")
-                _logger.LogError("Erro no RPC: {Message}", rpcEx.Message);
+                _logger.LogError("RPC errof for project {ProjectAddress}: {Message}", projectAddress, rpcEx.Message);
                 throw;
             }
             catch (Exception)

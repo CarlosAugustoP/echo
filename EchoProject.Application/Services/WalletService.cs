@@ -8,7 +8,7 @@ namespace EchoProject.Application.Services
     {
         private readonly IEthereumService _ethereumService = ethereumService;
 
-        public async Task<long> GetWalletBalanceAsync(string walletAddress)
+        public async Task<decimal> GetWalletBalanceAsync(string walletAddress)
         {
             return await _ethereumService.GetBalanceAsync(walletAddress);
         }

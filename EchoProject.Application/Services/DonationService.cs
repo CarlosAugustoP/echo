@@ -11,7 +11,6 @@ using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace EchoProject.Application.Services
@@ -20,22 +19,19 @@ namespace EchoProject.Application.Services
     public class DonationService(IUnitOfWork unitOfWork, IEthereumService ethereumService, ILogger<DonationService> logger, IMapper mapper)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IEthereumService _ethereumService = ethereumService;
+        private readonly IEthereumService _ethereum = ethereumService;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<DonationService> _logger = logger;
         
         public async Task<bool> DonateAsync(DonationRequest request, UserDTO donor)
         {
-            if (donor.Role != UserRole.Donor)
-                throw new UnauthorizedException("Only users with the Donor role can make donations.");
-
             var goal = await _unitOfWork.Goals.FindByIdAsync(request.GoalId)
                 ?? throw new NotFoundException($"Goal with ID {request.GoalId} not found.");
 
-            bool isTransactionValid = await _ethereumService.VerifyTransactionAsync(
+            bool isTransactionValid = await _ethereum.VerifyTransactionAsync(
                 request.TransactionHash,
                 goal.Project.SmartContractAddress,
-                request.Amount
+                request.TotalAmount
             );
 
             if (!isTransactionValid)
@@ -49,9 +45,7 @@ namespace EchoProject.Application.Services
             try
             {
                 await _unitOfWork.Donations.AddAsync(donation);
-
                 goal.RegisterDonation(request.Amount);
-
                 await _unitOfWork.CommitAsync();
             }
             catch (Exception ex)
@@ -97,6 +91,31 @@ namespace EchoProject.Application.Services
                 .FindByProjectId(projectId, CancellationToken.None)
                 .Paginate(pr.PageNumber, pr.PageSize)
                 .Select(x => _mapper.Map<DonationDTO>(x));
+        }
+
+        public async Task<bool> AssignDonationToVendorAsync(Guid donId, Guid vendorId, UserDTO user)
+        {
+            var donation = await _unitOfWork.Donations.FindByIdAsync(donId)
+                ?? throw new NotFoundException($"Donation with ID {donId} not found.");
+
+            var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
+                ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
+
+            if (donation.Goal.Project.ManagerId != user.Id)
+            {
+                throw new UnauthorizedException("You are not the manager of this project.");
+            }
+
+            donation.TransferToVendor(vendor);
+            var project = donation.Goal.Project;
+
+            _logger.LogInformation("Beginning transfer of funds to vendor. Donation ID: {DonationId}, Vendor ID: {VendorId}, Amount: {Amount}"
+                ,donId, vendorId, donation.Amount);
+            
+            await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.Amount);
+        
+            await _unitOfWork.CommitAsync();
+            return true;
         }
     }
 }

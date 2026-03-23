@@ -1,9 +1,11 @@
+using System.Numerics;
+
 namespace EchoProject.Application.Requests.Donation
 {
     public record DonationRequest
     (
-        long Amount,
-        long? TotalAmount, 
+        decimal Amount,
+        decimal TotalAmount, 
         Guid GoalId,
         string TransactionHash
     );

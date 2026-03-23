@@ -33,9 +33,9 @@ namespace EchoProject.Domain.ProjectAggregate
             SmartContractAddress = new SmartContractAddress(address);
         }
 
-        public Goal AddGoal(string title, long target, GoalType goalType)
+        public Goal AddGoal(string title, decimal target, GoalType goalType, long? costPerUnit)
         {
-            var goal = new Goal(Id, title, target, goalType);
+            var goal = new Goal(Id, title, target, goalType, costPerUnit);
             _goals.Add(goal);
             return goal;
         }

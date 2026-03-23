@@ -3,6 +3,7 @@ using System;
 using EchoProject.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EchoProject.Infrastructure.Migrations
 {
     [DbContext(typeof(EchoDbContext))]
-    partial class EchoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323011221_RemoveLongAsWeWillWorkWithWEI")]
+    partial class RemoveLongAsWeWillWorkWithWEI
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,8 +87,7 @@ namespace EchoProject.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal?>("CostPerUnit")
-                        .HasColumnType("decimal(38,18)")
-                        .HasColumnName("cost_per_unit");
+                        .HasColumnType("numeric");
 
                     b.Property<decimal>("CurrentAmount")
                         .ValueGeneratedOnAdd()

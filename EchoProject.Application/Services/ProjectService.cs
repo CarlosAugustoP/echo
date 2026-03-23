@@ -52,16 +52,18 @@ namespace EchoProject.Application.Services
                 var goalType = await _unitOfWork.GoalTypes.FindByIdAsync(goalReq.GoalTypeId)
                     ?? throw new NotFoundException($"GoalType {goalReq.GoalTypeId} not found.");
 
-                var goal = project.AddGoal(goalReq.Title, goalReq.TargetAmount, goalType);
-                if (goalReq.VendorIds != null && goalReq.VendorIds.Count > 0)
-                {
-                    var vendors = await FetchVendorsAsync(goalReq.VendorIds);
-                    goal.AssignVendors(vendors);
-                }
+                var goal = project.AddGoal(goalReq.Title, goalReq.TargetAmount, goalType, goalReq.CostPerUnit);
+                
+                var vendors = await FetchVendorsAsync(goalReq.VendorIds);
+                goal.AssignVendors(vendors);
+                
             }
         }
-        private async Task<IEnumerable<Vendor>> FetchVendorsAsync(IEnumerable<Guid> vendorIds)
+        private async Task<IEnumerable<Vendor>> FetchVendorsAsync(IEnumerable<Guid>? vendorIds)
         {
+            if (vendorIds == null || !vendorIds.Any())
+                return [];
+                
             var vendors = new List<Vendor>();
             foreach (var id in vendorIds)
             {
@@ -110,7 +112,7 @@ namespace EchoProject.Application.Services
             var goalType = await _unitOfWork.GoalTypes.FindByIdAsync(goalRequest.GoalTypeId)
                 ?? throw new NotFoundException($"GoalType with ID {goalRequest.GoalTypeId} not found.");
 
-            var goal = project.AddGoal(goalRequest.Title, goalRequest.TargetAmount, goalType);
+            var goal = project.AddGoal(goalRequest.Title, goalRequest.TargetAmount, goalType, goalRequest.CostPerUnit);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<GoalDTO>(goal);
         }

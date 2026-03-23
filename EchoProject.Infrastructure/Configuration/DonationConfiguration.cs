@@ -25,6 +25,12 @@ namespace EchoProject.Infrastructure.Configuration
 
             builder.Property(d => d.Amount)
                 .HasColumnName("amount")
+                .HasColumnType("decimal(38,18)")
+                .IsRequired();
+            
+            builder.Property(d => d.TotalCost)
+                .HasColumnName("total_cost")
+                .HasColumnType("decimal(38,18)")
                 .IsRequired();
 
             builder.Property(d => d.TransactionHash)

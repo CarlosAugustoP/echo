@@ -11,14 +11,14 @@ namespace EchoProject.Domain.ProjectAggregate
         public virtual GoalType GoalType { get; private set; }  
         public virtual Project Project { get; private set; } = null!;
         public string Title { get; private set; }
-        public long TargetAmount { get; private set; }
-        public long CurrentAmount { get; private set; } = 0;
-        public long? CostPerUnit { get; private set; }
+        public decimal TargetAmount { get; private set; }
+        public decimal CurrentAmount { get; private set; } = 0;
+        public decimal? CostPerUnit { get; private set; }
         private readonly List<Vendor> _vendors = [];
         public IReadOnlyCollection<Vendor> Vendors => _vendors.AsReadOnly();
 
         // Construtor atualizado
-        internal Goal(Guid projectId, string title, long target, GoalType goalType)
+        internal Goal(Guid projectId, string title, decimal target, GoalType goalType, decimal? costPerUnit = null)
         {
             ProjectId = projectId;
             GoalType = goalType ?? throw new ArgumentNullException(nameof(goalType));
@@ -28,12 +28,11 @@ namespace EchoProject.Domain.ProjectAggregate
             {
                 throw new ArgumentException("Cost per unit cannot be defined for money goals.");
             }
-
-            if (goalType.Name != PresetName.Money && Vendors.Count == 0)
+            if (RequiresVendor() && costPerUnit is null)
             {
-                throw new ArgumentException("Non-money goals must have at least one vendor assigned.");
+                throw new ArgumentException("Cost per unit must be defined for non-money goals.");
             }
-            
+            CostPerUnit = costPerUnit;
             Title = title.Length is > 0 and < 50 
                 ? title 
                 : throw new ArgumentException("Title must be between 1 and 50 characters long.");
@@ -60,13 +59,16 @@ namespace EchoProject.Domain.ProjectAggregate
 
         public void AssignVendors(IEnumerable<Vendor> vendors)
         {
+            if (RequiresVendor() && !vendors.Any())
+                throw new DomainException("At least one vendor must be assigned to a non-money goal.");
+            
             foreach (var vendor in vendors)
             {
                 AssignVendor(vendor);
             }
         }
 
-        public void RegisterDonation(long amount)
+        public void RegisterDonation(decimal amount)
         {
             CurrentAmount += amount;
         }
