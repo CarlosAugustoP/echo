@@ -4,7 +4,8 @@ namespace EchoProject.Domain.DonationAggregate
     {
         PendingVendorRepass,
         ImmediateTransferToNGO,
-        TransferredToVendor,
+        TransferredToVendorPending,
+        TransferredToVendorConfirmed,
         Failed,
         ExpiredAndRefunded
     }

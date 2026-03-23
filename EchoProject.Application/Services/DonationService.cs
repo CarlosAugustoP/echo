@@ -112,7 +112,7 @@ namespace EchoProject.Application.Services
             _logger.LogInformation("Beginning transfer of funds to vendor. Donation ID: {DonationId}, Vendor ID: {VendorId}, Amount: {Amount}"
                 ,donId, vendorId, donation.Amount);
             
-            await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.Amount);
+            await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.TotalCost);
         
             await _unitOfWork.CommitAsync();
             return true;

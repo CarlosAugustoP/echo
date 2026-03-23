@@ -68,7 +68,7 @@ namespace EchoProject.Domain.DonationAggregate
             if (!vendor.IsValid())
                 throw new DomainException("O fornecedor não é aprovado para receber a doação.");
 
-            Status = DonationStatus.TransferredToVendor;
+            Status = DonationStatus.TransferredToVendorPending;
             TransferredToVendor = vendor;
             TransferredToVendorId = vendor.Id;
             Goal.RegisterDonation(Amount);
@@ -76,7 +76,7 @@ namespace EchoProject.Domain.DonationAggregate
 
         public void MarkAsFailed()
         {
-            if (Status == DonationStatus.TransferredToVendor)
+            if (Status == DonationStatus.TransferredToVendorPending)
                 throw new DomainException("Não é possível marcar como falhada uma doação já transferida para o fornecedor.");
 
             Status = DonationStatus.Failed;
@@ -84,7 +84,7 @@ namespace EchoProject.Domain.DonationAggregate
 
         public void MarkAsExpiredAndRefunded()
         {
-            if (Status == DonationStatus.TransferredToVendor)
+            if (Status == DonationStatus.TransferredToVendorPending)
                 throw new DomainException("Não é possível marcar como expirada e reembolsada uma doação já transferida para o fornecedor.");
             
             Status = DonationStatus.ExpiredAndRefunded;

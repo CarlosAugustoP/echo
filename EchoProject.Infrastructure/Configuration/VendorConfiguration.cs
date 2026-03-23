@@ -46,6 +46,10 @@ namespace EchoProject.Infrastructure.Configuration
                 .HasColumnName("type_item_supply")
                 .IsRequired()
                 .HasMaxLength(100);
+            
+            builder.Property(x => x.DecisionDate)
+                .HasColumnName("decision_date")
+                .IsRequired(false);
 
             builder.OwnsOne(v => v.Wallet, w =>
             {

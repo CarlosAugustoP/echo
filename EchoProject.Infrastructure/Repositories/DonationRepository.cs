@@ -12,7 +12,9 @@ namespace EchoProject.Infrastructure.Repositories
                 .Include(x => x.Goal)
                 .ThenInclude(g => g.Project)
                 .Include(x => x.Goal)
-                .ThenInclude(g => g.GoalType);
+                .ThenInclude(g => g.GoalType)
+                .Include(x => x.Goal)
+                .ThenInclude(g => g.Vendors);
 
         public IEnumerable<Donation> FindByProjectId(Guid projectId, CancellationToken ct = default)
         {
