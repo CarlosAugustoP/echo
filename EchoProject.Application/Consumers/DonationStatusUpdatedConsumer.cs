@@ -37,6 +37,11 @@ namespace EchoProject.Application.Consumers
                     return;
                 }
 
+                if (message.FundsReleasedHash != null)
+                {
+                    donation.SetFundsReleasedHash(message.FundsReleasedHash);    
+                }
+
                 donation.UpdateStatus(message.NewStatus);
                 var statusEvent = DonationEventFactory.Create(donation, message.NewStatus);
                 
