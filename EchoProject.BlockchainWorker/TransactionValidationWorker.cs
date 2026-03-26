@@ -20,7 +20,7 @@ namespace EchoProject.BlockchainWorker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Worker de Validação de Transações iniciado.");
+            _logger.LogInformation("AAAAAAAAAAAAAAAAAAA - Worker de Validação de Transações iniciado.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -63,9 +63,9 @@ namespace EchoProject.BlockchainWorker
                     var isMoneyDonation = pendingStatus == DonationStatus.ImmediateTransferToNGOPending;
 
                     var currentStatus = await ethService.GetDonationStatus(
-                        donation.TransactionHash, 
+                        donation.FundsReleaseHash!, 
                         targetWallet, 
-                        donation.Amount, 
+                        donation.TotalCost, 
                         isMoneyDonation
                     );
 

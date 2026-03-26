@@ -17,6 +17,7 @@ namespace EchoProject.Domain.DonationAggregate
         public decimal Amount { get; private set; }
         public decimal TotalCost { get; private set; }
         public string TransactionHash { get; private set; }
+        public string? FundsReleaseHash { get; private set; }
         public Guid? TransferredToVendorId { get; private set; }
         public Vendor? TransferredToVendor { get; private set; }
         public DateTime CreatedAt { get; private set; }
@@ -42,6 +43,10 @@ namespace EchoProject.Domain.DonationAggregate
 
         }
 
+        public void SetFundsReleasedHash(string fundsReleaseHash)
+        {
+            FundsReleaseHash = fundsReleaseHash;
+        }
 
         private void ValidatePayment()
         {

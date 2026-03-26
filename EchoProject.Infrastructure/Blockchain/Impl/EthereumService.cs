@@ -172,9 +172,21 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
                 var releaseEvent = receipt.DecodeAllEvents<FundsReleasedEvent>();
 
                 var validLog = releaseEvent.FirstOrDefault(log =>
-                    string.Equals(log.Event.Vendor, expectedReceivingVendorWallet, StringComparison.OrdinalIgnoreCase) &&
-                    Web3.Convert.FromWei(log.Event.Amount) == expectedAmountInETH
-                );
+                {
+                    var vendor = log.Event.Supplier;
+                    var amount = Web3.Convert.FromWei(log.Event.Amount);
+                    var vendorMatch = string.Equals(vendor, expectedReceivingVendorWallet, StringComparison.OrdinalIgnoreCase);
+                    var amountMatch = amount == expectedAmountInETH;
+                    
+                    _logger.LogInformation(
+                        "Event log check - Vendor: {ActualVendor} (Expected: {ExpectedVendor}) Match: {VendorMatch}, Amount: {ActualAmount} (Expected: {ExpectedAmount}) Match: {AmountMatch}",
+                        vendor, expectedReceivingVendorWallet, vendorMatch,
+                        amount, expectedAmountInETH, amountMatch
+                    );
+                    
+                    return vendorMatch && amountMatch;
+                });
+                
 
                 if (validLog != null)
                 {

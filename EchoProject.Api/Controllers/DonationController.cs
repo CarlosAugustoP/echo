@@ -54,5 +54,12 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        [HttpGet("status/{donationId}")]
+        public async Task<IActionResult> GetDonationStatus(Guid donationId)
+        {
+             _donationService.VerifyTransaction(donationId);
+            return Success("a");
+        }
+
     }
 }
