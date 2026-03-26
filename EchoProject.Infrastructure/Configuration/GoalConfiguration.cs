@@ -55,7 +55,7 @@ namespace EchoProject.Infrastructure.Configuration
             builder.HasMany(g => g.Vendors)
                 .WithMany()
                 .UsingEntity<Dictionary<string, object>>(
-                    "goal_vendor", // Name of the join table
+                    "goal_vendor", 
                     j => j.HasOne<Domain.VendorAggregate.Vendor>().WithMany().HasForeignKey("vendor_id"),
                     j => j.HasOne<Goal>().WithMany().HasForeignKey("goal_id")
                 );

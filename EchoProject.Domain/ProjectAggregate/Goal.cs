@@ -42,8 +42,9 @@ namespace EchoProject.Domain.ProjectAggregate
                 : throw new ArgumentException("Target amount must be greater than zero.");
         }
 
-        public bool RequiresVendor() => GoalType.Name != PresetName.Money;
-        public bool MoneyPendingOnTrustedVendorLiberation() => GoalType.Name != PresetName.Money;
+        public bool IsMoney() => GoalType.Name == PresetName.Money;
+        public bool RequiresVendor() => !IsMoney();
+        public bool MoneyPendingOnTrustedVendorLiberation() => !IsMoney();
         private Goal() { } // EF Core
 
         public void AssignVendor(Vendor vendor)

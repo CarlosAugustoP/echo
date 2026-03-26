@@ -1,18 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using EchoProject.Api.DependencyInjection;
-using EchoProject.Application.Common.Password;
-using EchoProject.Domain.Interfaces;
-using EchoProject.Infrastructure.UnitOfWork;
-using FluentValidation;
-using FluentValidation.AspNetCore;
+using EchoProject.Application.DependencyInjection;
+using EchoProject.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.ConfigureSwagger();
-builder.Services.AddPostgresDatabase(builder.Configuration);
-builder.Services.ConfigureBlockChain(builder.Configuration);
-builder.Services.AddControllers();
-builder.Services.AddRepositoriesAndUnitOfWork();    
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutoMapper
 (
     cfg => { cfg.LicenseKey = builder.Configuration["AutoMapper:LicenseKey"]; 
@@ -23,14 +16,9 @@ builder.Services.AddLogging(config =>
     config.AddConsole();
     config.AddDebug();
 });
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddAppServices(
-    typeof(EchoProject.Application.AssemblyReference).Assembly);
-builder.Services.AddAuth(builder.Configuration);
-builder.Services.AddFluentValidationAutoValidation(); 
-builder.Services.AddFluentValidationClientsideAdapters();
-builder.Services.AddValidatorsFromAssemblyContaining<EchoProject.Application.AssemblyReference>();
-
+builder.Services.ConfigureSwagger();
+builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddControllers();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -40,6 +28,7 @@ if (app.Environment.IsDevelopment())
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 app.UseAuthentication();
 app.UseAuthorization();
+await app.SubscribeRebusEventsAsync();
 app.AddMiddlewares();
 app.MapControllers();
 app.Run();

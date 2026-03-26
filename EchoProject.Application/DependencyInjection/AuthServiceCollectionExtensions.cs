@@ -1,10 +1,13 @@
 using System.Text;
 using EchoProject.Application.Common.Auth;
+using EchoProject.Application.Common.Password;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace EchoProject.Api.DependencyInjection
+namespace EchoProject.Application.DependencyInjection
 {
     public static class AuthServiceCollectionExtensions
     {
@@ -40,7 +43,7 @@ namespace EchoProject.Api.DependencyInjection
                     ClockSkew = TimeSpan.Zero 
                 };
             });
-
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
             return services;
         }
     }

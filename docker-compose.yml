@@ -1,0 +1,54 @@
+services:
+  # --- INFRAESTRUTURA ---
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: echo-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - echo-network
+
+  # --- BACK-END API ---
+  echo-api:
+    build:
+      context: .
+      dockerfile: EchoProject.API/Dockerfile
+    container_name: echo-api
+    ports:
+      - "5087:8080" # Mapeia porta 5000 externa para 8080 interna do container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMqSettings__Host=rabbitmq # IMPORTANTE: No docker, o host é o nome do serviço
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - echo-network
+
+  # --- BLOCKCHAIN WORKER ---
+  echo-worker:
+    build:
+      context: .
+      dockerfile: EchoProject.BlockchainWorker/Dockerfile
+    container_name: echo-worker
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - RabbitMqSettings__Host=rabbitmq # Mesmo host aqui
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - echo-network
+
+networks:
+  echo-network:
+    driver: bridge

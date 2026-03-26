@@ -9,6 +9,7 @@ using EchoProject.Application.Requests.Pagination;
 using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.Interfaces;
+using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -56,6 +57,16 @@ namespace EchoProject.Application.Services
 
             return true;
         }
+
+        public void VerifyTransaction(Guid donationId)
+        {
+            var donation = _unitOfWork.Donations.FindByIdAsync(donationId).Result
+                ?? throw new NotFoundException($"Donation with ID {donationId} not found.");
+
+            _ethereum.GetDonationStatus(donation.TransactionHash, donation.TransferredToVendor.Wallet, donation.TotalCost, false).GetAwaiter().GetResult();
+    
+        }
+
         public PaginatedList<DonationDTO> GetByDonorId(Guid userId, PageRequest pr)
         {
             return _unitOfWork.Donations
@@ -112,8 +123,10 @@ namespace EchoProject.Application.Services
             _logger.LogInformation("Beginning transfer of funds to vendor. Donation ID: {DonationId}, Vendor ID: {VendorId}, Amount: {Amount}"
                 ,donId, vendorId, donation.Amount);
             
-            await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.TotalCost);
-        
+            var finalTransactionHash = await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.TotalCost);
+            
+            donation.SetFundsReleasedHash(finalTransactionHash);
+            
             await _unitOfWork.CommitAsync();
             return true;
         }

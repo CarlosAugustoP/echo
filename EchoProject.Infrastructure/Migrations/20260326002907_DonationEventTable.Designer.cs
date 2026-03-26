@@ -3,6 +3,7 @@ using System;
 using EchoProject.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EchoProject.Infrastructure.Migrations
 {
     [DbContext(typeof(EchoDbContext))]
-    partial class EchoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260326002907_DonationEventTable")]
+    partial class DonationEventTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,9 +43,6 @@ namespace EchoProject.Infrastructure.Migrations
                     b.Property<Guid>("DonorId")
                         .HasColumnType("uuid")
                         .HasColumnName("donor_id");
-
-                    b.Property<string>("FundsReleaseHash")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("GoalId")
                         .HasColumnType("uuid")

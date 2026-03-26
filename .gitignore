@@ -5,6 +5,8 @@
 /echo-solution/EchoProject.Domain/bin
 /echo-solution/EchoProject.Infrastructure/bin
 EchoProject.Api/appsettings.json
+EchoProject.BlockchainWorker/appsettings.json
+
 [Bb]in/
 [Oo]bj/
 

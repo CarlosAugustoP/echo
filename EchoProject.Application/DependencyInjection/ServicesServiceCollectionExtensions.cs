@@ -1,11 +1,12 @@
 using System.Reflection;
 using EchoProject.Application.Common;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace EchoProject.Api.DependencyInjection
+namespace EchoProject.Application.DependencyInjection
 {
     public  static class ServicesServiceCollectionExtensions
     {
-        public static IServiceCollection AddAppServices(this IServiceCollection services, Assembly assembly)
+    public static IServiceCollection AddAppServices(this IServiceCollection services, Assembly assembly)
     {
         var types = assembly.GetTypes()
             .Where(t => t.IsClass &&
