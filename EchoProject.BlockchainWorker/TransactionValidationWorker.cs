@@ -67,6 +67,26 @@ namespace EchoProject.BlockchainWorker
                         continue;
                     }
 
+                    if (isMoneyDonation)
+                    {
+                        // We release funds directly to the NGO.
+                        var txHash = ethService.ReleaseFundsToSupplierAsync
+                        (
+                            donation.Goal.Project.SmartContractAddress, 
+                            donation.Goal.Project.Manager.WalletAddress,
+                            donation.TotalCost
+                        );
+                        
+                        await bus.Publish(new DonationStatusUpdatedMessage(
+                            donation.Id,
+                            DonationStatus.ImmediateTransferToNGOConfirmed,
+                            donation.TransactionHash, 
+                            donation.FundsReleaseHash
+                        ));    
+                        
+                        continue;        
+                    }
+
                     var currentStatus = await ethService.GetDonationStatus(
                         donation.FundsReleaseHash!, 
                         targetWallet, 
