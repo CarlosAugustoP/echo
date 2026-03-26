@@ -6,7 +6,7 @@ namespace EchoProject.Domain.DonationAggregate
         {
             string message = status switch
             {
-                DonationStatus.ImmediateTransferToNGOPending => "Aguardando repasse para o ONG.",
+                DonationStatus.ImmediateTransferToNGOInContract => "Aguardando repasse para o ONG.",
                 DonationStatus.ImmediateTransferToNGOConfirmed => "Repasse para ONG confirmado no Blockchain.",
                 DonationStatus.TransferredToVendorPending => $"Transação de repasse enviada ao Blockchain. Hash: {donation.TransactionHash}",
                 DonationStatus.TransferredToVendorConfirmed => "Repasse confirmado com sucesso no Blockchain e recebido pelo fornecedor.",

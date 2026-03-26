@@ -22,7 +22,7 @@ namespace EchoProject.Application.DependencyInjection
             services.AddAuth(configuration);
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();
-            // services.AddMessaging(configuration);
+            services.AddMessaging(configuration);
 
             return services;
         }

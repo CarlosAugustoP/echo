@@ -25,15 +25,12 @@ namespace EchoProject.Application.Consumers
             try
             {
                 var donation = await _unitOfWork.Donations.FindByIdAsync(message.DonationId);
-
                 if (donation == null)
                 {
                     _logger.LogWarning("Doação {Id} não encontrada no banco de dados. Ignorando.", message.DonationId);
                     return;
                 }
 
-                // 1. IDEMPOTÊNCIA (Crucial em mensageria)
-                // Se o status já é o mesmo (ex: o Rebus tentou processar a mensagem de novo por falha de rede), nós ignoramos.
                 if (donation.Status == message.NewStatus)
                 {
                     _logger.LogInformation(">>> [Consumer] A doação {Id} já está com o status {Status}. Processamento ignorado.", message.DonationId, message.NewStatus);
@@ -43,12 +40,7 @@ namespace EchoProject.Application.Consumers
                 donation.UpdateStatus(message.NewStatus);
                 var statusEvent = DonationEventFactory.Create(donation, message.NewStatus);
                 
-                // 2. ADIÇÃO DO EVENTO
-                // Se `donation.AddEvent(statusEvent)` continuar forçando o EF a fazer um UPDATE...
-                // ...a alternativa mais segura com UoW é adicionar o evento explicitamente no DbContext
                 await _unitOfWork.DonationEvents.AddAsync(statusEvent);                
-                // (Descomente a linha abaixo se o erro persistir, assumindo que seu UoW tenha acesso a esse repositório)
-                // await _unitOfWork.DonationEvents.AddAsync(statusEvent);
 
                 await _unitOfWork.CommitAsync();
 

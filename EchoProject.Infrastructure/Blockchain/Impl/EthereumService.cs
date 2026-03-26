@@ -158,7 +158,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             decimal expectedAmountInETH,
             bool isMoneyDonation)
         {
-            var pendingStatus = isMoneyDonation ? DonationStatus.ImmediateTransferToNGOPending : DonationStatus.TransferredToVendorPending;
+            var pendingStatus = isMoneyDonation ? DonationStatus.ImmediateTransferToNGOInContract : DonationStatus.TransferredToVendorPending;
             var confirmedStatus = isMoneyDonation ? DonationStatus.ImmediateTransferToNGOConfirmed : DonationStatus.TransferredToVendorConfirmed;
 
             try

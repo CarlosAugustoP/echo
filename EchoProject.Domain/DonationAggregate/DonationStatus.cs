@@ -5,11 +5,15 @@ namespace EchoProject.Domain.DonationAggregate
         /// <summary>
         /// The donation has been transferred to the NGO's wallet, as it is a money donation directly to the NGO.
         /// </summary>
-        ImmediateTransferToNGOPending,
+        ImmediateTransferToNGOInContract,
         /// <summary>
         /// The donation has been transferred to the NGO's wallet and the transaction is confirmed on the blockchain, as it is a money donation directly to the NGO.
         /// </summary>
         ImmediateTransferToNGOConfirmed,
+        
+        /// <summary>
+        /// The donation has been transferred to smart contract.    
+        TransferredToContract,
         /// <summary>
         /// The donation has been transferred to the supplier's wallet, but we are still waiting for blockchain confirmation.
         /// </summary>

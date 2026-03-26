@@ -20,7 +20,7 @@ namespace EchoProject.BlockchainWorker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("AAAAAAAAAAAAAAAAAAA - Worker de Validação de Transações iniciado.");
+            _logger.LogInformation("Worker de Validação de Transações iniciado.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -29,14 +29,13 @@ namespace EchoProject.BlockchainWorker
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
                     var ethService = scope.ServiceProvider.GetRequiredService<IEthereumService>();
                     
-                    // Rebus: Pega a instância do IBus ao invés do IPublishEndpoint
                     var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 
                     var pendingVendor = unitOfWork.Donations.FindPendingConfirmations(stoppingToken);
                     var pendingNGO = unitOfWork.Donations.FindDirectPendingNGOLiberation(stoppingToken);
 
                     await ProcessDonationsAsync(pendingVendor, DonationStatus.TransferredToVendorPending, ethService, bus, stoppingToken);
-                    await ProcessDonationsAsync(pendingNGO, DonationStatus.ImmediateTransferToNGOPending, ethService, bus, stoppingToken);
+                    await ProcessDonationsAsync(pendingNGO, DonationStatus.ImmediateTransferToNGOInContract, ethService, bus, stoppingToken);
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
@@ -47,7 +46,7 @@ namespace EchoProject.BlockchainWorker
             IEnumerable<Donation> donations, 
             DonationStatus pendingStatus,
             IEthereumService ethService,
-            IBus bus, // Passando o IBus do Rebus
+            IBus bus,
             CancellationToken ct)
         {
             foreach (var donation in donations)
@@ -60,7 +59,13 @@ namespace EchoProject.BlockchainWorker
 
                     _logger.LogDebug("Consultando Blockchain para transação {Hash}...", donation.TransactionHash);
 
-                    var isMoneyDonation = pendingStatus == DonationStatus.ImmediateTransferToNGOPending;
+                    var isMoneyDonation = pendingStatus == DonationStatus.ImmediateTransferToNGOInContract;
+
+                    if (donation.FundsReleaseHash is null)
+                    {
+                        _logger.LogWarning("Doação {Id} está pendente, mas sem hash de liberação. Ignorando por enquanto.", donation.Id);
+                        continue;
+                    }
 
                     var currentStatus = await ethService.GetDonationStatus(
                         donation.FundsReleaseHash!, 
@@ -71,7 +76,6 @@ namespace EchoProject.BlockchainWorker
 
                     if (currentStatus != pendingStatus)
                     {
-                        // Rebus: O método Publish funciona da mesma forma
                         await bus.Publish(new DonationStatusUpdatedMessage(
                             donation.Id, 
                             currentStatus, 

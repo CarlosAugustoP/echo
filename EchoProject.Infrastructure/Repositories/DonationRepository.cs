@@ -44,7 +44,7 @@ namespace EchoProject.Infrastructure.Repositories
                 .Include(x => x.Goal)
                 .ThenInclude(g => g.Project)
                 .ThenInclude(g => g.Manager)
-                .Where(x => x.Status == DonationStatus.ImmediateTransferToNGOPending);
+                .Where(x => x.Status == DonationStatus.ImmediateTransferToNGOInContract);
         }
     }
 }

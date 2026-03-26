@@ -13,7 +13,7 @@ namespace EchoProject.Domain.DonationAggregate
         public Guid GoalId { get; private set; }
         public Goal Goal { get; private set; } = null!;
         public DonationStatus Status { get; private set; }
-        
+
         public decimal Amount { get; private set; }
         public decimal TotalCost { get; private set; }
         public string TransactionHash { get; private set; }
@@ -35,9 +35,9 @@ namespace EchoProject.Domain.DonationAggregate
             Goal = goal;
             // 1st scenario: costPurchase is passed (not money) so user paid a total amount of money for the donation. 
             // 2nd scenario: costPurchase is null (money) so we consider the amount of ETH donated as the total cost paid by the user.
-            TotalCost = costPurchase ?? amount; 
+            TotalCost = costPurchase ?? amount;
             Status = goal.MoneyPendingOnTrustedVendorLiberation()
-                ? DonationStatus.TransferredToVendorPending : DonationStatus.ImmediateTransferToNGOPending;
+                ? DonationStatus.TransferredToContract : DonationStatus.ImmediateTransferToNGOInContract;
 
             ValidatePayment();
 
@@ -54,9 +54,9 @@ namespace EchoProject.Domain.DonationAggregate
             if (Goal.GoalType.Name != PresetName.Money)
             {
                 var userPaidThisMuch = TotalCost; // How much the user paid as a whole for the donation
-                var moneyRequired = Goal.CostPerUnit * Amount; // How much money is required for this donation based on the goal's cost per unit and the amount of units donated
-                
-                if (userPaidThisMuch < moneyRequired)
+                var weNeedThisMuch = Goal.CostPerUnit * Amount; // How much money is required for this donation based on the goal's cost per unit and the amount of units donated
+
+                if (userPaidThisMuch < weNeedThisMuch)
                 {
                     throw new DomainException($"The amount paid: {userPaidThisMuch} is less than the cost per unit: {Goal.CostPerUnit} for this goal.");
                 }
@@ -65,7 +65,7 @@ namespace EchoProject.Domain.DonationAggregate
 
         public void TransferToVendor(Vendor vendor)
         {
-            if (Status != DonationStatus.TransferredToVendorPending)
+            if (Status != DonationStatus.TransferredToContract)
                 throw new DomainException("A doação não está em estado de transferência para fornecedor.");
 
             if (!Goal.Vendors.Contains(vendor))
@@ -107,18 +107,13 @@ namespace EchoProject.Domain.DonationAggregate
 
         private void CompleteTransfer()
         {
-            if (Status == DonationStatus.TransferredToVendorPending)
+            Status = Status switch
             {
-                Status = DonationStatus.TransferredToVendorConfirmed;
-            }
-            if (Status == DonationStatus.ImmediateTransferToNGOPending)
-            {
-                Status = DonationStatus.ImmediateTransferToNGOConfirmed;
-            }
-            else
-            {
-                throw new DomainException("Only donations pending transfer to vendor or immediate transfer to NGO can be confirmed.");
-            }
+                DonationStatus.TransferredToVendorPending => DonationStatus.TransferredToVendorConfirmed,
+                DonationStatus.ImmediateTransferToNGOInContract => DonationStatus.ImmediateTransferToNGOConfirmed,
+                _ => throw new DomainException($"Cannot confirm transfer. Current status: {Status}"),
+            };
+
         }
 
         private void MarkAsFailed()
@@ -133,10 +128,10 @@ namespace EchoProject.Domain.DonationAggregate
         {
             if (Status == DonationStatus.TransferredToVendorConfirmed)
                 throw new DomainException("Não é possível marcar como expirada e reembolsada uma doação já transferida para o fornecedor.");
-            
+
             Status = DonationStatus.ExpiredAndRefunded;
         }
-        
+
 
     }
 }

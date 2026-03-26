@@ -28,7 +28,7 @@ if (app.Environment.IsDevelopment())
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 app.UseAuthentication();
 app.UseAuthorization();
-// await app.SubscribeRebusEventsAsync();
+await app.SubscribeRebusEventsAsync();
 app.AddMiddlewares();
 app.MapControllers();
 app.Run();

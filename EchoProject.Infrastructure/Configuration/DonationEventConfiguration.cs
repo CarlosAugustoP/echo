@@ -19,22 +19,21 @@ namespace EchoProject.Infrastructure.Configuration
                 .HasColumnName("donation_id")
                 .IsRequired();
 
-            builder.Property(de => de.Timestamp) // Ajustado para bater com a classe
+            builder.Property(de => de.Timestamp) 
                 .HasColumnName("timestamp")
                 .IsRequired();
 
             builder.Property(de => de.Status)
                 .HasColumnName("status")
-                .HasConversion<int>() // Salva como inteiro no banco
+                .HasConversion<int>() 
                 .IsRequired();
 
             builder.Property(de => de.Message)
                 .HasColumnName("message")
                 .HasMaxLength(500);
 
-            // Relacionamento
             builder.HasOne(de => de.Donation)
-                .WithMany(d => d.Events) // Certifique-se de que Donation tem: public ICollection<DonationEvent> Events { get; set; }
+                .WithMany(d => d.Events) 
                 .HasForeignKey(de => de.DonationId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
