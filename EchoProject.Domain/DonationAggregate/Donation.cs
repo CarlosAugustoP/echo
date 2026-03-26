@@ -87,7 +87,7 @@ namespace EchoProject.Domain.DonationAggregate
 
         public void UpdateStatus(DonationStatus newStatus)
         {
-            if (newStatus == DonationStatus.TransferredToVendorConfirmed)
+            if (newStatus == DonationStatus.TransferredToVendorConfirmed || newStatus == DonationStatus.ImmediateTransferToNGOInContract)
             {
                 CompleteTransfer();
             }
