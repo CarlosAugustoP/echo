@@ -155,13 +155,17 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
         public async Task<DonationStatus> GetDonationStatus(
             string transactionId,
             string expectedReceivingVendorWallet, 
-            decimal expectedAmountInETH)
+            decimal expectedAmountInETH,
+            bool isMoneyDonation)
         {
+            var pendingStatus = isMoneyDonation ? DonationStatus.ImmediateTransferToNGOPending : DonationStatus.TransferredToVendorPending;
+            var confirmedStatus = isMoneyDonation ? DonationStatus.ImmediateTransferToNGOConfirmed : DonationStatus.TransferredToVendorConfirmed;
+
             try
-            {
+            {    
                 var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionId);
 
-                if (receipt == null) return DonationStatus.TransferredToVendorPending;
+                if (receipt == null) return pendingStatus; 
 
                 if (receipt.Status.Value == 0) return DonationStatus.Failed;
 
@@ -174,7 +178,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
 
                 if (validLog != null)
                 {
-                    return DonationStatus.TransferredToVendorConfirmed;
+                    return confirmedStatus;
                 }
 
                 _logger.LogWarning("Transação {Hash} confirmada, mas logs não batem com esperado!", transactionId);
@@ -183,7 +187,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro na auditoria de logs da transação {Hash}", transactionId);
-                return DonationStatus.TransferredToVendorPending;
+                return pendingStatus;
             }
         }
 

@@ -3,13 +3,13 @@ namespace EchoProject.Domain.DonationAggregate
     public enum DonationStatus
     {
         /// <summary>
-        /// The donation is in the smart contract and must me manually released to the supplier.
-        /// </summary>
-        PendingVendorRepass,
-        /// <summary>
         /// The donation has been transferred to the NGO's wallet, as it is a money donation directly to the NGO.
         /// </summary>
-        ImmediateTransferToNGO,
+        ImmediateTransferToNGOPending,
+        /// <summary>
+        /// The donation has been transferred to the NGO's wallet and the transaction is confirmed on the blockchain, as it is a money donation directly to the NGO.
+        /// </summary>
+        ImmediateTransferToNGOConfirmed,
         /// <summary>
         /// The donation has been transferred to the supplier's wallet, but we are still waiting for blockchain confirmation.
         /// </summary>

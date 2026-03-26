@@ -36,7 +36,7 @@ namespace EchoProject.Domain.DonationAggregate
             // 2nd scenario: costPurchase is null (money) so we consider the amount of ETH donated as the total cost paid by the user.
             TotalCost = costPurchase ?? amount; 
             Status = goal.MoneyPendingOnTrustedVendorLiberation()
-                ? DonationStatus.PendingVendorRepass : DonationStatus.ImmediateTransferToNGO;
+                ? DonationStatus.TransferredToVendorPending : DonationStatus.ImmediateTransferToNGOPending;
 
             ValidatePayment();
 
@@ -60,7 +60,7 @@ namespace EchoProject.Domain.DonationAggregate
 
         public void TransferToVendor(Vendor vendor)
         {
-            if (Status != DonationStatus.PendingVendorRepass)
+            if (Status != DonationStatus.TransferredToVendorPending)
                 throw new DomainException("A doação não está em estado de transferência para fornecedor.");
 
             if (!Goal.Vendors.Contains(vendor))
@@ -102,12 +102,23 @@ namespace EchoProject.Domain.DonationAggregate
 
         private void CompleteTransfer()
         {
-            Status = DonationStatus.TransferredToVendorConfirmed;
+            if (Status == DonationStatus.TransferredToVendorPending)
+            {
+                Status = DonationStatus.TransferredToVendorConfirmed;
+            }
+            if (Status == DonationStatus.ImmediateTransferToNGOPending)
+            {
+                Status = DonationStatus.ImmediateTransferToNGOConfirmed;
+            }
+            else
+            {
+                throw new DomainException("Only donations pending transfer to vendor or immediate transfer to NGO can be confirmed.");
+            }
         }
 
         private void MarkAsFailed()
         {
-            if (Status == DonationStatus.TransferredToVendorPending)
+            if (Status == DonationStatus.TransferredToVendorConfirmed)
                 throw new DomainException("Não é possível marcar como falhada uma doação já transferida para o fornecedor.");
 
             Status = DonationStatus.Failed;
@@ -115,7 +126,7 @@ namespace EchoProject.Domain.DonationAggregate
 
         private void MarkAsExpiredAndRefunded()
         {
-            if (Status == DonationStatus.TransferredToVendorPending)
+            if (Status == DonationStatus.TransferredToVendorConfirmed)
                 throw new DomainException("Não é possível marcar como expirada e reembolsada uma doação já transferida para o fornecedor.");
             
             Status = DonationStatus.ExpiredAndRefunded;

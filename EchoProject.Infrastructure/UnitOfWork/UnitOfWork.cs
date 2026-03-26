@@ -16,6 +16,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
         public IDonationRepository Donations { get; }
         public IGoalTypeRepository GoalTypes { get; }
         public IVendorRepository Vendors { get; }
+        public IDonationEventRepository DonationEvents { get; }
 
         public UnitOfWork(
             EchoDbContext context,
@@ -24,7 +25,8 @@ namespace EchoProject.Infrastructure.UnitOfWork
             IUserRepository users,
             IDonationRepository donations,
             IGoalTypeRepository goalTypes,
-            IVendorRepository vendors)
+            IVendorRepository vendors,
+            IDonationEventRepository donationEvents)
         {
             _context = context;
             Goals = goals;
@@ -33,6 +35,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
             Donations = donations;
             GoalTypes = goalTypes;
             Vendors = vendors;
+            DonationEvents = donationEvents;
         }
 
         public int Commit() => _context.SaveChanges();

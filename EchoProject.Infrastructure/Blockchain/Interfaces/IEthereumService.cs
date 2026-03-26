@@ -30,6 +30,6 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
         /// <returns></returns>
         Task<string> DeployProjectContractAsync();
         Task<bool> CancelSmartContractAsync(string projectAddress); 
-        Task<DonationStatus> GetDonationStatus(string transactionId, string expectedReceivingVendorWallet, decimal expectedAmountInETH);
+        Task<DonationStatus> GetDonationStatus(string transactionId, string expectedReceivingVendorWallet, decimal expectedAmountInETH, bool isMoneyDonation);
     }
 }

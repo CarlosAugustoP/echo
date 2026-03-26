@@ -1,7 +1,9 @@
 using EchoProject.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace EchoProject.Api.DependencyInjection
+namespace EchoProject.Infrastructure.DependencyInjection
 {
     public static class DatabaseServiceCollectionExtensions 
     {

@@ -1,6 +1,6 @@
 using EchoProject.Domain.DonationAggregate;
 
-namespace EchoProject.BlockchainWorker
+namespace EchoProject.Application.Events
 {
     public record DonationStatusUpdatedMessage(
         Guid DonationId, 

@@ -1,5 +1,6 @@
 using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Repositories;
+using EchoProject.Domain.UserAggregate;
 using EchoProject.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,5 +38,13 @@ namespace EchoProject.Infrastructure.Repositories
             return Query.Where(d => d.Status == DonationStatus.TransferredToVendorPending);
         }
 
+        public IEnumerable<Donation> FindDirectPendingNGOLiberation(CancellationToken ct = default)
+        {
+            return Query
+                .Include(x => x.Goal)
+                .ThenInclude(g => g.Project)
+                .ThenInclude(g => g.Manager)
+                .Where(x => x.Status == DonationStatus.ImmediateTransferToNGOPending);
+        }
     }
 }

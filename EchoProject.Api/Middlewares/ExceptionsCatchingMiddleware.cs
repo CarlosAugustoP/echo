@@ -20,7 +20,6 @@ namespace EchoProject.Api.Middlewares
             }
             catch (DomainException ex)
             {
-                context.Response.ContentType = "application/json";
                 context.Response.StatusCode = ex switch
                 {
                     ConflictException => StatusCodes.Status409Conflict,

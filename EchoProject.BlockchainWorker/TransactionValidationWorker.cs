@@ -1,7 +1,9 @@
+using EchoProject.Application.Events;
 using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Interfaces;
+using EchoProject.Domain.ValueObjects;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
-using MassTransit; // Importante!
+using Rebus.Bus; 
 
 namespace EchoProject.BlockchainWorker
 {
@@ -26,41 +28,64 @@ namespace EchoProject.BlockchainWorker
                 {
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
                     var ethService = scope.ServiceProvider.GetRequiredService<IEthereumService>();
-                    var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+                    
+                    // Rebus: Pega a instância do IBus ao invés do IPublishEndpoint
+                    var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 
-                    var pendingDonations = unitOfWork.Donations.FindPendingConfirmations(stoppingToken);
+                    var pendingVendor = unitOfWork.Donations.FindPendingConfirmations(stoppingToken);
+                    var pendingNGO = unitOfWork.Donations.FindDirectPendingNGOLiberation(stoppingToken);
 
-                    foreach (var donation in pendingDonations)
-                    {
-                        _logger.LogInformation("Validando transação {Hash} para a doação {Id}", donation.TransactionHash, donation.Id);
-
-                        var currentStatus = await ethService.GetDonationStatus(
-                            donation.TransactionHash, 
-                            donation.TransferredToVendor!.Wallet, 
-                            donation.Amount
-                        );
-
-                        if (currentStatus != DonationStatus.TransferredToVendorPending)
-                        {
-                            donation.UpdateStatus(currentStatus); 
-                            
-                            var statusEvent = DonationEventFactory.Create(donation, currentStatus);
-                            donation.AddEvent(statusEvent);
-
-                            await publishEndpoint.Publish(new DonationStatusUpdatedMessage(
-                                donation.Id, 
-                                currentStatus, 
-                                donation.TransactionHash
-                            ), stoppingToken);
-
-                            _logger.LogInformation("Notificação enviada ao RabbitMQ: Doação {Id} -> {Status}", donation.Id, currentStatus);
-                        }
-                    }
-
-                    await unitOfWork.CommitAsync();
+                    await ProcessDonationsAsync(pendingVendor, DonationStatus.TransferredToVendorPending, ethService, bus, stoppingToken);
+                    await ProcessDonationsAsync(pendingNGO, DonationStatus.ImmediateTransferToNGOPending, ethService, bus, stoppingToken);
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+            }
+        }
+
+        private async Task ProcessDonationsAsync(
+            IEnumerable<Donation> donations, 
+            DonationStatus pendingStatus,
+            IEthereumService ethService,
+            IBus bus, // Passando o IBus do Rebus
+            CancellationToken ct)
+        {
+            foreach (var donation in donations)
+            {
+                try 
+                {
+                    WalletAddress targetWallet = pendingStatus == DonationStatus.TransferredToVendorPending 
+                        ? donation.TransferredToVendor!.Wallet 
+                        : donation.Goal.Project.Manager.WalletAddress;
+
+                    _logger.LogDebug("Consultando Blockchain para transação {Hash}...", donation.TransactionHash);
+
+                    var isMoneyDonation = pendingStatus == DonationStatus.ImmediateTransferToNGOPending;
+
+                    var currentStatus = await ethService.GetDonationStatus(
+                        donation.TransactionHash, 
+                        targetWallet, 
+                        donation.Amount, 
+                        isMoneyDonation
+                    );
+
+                    if (currentStatus != pendingStatus)
+                    {
+                        // Rebus: O método Publish funciona da mesma forma
+                        await bus.Publish(new DonationStatusUpdatedMessage(
+                            donation.Id, 
+                            currentStatus, 
+                            donation.TransactionHash
+                        ));
+
+                        _logger.LogInformation("Evento enviado ao RabbitMQ: Doação {Id} mudou para {Status} no Blockchain.", 
+                            donation.Id, currentStatus);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Erro ao validar doação {Id} via serviço de Blockchain.", donation.Id);
+                }
             }
         }
     }

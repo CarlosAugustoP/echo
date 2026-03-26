@@ -9,6 +9,7 @@ using EchoProject.Application.Requests.Pagination;
 using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.Interfaces;
+using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -56,6 +57,7 @@ namespace EchoProject.Application.Services
 
             return true;
         }
+
         public PaginatedList<DonationDTO> GetByDonorId(Guid userId, PageRequest pr)
         {
             return _unitOfWork.Donations
