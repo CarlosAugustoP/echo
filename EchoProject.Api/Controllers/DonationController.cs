@@ -22,7 +22,7 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
-        [HttpPost("history")]
+        [HttpPost("donate")]
         [MandatoryUserFilter([UserRole.Donor])]
         public async Task<IActionResult> Donate([FromBody] DonationRequest request)
         {
@@ -30,7 +30,7 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
-        [HttpGet("user-donations")]
+        [HttpGet("history")]
         [MandatoryUserFilter([UserRole.Donor])]
         public async Task<IActionResult> GetHistory([FromQuery] PageRequest pr)
         {

@@ -221,6 +221,6 @@ namespace EchoProject.Application.Services
             return _mapper.Map<ProjectBlogPostDTO>(blogPost);
         }
 
-        //TODO add more proj
+        //TODO add more project blog post shi
     }
 }
