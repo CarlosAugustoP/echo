@@ -22,7 +22,7 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
-        [HttpPost("donate")]
+        [HttpPost("history")]
         [MandatoryUserFilter([UserRole.Donor])]
         public async Task<IActionResult> Donate([FromBody] DonationRequest request)
         {
@@ -30,7 +30,7 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
-        [HttpGet("history")]
+        [HttpGet("user-donations")]
         [MandatoryUserFilter([UserRole.Donor])]
         public async Task<IActionResult> GetHistory([FromQuery] PageRequest pr)
         {
@@ -54,11 +54,12 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
-        [HttpGet("status/{donationId}")]
-        public async Task<IActionResult> GetDonationStatus(Guid donationId)
+        [HttpGet("timeline/{donationId}")]
+        [MandatoryUserFilter([UserRole.Donor])]
+        public async Task<IActionResult> GetDonationHistory(Guid donationId, [FromQuery] PageRequest pr)
         {
-             _donationService.VerifyTransaction(donationId);
-            return Success("a");
+            var result = _donationService.GetTimeline(pr, CurrentUser!, donationId);
+            return Success(result);
         }
 
     }

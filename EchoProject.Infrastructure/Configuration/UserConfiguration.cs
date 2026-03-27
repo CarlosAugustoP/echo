@@ -1,5 +1,6 @@
     using EchoProject.Domain.UserAggregate;
-    using Microsoft.EntityFrameworkCore;
+using EchoProject.Domain.ValueObjects;
+using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
     namespace EchoProject.Infrastructure.Configuration
@@ -54,6 +55,17 @@
                     a.Property(p => p.Neighborhood).HasColumnName("neighbourhood").HasMaxLength(100);
                     a.Property(p => p.Number).HasColumnName("number");
                 });
+
+                builder.OwnsOne(x => x.ProfilePicture, pb =>
+                {
+                    pb.Property(p => p.Url)
+                        .HasColumnName("profile_picture_url")
+                        .HasMaxLength(255)
+                        .IsRequired(); 
+                });
+
+
+                builder.Navigation(x => x.ProfilePicture).IsRequired(false);
             }
         }
     }

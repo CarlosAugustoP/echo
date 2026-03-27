@@ -44,5 +44,7 @@ namespace EchoProject.Infrastructure.Blockchain.Interfaces
         /// <param name="isMoneyDonation"></param>
         /// <returns></returns>
         Task<DonationStatus> GetDonationStatus(string transactionId, string expectedReceivingVendorWallet, decimal expectedAmountInETH, bool isMoneyDonation);
+
+        void ValidateEthereumWallet(string walletAddress);
     }
 }

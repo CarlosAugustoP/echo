@@ -3,6 +3,7 @@ using System;
 using EchoProject.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EchoProject.Infrastructure.Migrations
 {
     [DbContext(typeof(EchoDbContext))]
-    partial class EchoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260327012859_ImageBlogPosts")]
+    partial class ImageBlogPosts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -193,25 +196,11 @@ namespace EchoProject.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("description");
-
-                    b.Property<string[]>("Images")
-                        .IsRequired()
-                        .HasColumnType("text[]")
-                        .HasColumnName("images");
-
-                    b.Property<string>("MainImage")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("main_image_url");
 
                     b.Property<Guid>("ManagerId")
                         .HasColumnType("uuid")
@@ -470,9 +459,8 @@ namespace EchoProject.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("Url")
-                                .IsRequired()
-                                .HasMaxLength(255)
-                                .HasColumnType("character varying(255)")
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
                                 .HasColumnName("profile_picture_url");
 
                             b1.HasKey("UserId");

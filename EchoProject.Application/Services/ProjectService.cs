@@ -5,21 +5,24 @@ using EchoProject.Application.DTO;
 using EchoProject.Application.DTO.Projects;
 using EchoProject.Application.Exceptions;
 using EchoProject.Application.Requests.Projects;
+using EchoProject.Domain.Common;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.ValueObjects;
 using EchoProject.Domain.VendorAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
+using EchoProject.Infrastructure.Storage.Client;
 using Microsoft.Extensions.Logging;
 namespace EchoProject.Application.Services
 {
     [AppService]
-    public class ProjectService(IUnitOfWork unitOfWork, IMapper mapper, IEthereumService ethereumService, ILogger<ProjectService> logger)
+    public class ProjectService(IUnitOfWork unitOfWork, IMapper mapper, IEthereumService ethereumService, ILogger<ProjectService> logger, IStorageClient storage)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<ProjectService> _logger = logger;
         private readonly IEthereumService _ethereumService = ethereumService;
+        private readonly IStorageClient _storage = storage;
 
         public PaginatedList<ProjectDTO> GetByNGO(Guid ngoId, int page, int pageSize)
         {
@@ -137,5 +140,87 @@ namespace EchoProject.Application.Services
 
             return _mapper.Map<ProjectDTO>(project);
         }
+
+        public async Task<ProjectDTO> UpdateMainImageAsync(Guid projectId, string? mainImage, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can update the project's main image.");
+
+            if (mainImage is null)
+            {
+                project.RemoveMainImage();
+            }
+            else
+            {
+                project.AddOrUpdateMainImage(mainImage);
+            }
+            await _unitOfWork.CommitAsync();
+            return _mapper.Map<ProjectDTO>(project);
+        }
+
+        public async Task<ProjectDTO> AddImageAsync(Guid projectId, string imageUrl, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can add images to the project.");
+
+            project.AddImage(imageUrl);
+            await _unitOfWork.CommitAsync();
+            return _mapper.Map<ProjectDTO>(project);
+        }
+
+        public async Task<ProjectDTO> RemoveImageAsync(Guid projectId, string imageUrl, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can remove images from the project.");
+
+            project.RemoveImage(imageUrl); //TODO test this!!!
+            await _unitOfWork.CommitAsync();
+            return _mapper.Map<ProjectDTO>(project);
+        }
+
+        public async Task<ProjectBlogPostDTO> AddBlogPostAsync(Guid projectId, CreateBlogPostRequest request, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can add blog posts to the project.");
+
+            string? headerImageUrl = null;
+            
+            if (request.HeaderImageBase64 != null)
+            {
+                headerImageUrl = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{Guid.NewGuid()}", request.HeaderImageBase64.ToStream());
+            }
+            
+            List<string> imageUrls = [];
+            
+            foreach (var imageBase64 in request.ImageBase64List ?? [])
+            {
+                await _storage.UploadFileAsync($"project_{projectId}_blogpost_{Guid.NewGuid()}", imageBase64.ToStream());
+                imageUrls.Add(imageBase64);
+            }
+        
+            var blogPost = project.AddBlogPost
+            (
+                headerImageUrl is not null ? new ImageUrl(headerImageUrl) : null,
+                request.Content, 
+                imageUrls.Select(url => new ImageUrl(url)).ToList()
+            );
+
+            await _unitOfWork.CommitAsync();
+            return _mapper.Map<ProjectBlogPostDTO>(blogPost);
+        }
+
+        //TODO add more proj
     }
 }

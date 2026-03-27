@@ -13,6 +13,7 @@ namespace EchoProject.Domain.UserAggregate
         public UserRole Role { get; private set;}
         public Address Address { get; private set; }
         public WalletAddress WalletAddress { get; private set; }
+        public ImageUrl? ProfilePicture { get; private set; } = null;
 
         public User(string? name, string? email, string? passwordHash, TaxId taxId, WalletAddress walletAddress, Address address, UserRole role)
         {
@@ -28,7 +29,10 @@ namespace EchoProject.Domain.UserAggregate
             if (string.IsNullOrWhiteSpace(passwordHash))
                 throw new ArgumentException("Password cannot be empty.");
 
-            if (role == UserRole.NGO && taxId?.IsCpf == true)
+            if (taxId == null)
+                throw new ArgumentException("TaxId cannot be null.");
+
+            if (role == UserRole.NGO && taxId.IsCpf == true)
                 throw new ArgumentException("NGOs must have a CNPJ TaxId.");
 
             Name = name;
@@ -46,5 +50,25 @@ namespace EchoProject.Domain.UserAggregate
         {
             WalletAddress = newWalletAddress;
         }
+
+        public void UpdateInformation(string? name, string? email, Address address, ImageUrl? profilePicture)
+        {
+            if (!string.IsNullOrWhiteSpace(name))
+                Name = name;
+
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                if (!email.Contains("@") || !email.Contains("."))
+                    throw new ArgumentException("Email must be valid.");
+
+                Email = email.ToLower();
+            }
+
+            if (address != null)
+                Address = address;
+
+            ProfilePicture = profilePicture;
+        }
+
     }
 }

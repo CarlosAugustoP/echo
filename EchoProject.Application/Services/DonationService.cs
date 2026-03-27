@@ -58,21 +58,20 @@ namespace EchoProject.Application.Services
             return true;
         }
 
-        public void VerifyTransaction(Guid donationId)
-        {
-            var donation = _unitOfWork.Donations.FindByIdAsync(donationId).Result
-                ?? throw new NotFoundException($"Donation with ID {donationId} not found.");
-
-            _ethereum.GetDonationStatus(donation.TransactionHash, donation.TransferredToVendor.Wallet, donation.TotalCost, false).GetAwaiter().GetResult();
-    
-        }
-
         public PaginatedList<DonationDTO> GetByDonorId(Guid userId, PageRequest pr)
         {
             return _unitOfWork.Donations
                 .FindUserHistory(userId, CancellationToken.None)
                 .Paginate(pr.PageNumber, pr.PageSize)
                 .Select(x => _mapper.Map<DonationDTO>(x));
+        }
+
+        public PaginatedList<DonationEventDTO> GetTimeline(PageRequest pr, UserDTO user, Guid donationId)
+        {
+            return _unitOfWork.DonationEvents
+                .FindAll(x => x.Donation.DonorId == user.Id && x.Donation.Id == donationId)
+                .Paginate(pr.PageNumber, pr.PageSize)
+                .Select(_mapper.Map<DonationEventDTO>);
         }
 
         public async Task<DonationDTO> GetByIdAsync(Guid donationId, UserDTO user)

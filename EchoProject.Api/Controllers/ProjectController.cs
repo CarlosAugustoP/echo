@@ -22,7 +22,6 @@ namespace EchoProject.Api.Controllers
         /// <param name="pageRequest"></param>
         /// <returns></returns>
         [HttpGet("manager/{managerId}")]
-        [Authorize]
         [MandatoryUserFilter]
         public IActionResult GetByManager([FromRoute] Guid managerId, [FromQuery] PageRequest pageRequest)
         {
@@ -48,7 +47,6 @@ namespace EchoProject.Api.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize]
         [MandatoryUserFilter([UserRole.NGO])]
         public async Task<IActionResult> Create([FromBody] CreateProjectRequest request)
         {
@@ -63,7 +61,6 @@ namespace EchoProject.Api.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        [Authorize]
         [MandatoryUserFilter]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProjectRequest request)
         {
@@ -78,7 +75,6 @@ namespace EchoProject.Api.Controllers
         /// <param name="request"></param>
         /// <returns></returns> 
         [HttpPost("{id}/goals")]
-        [Authorize]
         [MandatoryUserFilter]
         public async Task<IActionResult> AddGoal(Guid id, [FromBody] GoalRequest request)
         {
@@ -93,12 +89,18 @@ namespace EchoProject.Api.Controllers
         /// <param name="goalId"></param>
         /// <returns></returns>
         [HttpDelete("{id}/goals/{goalId}")]
-        [Authorize]
         [MandatoryUserFilter]
         public async Task<IActionResult> RemoveGoal(Guid id, Guid goalId)
         {
             await _service.RemoveGoalAsync(id, goalId, CurrentUser!);
             return NoContent();
         }
+
+        [HttpPost("blog-post/{projectId}")]
+        [MandatoryUserFilter([UserRole.NGO])]
+        public async Task<IActionResult> AddBlogPost(Guid projectId, [FromBody] BlogPostRequest request)
+        {
+            var blogPost = await _service.AddBlogPostAsync(projectId, request, CurrentUser!);
+            return CreatedAtAction(nameof(GetById), new { id = blogPost.Id }, blogPost);
     }
 }
