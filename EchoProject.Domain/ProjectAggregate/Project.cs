@@ -1,4 +1,5 @@
 using EchoProject.Domain.Common;
+using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Domain.ValueObjects;
@@ -76,7 +77,11 @@ namespace EchoProject.Domain.ProjectAggregate
 
         public void AddImage(ImageUrl image)
         {
-            _images.Add(image);
+            if (_images.Count < 10) 
+            {
+                _images.Add(image);
+            }
+            else throw new DomainException("Cannot add more than 10 images to a project.");
         }
 
         public void RemoveImage(ImageUrl image)

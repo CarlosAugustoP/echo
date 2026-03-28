@@ -18,7 +18,7 @@ namespace EchoProject.Api.Controllers
         [MandatoryUserFilter([UserRole.NGO, UserRole.EchoAdmin])]
         public async Task<IActionResult> GetByProject(Guid projectId, [FromQuery] PageRequest pr)
         {
-            var result = await _donationService.FindByProject(projectId, pr, CurrentUser!);
+            var result = await _donationService.FindByProjectAsync(projectId, pr, CurrentUser!);
             return Success(result);
         }
 
@@ -59,6 +59,14 @@ namespace EchoProject.Api.Controllers
         public async Task<IActionResult> GetDonationHistory(Guid donationId, [FromQuery] PageRequest pr)
         {
             var result = _donationService.GetTimeline(pr, CurrentUser!, donationId);
+            return Success(result);
+        }
+
+        [HttpGet("donation-distribution")]
+        [MandatoryUserFilter([UserRole.EchoAdmin])]
+        public async Task<IActionResult> GetGlobalDonationDistribution([FromQuery] int topN = 5)
+        {
+            var result = await _donationService.GetGlobalDonationDistributionPerGoalTypeAsync(topN);
             return Success(result);
         }
 

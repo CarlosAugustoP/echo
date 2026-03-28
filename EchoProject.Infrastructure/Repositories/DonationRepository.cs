@@ -18,27 +18,27 @@ namespace EchoProject.Infrastructure.Repositories
                 .ThenInclude(g => g.Vendors)
                 .Include(x => x.TransferredToVendor);
 
-        public IEnumerable<Donation> FindByProjectId(Guid projectId, CancellationToken ct = default)
+        public IQueryable<Donation> FindByProjectId(Guid projectId, CancellationToken ct = default)
         {
             return Query.Where(d => d.Goal.ProjectId == projectId);
         }
 
-        public IEnumerable<Donation> FindByUserIdAndProjectId(Guid userId, Guid projectId, CancellationToken ct = default)
+        public IQueryable<Donation> FindByUserIdAndProjectId(Guid userId, Guid projectId, CancellationToken ct = default)
         {
             return Query.Where(d => d.DonorId == userId && d.Goal.ProjectId == projectId);
         }
 
-        public IEnumerable<Donation> FindUserHistory(Guid userId, CancellationToken ct = default)
+        public IQueryable<Donation> FindUserHistory(Guid userId, CancellationToken ct = default)
         {
             return Query.Where(d => d.DonorId == userId);
         }
 
-        public IEnumerable<Donation> FindPendingConfirmations(CancellationToken ct = default)
+        public IQueryable<Donation> FindPendingConfirmations(CancellationToken ct = default)
         {
             return Query.Where(d => d.Status == DonationStatus.TransferredToVendorPending);
         }
 
-        public IEnumerable<Donation> FindDirectPendingNGOLiberation(CancellationToken ct = default)
+        public IQueryable<Donation> FindDirectPendingNGOLiberation(CancellationToken ct = default)
         {
             return Query
                 .Include(x => x.Goal)

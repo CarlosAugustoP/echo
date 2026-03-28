@@ -11,6 +11,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public IReadOnlyCollection<ImageUrl> Images => _images.AsReadOnly();
         public string Content { get; set; } = string.Empty;
         public Guid ProjectId { get; private set; }
+        public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public virtual Project Project { get; private set; } = null!;
 
         private ProjectBlogPost() { } // EF Core
@@ -31,6 +32,12 @@ namespace EchoProject.Domain.ProjectAggregate
         {
             if (!_images.Contains(image))
                 _images.Add(image);
+        }
+
+        public void RemoveImage(ImageUrl image)
+        {
+            if (_images.Contains(image))
+                _images.Remove(image);
         }
     }
 }

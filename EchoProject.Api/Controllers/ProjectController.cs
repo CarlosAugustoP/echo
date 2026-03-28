@@ -98,9 +98,28 @@ namespace EchoProject.Api.Controllers
 
         [HttpPost("blog-post/{projectId}")]
         [MandatoryUserFilter([UserRole.NGO])]
-        public async Task<IActionResult> AddBlogPost(Guid projectId, [FromBody] BlogPostRequest request)
+        public async Task<IActionResult> AddBlogPost(Guid projectId, [FromBody] CreateBlogPostRequest request)
         {
             var blogPost = await _service.AddBlogPostAsync(projectId, request, CurrentUser!);
             return CreatedAtAction(nameof(GetById), new { id = blogPost.Id }, blogPost);
+        }
+
+        [HttpGet("trending")]
+        public async Task<IActionResult> GetTrendingProjects([FromQuery] PageRequest pageRequest)
+        {
+            var projects = await _service.GetTrendingProjectsAsync(pageRequest);
+            return Success(projects);
+        }
+
+        [HttpGet("for-you")]
+        [MandatoryUserFilter([UserRole.Donor])]
+        public async Task<IActionResult> GetForYou([FromQuery] PageRequest pageRequest)
+        {
+            var projects = await _service.GetForYou(CurrentUser!, pageRequest);
+            return Success(projects);
+        }
+
+
+
     }
 }

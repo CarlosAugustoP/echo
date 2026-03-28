@@ -87,7 +87,7 @@ namespace EchoProject.Application.Services
             return _mapper.Map<DonationDTO>(donation);
         }
 
-        public async Task<PaginatedList<DonationDTO>> FindByProject(Guid projectId, PageRequest pr, UserDTO user)
+        public async Task<PaginatedList<DonationDTO>> FindByProjectAsync(Guid projectId, PageRequest pr, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
                 ?? throw new NotFoundException($"Project with ID {projectId} not found.");
@@ -119,8 +119,8 @@ namespace EchoProject.Application.Services
             donation.TransferToVendor(vendor);
             var project = donation.Goal.Project;
 
-            _logger.LogInformation("Beginning transfer of funds to vendor. Donation ID: {DonationId}, Vendor ID: {VendorId}, Amount: {Amount}"
-                ,donId, vendorId, donation.Amount);
+            _logger.LogInformation("Beginning transfer of funds to vendor. Donation ID: {DonationId}, Vendor ID: {VendorId}, Amount: {Amount}",
+                donId, vendorId, donation.Amount);
             
             var finalTransactionHash = await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.TotalCost);
             
@@ -129,5 +129,9 @@ namespace EchoProject.Application.Services
             await _unitOfWork.CommitAsync();
             return true;
         }
+
+        public async Task<Dictionary<string,decimal>> GetGlobalDonationDistributionPerGoalTypeAsync(int topN) 
+            => await _unitOfWork.GoalTypes.GetTrendingGoalTypes(topN);
+        
     }
 }

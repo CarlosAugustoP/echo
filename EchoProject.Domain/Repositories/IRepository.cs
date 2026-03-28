@@ -12,7 +12,7 @@ namespace EchoProject.Domain.Repositories
             Expression<Func<T, bool>>? predicate = null,
             CancellationToken ct = default);
 
-        IEnumerable<T> FindAll(Expression<Func<T, bool>>? predicate = null);
+        IQueryable<T> FindAll(Expression<Func<T, bool>>? predicate = null);
         
         Task AddAsync(T entity, CancellationToken ct = default);
         void Update(T entity);

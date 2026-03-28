@@ -45,6 +45,10 @@ namespace EchoProject.Infrastructure.Configuration
                .HasColumnType("text[]")
                .Metadata.SetValueComparer(imageUrlComparer);
 
+            builder.Property(x => x.CreatedAt)
+                .HasColumnName("created_at")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
             builder.HasOne(x => x.Project)
                 .WithMany(p => p.BlogPosts)
                 .HasForeignKey(x => x.ProjectId)

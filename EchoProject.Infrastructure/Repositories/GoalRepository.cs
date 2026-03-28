@@ -11,7 +11,7 @@ namespace EchoProject.Infrastructure.Repositories
             .Include(x => x.Project)
             .ThenInclude(x => x.Manager)
             .Include(p => p.GoalType);
-        public IEnumerable<Goal> FindByProjectId(Guid projectId)
+        public IQueryable<Goal> FindByProjectId(Guid projectId)
         {
             return Query.Where(g => g.ProjectId == projectId);
         }
