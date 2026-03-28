@@ -66,11 +66,12 @@ namespace EchoProject.Application.Services
                 .Select(x => _mapper.Map<DonationDTO>(x));
         }
 
-        public PaginatedList<DonationEventDTO> GetTimeline(PageRequest pr, UserDTO user, Guid donationId)
+        public List<DonationEventDTO> GetTimeline(PageRequest pr, UserDTO user, Guid donationId)
         {
             return _unitOfWork.DonationEvents
                 .FindAll(x => x.Donation.DonorId == user.Id && x.Donation.Id == donationId)
-                .Paginate(pr.PageNumber, pr.PageSize)
+                .ToList()
+                .DistinctBy(x => x.Status)
                 .Select(_mapper.Map<DonationEventDTO>);
         }
 

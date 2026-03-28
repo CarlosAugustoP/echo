@@ -2,6 +2,7 @@ namespace EchoProject.Application.DTO.Donations
 {
     public class DonationDTO
     {
+        public Guid Id { get; set; }
         public decimal Amount { get; set; }
         public decimal TotalCost { get; set; }
         public string TransactionHash { get; set; } = string.Empty;

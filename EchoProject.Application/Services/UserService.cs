@@ -34,7 +34,7 @@ namespace EchoProject.Application.Services
             IPasswordHasher passwordHasher,
             ILogger<UserService> logger,
             IUnitOfWork unitOfWork,
-            IMapper mapper, 
+            IMapper mapper,
             IJwtService jwt,
             IStorageClient storage)
         {
@@ -58,7 +58,7 @@ namespace EchoProject.Application.Services
             var hashedPassword = _passwordHasher.Hash(request.Password);
             var address = request.Address;
 
-            try 
+            try
             {
                 _ethereumService.ValidateEthereumWallet(request.WalletAddress);
             }
@@ -69,28 +69,28 @@ namespace EchoProject.Application.Services
 
             var user = new User
             (
-                request.Name, 
-                request.Email, 
+                request.Name,
+                request.Email,
                 hashedPassword,
-                new TaxId(request.TaxId), 
-                new WalletAddress(request.WalletAddress), 
+                new TaxId(request.TaxId),
+                new WalletAddress(request.WalletAddress),
                 new Address
                 (
                     address.ZipCode,
-                    address.Street, 
-                    address.Neighborhood, 
-                    address.City, 
-                    address.State, 
-                    address.CountryCode, 
+                    address.Street,
+                    address.Neighborhood,
+                    address.City,
+                    address.State,
+                    address.CountryCode,
                     address.Number
-                ), 
+                ),
                 request.Role
             );
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
 
-            return _mapper.Map<UserDTO>(user);     
+            return _mapper.Map<UserDTO>(user);
         }
 
         public async Task<string> LoginAsync(LoginRequest req)
@@ -103,39 +103,37 @@ namespace EchoProject.Application.Services
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
-        
+
             return _jwt.GenerateToken(userDto);
         }
 
         public long GetEchos(UserDTO user)
-        { 
-            decimal echoAmount = 0;
+        {
+            double echoAmount = 0;
+
             if (user.Role == UserRole.Donor)
             {
-                var allDonations = _unitOfWork.Donations
-                    .FindAll(d => d.DonorId == user.Id);
-
-                echoAmount = allDonations
-                    .Where(d => d.Status == DonationStatus.ImmediateTransferToNGOConfirmed 
-                        || d.Status == DonationStatus.TransferredToVendorConfirmed)
-                    .Sum(d => d.Amount * d.TotalCost);
+                echoAmount = _unitOfWork.Donations.FindAll()
+                    .Where(d => d.DonorId == user.Id &&
+                               (d.Status == DonationStatus.ImmediateTransferToNGOConfirmed ||
+                                d.Status == DonationStatus.TransferredToVendorConfirmed))
+                    .Sum(d => (double)d.Amount * (double)d.TotalCost);
             }
             else if (user.Role == UserRole.NGO)
             {
-                var allReceivedDonations = _unitOfWork.Donations
-                    .FindAll(d => d.Goal.Project.ManagerId == user.Id);
-                
-                echoAmount = allReceivedDonations
-                    .Where(d => d.Status == DonationStatus.ImmediateTransferToNGOConfirmed 
-                        || d.Status == DonationStatus.TransferredToVendorConfirmed)
-                    .Sum(d => d.Amount * d.TotalCost);
+                echoAmount = _unitOfWork.Donations.FindAll()
+                    .Where(d => d.Goal.Project.ManagerId == user.Id &&
+                               (d.Status == DonationStatus.ImmediateTransferToNGOConfirmed ||
+                                d.Status == DonationStatus.TransferredToVendorConfirmed))
+                    .Sum(d => (double)d.Amount * (double)d.TotalCost);
             }
+
             return (long)(echoAmount * 1000);
-        } 
+        }
 
         public async Task<UserDTO> UpdateProfile(UpdateUserRequest request, UserDTO user)
         {
-            var userEntity = await _unitOfWork.Users.FindByIdAsync(user.Id) 
+            var userEntity = await _unitOfWork.Users.FindByIdAsync(user.Id)
                 ?? throw new NotFoundException("User not found.");
 
             string? pfp = request.ProfilePictureBase64 != null ?
@@ -145,21 +143,21 @@ namespace EchoProject.Application.Services
 
             userEntity.UpdateInformation
                 (
-                    request.Name, 
-                    request.Email, 
+                    request.Name,
+                    request.Email,
                     request.Address != null ? new Address
                     (
                         request.Address.ZipCode,
-                        request.Address.Street, 
-                        request.Address.Neighborhood, 
-                        request.Address.City, 
-                        request.Address.State, 
-                        request.Address.CountryCode, 
+                        request.Address.Street,
+                        request.Address.Neighborhood,
+                        request.Address.City,
+                        request.Address.State,
+                        request.Address.CountryCode,
                         request.Address.Number
-                    ) : userEntity.Address, 
+                    ) : userEntity.Address,
                     profilePictureUrl
                 );
-            
+
             _unitOfWork.Users.Update(userEntity);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<UserDTO>(userEntity);
@@ -167,10 +165,10 @@ namespace EchoProject.Application.Services
 
         public async Task<UserDTO> UpdateWalletAddress(Guid userId, string newWalletAddress)
         {
-            var user = await _unitOfWork.Users.FindByIdAsync(userId) 
+            var user = await _unitOfWork.Users.FindByIdAsync(userId)
                 ?? throw new NotFoundException("User not found.");
 
-            try 
+            try
             {
                 _ethereumService.ValidateEthereumWallet(newWalletAddress);
             }
@@ -178,7 +176,7 @@ namespace EchoProject.Application.Services
             {
                 throw new ArgumentException(ex.Message);
             }
-            
+
             user.UpdateWalletAddress(new WalletAddress(newWalletAddress));
             _unitOfWork.Users.Update(user);
             await _unitOfWork.CommitAsync();

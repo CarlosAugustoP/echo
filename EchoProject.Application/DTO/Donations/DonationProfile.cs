@@ -7,6 +7,7 @@ namespace EchoProject.Application.DTO.Donations
         public DonationProfile()
         {
             CreateMap<Donation, DonationDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))  
                 .ForMember(dest => dest.NameItem, opt => opt.MapFrom(src => src.Goal.GoalType.Name))
                 .ForMember(dest => dest.GoalName, opt => opt.MapFrom(src => src.Goal.Title))
                 .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Goal.Project.Title))

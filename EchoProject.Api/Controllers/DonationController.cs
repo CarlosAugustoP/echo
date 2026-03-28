@@ -63,7 +63,6 @@ namespace EchoProject.Api.Controllers
         }
 
         [HttpGet("donation-distribution")]
-        [MandatoryUserFilter([UserRole.EchoAdmin])]
         public async Task<IActionResult> GetGlobalDonationDistribution([FromQuery] int topN = 5)
         {
             var result = await _donationService.GetGlobalDonationDistributionPerGoalTypeAsync(topN);
