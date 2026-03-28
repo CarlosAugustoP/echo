@@ -72,7 +72,8 @@ namespace EchoProject.Application.Services
                 .FindAll(x => x.Donation.DonorId == user.Id && x.Donation.Id == donationId)
                 .ToList()
                 .DistinctBy(x => x.Status)
-                .Select(_mapper.Map<DonationEventDTO>);
+                .Select(_mapper.Map<DonationEventDTO>)
+                .ToList();
         }
 
         public async Task<DonationDTO> GetByIdAsync(Guid donationId, UserDTO user)
