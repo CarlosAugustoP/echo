@@ -32,7 +32,7 @@ namespace EchoProject.Api.Controllers
 
         [HttpGet("history")]
         [MandatoryUserFilter([UserRole.Donor])]
-        public async Task<IActionResult> GetHistory([FromQuery] PageRequest pr)
+        public IActionResult GetHistory([FromQuery] PageRequest pr)
         {
             var result = _donationService.GetByDonorId(CurrentUser!.Id, pr);
             return Success(result);
@@ -56,7 +56,7 @@ namespace EchoProject.Api.Controllers
 
         [HttpGet("timeline/{donationId}")]
         [MandatoryUserFilter([UserRole.Donor])]
-        public async Task<IActionResult> GetDonationHistory(Guid donationId, [FromQuery] PageRequest pr)
+        public IActionResult GetDonationHistory(Guid donationId, [FromQuery] PageRequest pr)
         {
             var result = _donationService.GetTimeline(pr, CurrentUser!, donationId);
             return Success(result);
