@@ -28,8 +28,10 @@ namespace EchoProject.Api.Middlewares
                     _ => StatusCodes.Status400BadRequest
                 };
 
+                var sc = context.Response.StatusCode;
+
                 var response = ApiResult<string?>
-                    .Failure(ex.Message, ex.ErrorCode ?? "UNEXPECTED_FAILURE");
+                    .Failure(ex.Message, ex.ErrorCode ?? GetErrorCodeFromException(sc));
 
                 await context.Response.WriteAsJsonAsync(response);
             }
@@ -54,6 +56,17 @@ namespace EchoProject.Api.Middlewares
 
                 await context.Response.WriteAsJsonAsync(response);
             }
+        }
+        private static string GetErrorCodeFromException(int sc)
+        {
+            return sc switch
+            {
+                StatusCodes.Status409Conflict => "CONFLICT",
+                StatusCodes.Status404NotFound => "NOT_FOUND",
+                StatusCodes.Status401Unauthorized => "UNAUTHORIZED",
+                StatusCodes.Status400BadRequest => "BAD_REQUEST",
+                _ => "UNEXPECTED_FAILURE"
+            };
         }
     }
 }
