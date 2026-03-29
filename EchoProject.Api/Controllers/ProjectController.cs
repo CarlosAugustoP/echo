@@ -108,7 +108,7 @@ namespace EchoProject.Api.Controllers
         public async Task<IActionResult> AddBlogPost(Guid projectId, [FromBody] CreateBlogPostRequest request)
         {
             var blogPost = await _service.AddBlogPostAsync(projectId, request, CurrentUser!);
-            return CreatedAtAction(nameof(GetById), new { id = blogPost.Id }, blogPost);
+            return CreatedAtAction(nameof(GetBlogPost), new { blogPostId = blogPost.Id }, blogPost);
         }
 
         /// <summary>
