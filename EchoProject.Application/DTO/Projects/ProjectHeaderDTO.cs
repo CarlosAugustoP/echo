@@ -3,7 +3,6 @@ using EchoProject.Domain.ProjectAggregate;
 
 namespace EchoProject.Application.DTO.Projects
 {
-    [AutoMap(typeof(Project))]
     public class ProjectHeaderDTO
     {
         public Guid Id { get; set; }

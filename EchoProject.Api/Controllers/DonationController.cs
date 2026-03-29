@@ -68,6 +68,5 @@ namespace EchoProject.Api.Controllers
             var result = await _donationService.GetGlobalDonationDistributionPerGoalTypeAsync(topN);
             return Success(result);
         }
-
     }
 }

@@ -47,9 +47,9 @@ namespace EchoProject.Domain.ProjectAggregate
             return goal;
         }
 
-        public ProjectBlogPost AddBlogPost(ImageUrl? headerImage, string content, List<ImageUrl>? images = null)
+        public ProjectBlogPost AddBlogPost(ImageUrl? headerImage, string title, string content, List<ImageUrl>? images = null)
         {
-            var blogPost = new ProjectBlogPost(headerImage, content, this, images);
+            var blogPost = new ProjectBlogPost(headerImage, title, content, this, images);
             _blogPosts.Add(blogPost);
             return blogPost;
         }

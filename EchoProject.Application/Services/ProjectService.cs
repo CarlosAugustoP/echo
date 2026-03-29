@@ -204,33 +204,24 @@ namespace EchoProject.Application.Services
                 headerImageUrl = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{Guid.NewGuid()}", request.HeaderImageBase64.ToStream());
             }
             
-            List<string> imageUrls = [];
-            
-            foreach (var imageBase64 in request.ImageBase64List ?? [])
-            {
-                await _storage.UploadFileAsync($"project_{projectId}_blogpost_{Guid.NewGuid()}", imageBase64.ToStream());
-                imageUrls.Add(imageBase64);
-            }
-        
-            var blogPost = project.AddBlogPost
+            var blogPost = new ProjectBlogPost
             (
                 headerImageUrl is not null ? new ImageUrl(headerImageUrl) : null,
                 request.Content, 
-                imageUrls.Select(url => new ImageUrl(url)).ToList()
+                request.Title,
+                project
             );
 
+            await _unitOfWork.BlogPosts.AddAsync(blogPost);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<ProjectBlogPostDTO>(blogPost);
         }
 
-        public async Task<PaginatedList<ProjectBlogPostHeaderDTO>> GetBlogPostsbyProjectAsync(Guid projectId, int page, int pageSize)
+        public async Task<PaginatedList<ProjectBlogPostHeaderDTO>> GetBlogPostsbyProjectAsync(Guid projectId, PageRequest pr)
         {
-            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
-
-            var blogPosts = project.BlogPosts
-                .Select(_mapper.Map<ProjectBlogPostHeaderDTO>)
-                .Paginate(page, pageSize);
+            var blogPosts = _unitOfWork.BlogPosts.FindAll(x => x.ProjectId == projectId)
+                .Paginate(pr.PageNumber, pr.PageSize)
+                .Select(_mapper.Map<ProjectBlogPostHeaderDTO>);
 
             return blogPosts;
         }
@@ -260,7 +251,6 @@ namespace EchoProject.Application.Services
             await _unitOfWork.CommitAsync();
         }
         public async Task<PaginatedList<ProjectHeaderDTO>> GetTrendingProjectsAsync(PageRequest pr)
-
         {
             var projects = _unitOfWork.Projects.FindTrendingProjects();
             return projects.Paginate(pr.PageNumber, pr.PageSize).Select(x => _mapper.Map<ProjectHeaderDTO>(x));

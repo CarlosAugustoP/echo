@@ -3,11 +3,11 @@ using EchoProject.Domain.ProjectAggregate;
 
 namespace EchoProject.Application.DTO.Projects
 {
-    [AutoMap(typeof(ProjectBlogPost))]
     public class ProjectBlogPostDTO
     {
         public Guid Id { get; private set; }
-        public string HeaderImage { get; set; } = string.Empty;
+        public string? HeaderImage { get; set; }
+        public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public Guid ProjectId { get; private set; }
         public List<string> ImagesInBase64 { get; set; } = [];

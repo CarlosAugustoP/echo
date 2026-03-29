@@ -1,5 +1,6 @@
 using EchoProject.Api.Common;
 using EchoProject.Api.Middlewares;
+using EchoProject.Application.Requests.Docs;
 using EchoProject.Application.Requests.Pagination;
 using EchoProject.Application.Requests.Projects;
 using EchoProject.Application.Services;
@@ -102,6 +103,28 @@ namespace EchoProject.Api.Controllers
         {
             var blogPost = await _service.AddBlogPostAsync(projectId, request, CurrentUser!);
             return CreatedAtAction(nameof(GetById), new { id = blogPost.Id }, blogPost);
+        }
+
+        [HttpGet("blog-post/{blogPostId}")]
+        public async Task<IActionResult> GetBlogPost(Guid blogPostId)
+        {
+            var blogPost = await _service.GetBlogPostByIdAsync(blogPostId);
+            return Success(blogPost);
+        }
+
+        [HttpGet("blog-posts/{projectId}")]
+        public async Task<IActionResult> GetBlogPosts(Guid projectId, [FromQuery] PageRequest pageRequest)
+        {
+            var blogPosts = await _service.GetBlogPostsbyProjectAsync(projectId, pageRequest);
+            return Success(blogPosts);
+        }
+
+        [HttpPost("blog-post/{projectId}/{blogPostId}/add-image")]
+        [MandatoryUserFilter([UserRole.NGO])]
+        public async Task<IActionResult> AddImageToBlogPost(Guid projectId, Guid blogPostId, [FromBody] DocumentRequest request)
+        {
+            await _service.AddImageToProjectBlogPostAsync(projectId, blogPostId, request, CurrentUser!);
+            return NoContent();
         }
 
         [HttpGet("trending")]

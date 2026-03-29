@@ -9,6 +9,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public ImageUrl? HeaderImage { get; set; }
         private readonly List<ImageUrl> _images = []; 
         public IReadOnlyCollection<ImageUrl> Images => _images.AsReadOnly();
+        public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public Guid ProjectId { get; private set; }
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
@@ -16,9 +17,10 @@ namespace EchoProject.Domain.ProjectAggregate
 
         private ProjectBlogPost() { } // EF Core
 
-        public ProjectBlogPost(ImageUrl? headerImage, string content, Project project, List<ImageUrl>? images = null)
+        public ProjectBlogPost(ImageUrl? headerImage, string title, string content, Project project, List<ImageUrl>? images = null)
         {
             HeaderImage = headerImage;
+            Title = title;
             Content = content;
             Project = project;
             ProjectId = project.Id;

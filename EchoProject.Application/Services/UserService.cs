@@ -128,7 +128,7 @@ namespace EchoProject.Application.Services
                     .Sum(d => (double)d.Amount * (double)d.TotalCost);
             }
 
-            return (long)(echoAmount * 1000);
+            return (long)(echoAmount * 10000);
         }
 
         public async Task<UserDTO> UpdateProfile(UpdateUserRequest request, UserDTO user)
