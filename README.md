@@ -1,4 +1,4 @@
-# Echo — Blockchain-Powered Social Donation Platform
+# Echo: A Blockchain-Powered Social Donation Platform
 
 Echo is a transparent donation platform that connects **Donors**, **NGOs**, and **Vendors** through Ethereum smart contracts. Donations are held in escrow on-chain and released only when funds are properly directed to verified suppliers or directly to NGOs, guaranteeing full traceability of every transaction.
 
