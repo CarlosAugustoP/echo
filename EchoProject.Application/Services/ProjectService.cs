@@ -201,7 +201,8 @@ namespace EchoProject.Application.Services
             
             if (request.HeaderImageBase64 != null)
             {
-                headerImageUrl = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{Guid.NewGuid()}", request.HeaderImageBase64.ToStream());
+                using var stream = request.HeaderImageBase64.ToStream();
+                headerImageUrl = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{Guid.NewGuid()}", stream);
             }
             
             var blogPost = new ProjectBlogPost
@@ -245,7 +246,8 @@ namespace EchoProject.Application.Services
             var blogPost = await _unitOfWork.BlogPosts.FindByIdAsync(blogPostId)
                 ?? throw new NotFoundException($"Blog post with ID {blogPostId} not found.");
 
-            var url = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{blogPostId}_{Guid.NewGuid()}", req.Base64String.ToStream());
+            using var stream = req.Base64String.ToStream();
+            var url = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{blogPostId}_{Guid.NewGuid()}", stream);
 
             blogPost.AddImage(new ImageUrl(url));
             await _unitOfWork.CommitAsync();

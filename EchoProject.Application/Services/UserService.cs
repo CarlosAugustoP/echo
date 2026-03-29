@@ -136,8 +136,13 @@ namespace EchoProject.Application.Services
             var userEntity = await _unitOfWork.Users.FindByIdAsync(user.Id)
                 ?? throw new NotFoundException("User not found.");
 
-            string? pfp = request.ProfilePictureBase64 != null ?
-                await _storage.UploadFileAsync("profile_" + user.Id, request.ProfilePictureBase64.ToStream()) : null;
+            string? pfp = null;
+
+            if (request.ProfilePictureBase64 != null)
+            {
+                using var stream = request.ProfilePictureBase64.ToStream();
+                pfp = await _storage.UploadFileAsync("profile_" + user.Id, stream);
+            }
 
             ImageUrl? profilePictureUrl = pfp != null ? new(pfp) : null;
 
