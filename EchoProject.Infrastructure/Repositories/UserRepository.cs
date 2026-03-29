@@ -22,7 +22,7 @@ namespace EchoProject.Infrastructure.Repositories
             return await Query.FirstOrDefaultAsync(u => u.WalletAddress.Address == walletAddress, ct);
         }
 
-        public IEnumerable<User> FindByRole(UserRole role, CancellationToken ct = default)
+        public IQueryable<User> FindByRole(UserRole role, CancellationToken ct = default)
         {
             return Query.Where(u => u.Role == role);
         }

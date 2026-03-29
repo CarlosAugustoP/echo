@@ -4,6 +4,6 @@ namespace EchoProject.Domain.Repositories
 {
     public interface IGoalRepository : IRepository<Goal>
     {
-        IEnumerable<Goal> FindByProjectId(Guid projectId);
+        IQueryable<Goal> FindByProjectId(Guid projectId);
     }
 }

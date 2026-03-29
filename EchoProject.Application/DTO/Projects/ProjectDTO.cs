@@ -12,5 +12,7 @@ namespace EchoProject.Application.DTO.Projects
         public Guid ManagerId { get; set; }        
         public List<GoalDTO> Goals { get; set; } = [];
         public string SmartContractAddress { get; set; } = string.Empty;
+        public string? MainImage { get; set; }
+        public List<string> Images { get; set; } = [];
     }
 }

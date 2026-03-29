@@ -7,6 +7,6 @@ namespace EchoProject.Domain.Repositories
         Task<User?> FindByEmailAsync(string email, CancellationToken ct = default);
         Task<User?> FindByWalletAddressAsync(string walletAddress, CancellationToken ct = default);
         Task<User?> FindByTaxId(string taxId, CancellationToken ct = default);
-        IEnumerable<User> FindByRole(UserRole role, CancellationToken ct = default);
+        IQueryable<User> FindByRole(UserRole role, CancellationToken ct = default);
     }
 }

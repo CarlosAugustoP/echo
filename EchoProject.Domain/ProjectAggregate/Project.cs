@@ -1,4 +1,5 @@
 using EchoProject.Domain.Common;
+using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Domain.ValueObjects;
@@ -9,11 +10,17 @@ namespace EchoProject.Domain.ProjectAggregate
     {
         public string Title { get; private set; }
         public string Description { get; private set; }
+        public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public Guid ManagerId { get; private set; }
         public virtual User Manager { get; private set; } = null!;
-        private readonly List<Goal> _goals = [];
         public SmartContractAddress SmartContractAddress { get; private set; }
+        public ImageUrl? MainImage { get; private set; } = null;
+        private readonly List<ImageUrl> _images = [];
+        public IReadOnlyCollection<ImageUrl> Images => _images.AsReadOnly();
+        private readonly List<Goal> _goals = [];
+        private readonly List<ProjectBlogPost> _blogPosts = [];
         public IReadOnlyCollection<Goal> Goals => _goals.AsReadOnly();
+        public IReadOnlyCollection<ProjectBlogPost> BlogPosts => _blogPosts.AsReadOnly();
         private Project() { } // EF Core
         public Project(string title, string description, Guid managerId)
         {
@@ -33,11 +40,18 @@ namespace EchoProject.Domain.ProjectAggregate
             SmartContractAddress = new SmartContractAddress(address);
         }
 
-        public Goal AddGoal(string title, decimal target, GoalType goalType, long? costPerUnit)
+        public Goal AddGoal(string title, decimal target, GoalType goalType, decimal? costPerUnit)
         {
             var goal = new Goal(Id, title, target, goalType, costPerUnit);
             _goals.Add(goal);
             return goal;
+        }
+
+        public ProjectBlogPost AddBlogPost(ImageUrl? headerImage, string title, string content, List<ImageUrl>? images = null)
+        {
+            var blogPost = new ProjectBlogPost(headerImage, title, content, this, images);
+            _blogPosts.Add(blogPost);
+            return blogPost;
         }
 
         public Goal RemoveGoal(Guid goalId)
@@ -49,6 +63,30 @@ namespace EchoProject.Domain.ProjectAggregate
                 return goal;
             }
             throw new ArgumentException("Goal not found.");
+        }
+
+        public void AddOrUpdateMainImage(ImageUrl mainImage)
+        {
+            MainImage = mainImage;
+        }
+        
+        public void RemoveMainImage()
+        {
+            MainImage = null;
+        }
+
+        public void AddImage(ImageUrl image)
+        {
+            if (_images.Count < 10) 
+            {
+                _images.Add(image);
+            }
+            else throw new DomainException("Cannot add more than 10 images to a project.");
+        }
+
+        public void RemoveImage(ImageUrl image)
+        {
+            _images.Remove(image);
         }
 
         public void UpdateDetails(string title, string description)

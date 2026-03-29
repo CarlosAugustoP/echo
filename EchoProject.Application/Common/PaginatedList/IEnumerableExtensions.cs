@@ -4,9 +4,8 @@ namespace EchoProject.Application.Common.PaginatedList
     {
         public static PaginatedList<T> Paginate<T>(this IEnumerable<T> items, int page, int pageSize)
         {
-            IQueryable<T> actualItems = items.AsQueryable();
-            var list = actualItems.Skip(page * pageSize).Take(pageSize);
-            return new PaginatedList<T>(list, actualItems.Count(), pageSize, page);
-        }
+            var list = items.Skip(page * pageSize).Take(pageSize);
+            return new PaginatedList<T>(list, items.Count(), pageSize, page);
+        }      
     }
 }

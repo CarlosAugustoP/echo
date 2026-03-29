@@ -7,6 +7,7 @@ namespace EchoProject.Application.DTO.Donations
         public DonationProfile()
         {
             CreateMap<Donation, DonationDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))  
                 .ForMember(dest => dest.NameItem, opt => opt.MapFrom(src => src.Goal.GoalType.Name))
                 .ForMember(dest => dest.GoalName, opt => opt.MapFrom(src => src.Goal.Title))
                 .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Goal.Project.Title))
@@ -17,6 +18,7 @@ namespace EchoProject.Application.DTO.Donations
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(dest => dest.TotalCost, opt => opt.MapFrom(src => src.TotalCost))
                 .ForMember(dest => dest.TransactionHash, opt => opt.MapFrom(src => src.TransactionHash))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ReverseMap();
         }
     }

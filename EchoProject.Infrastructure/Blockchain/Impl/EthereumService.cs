@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Nethereum.JsonRpc.Client;
 using System.Text.Json;
 using EchoProject.Domain.DonationAggregate;
+using Nethereum.Util;
 
 namespace EchoProject.Infrastructure.Blockchain.Impl
 {
@@ -154,7 +155,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
 
         public async Task<DonationStatus> GetDonationStatus(
             string transactionId,
-            string expectedReceivingVendorWallet, 
+            string expectedReceivingVendorWallet,
             decimal expectedAmountInETH,
             bool isMoneyDonation)
         {
@@ -162,10 +163,10 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             var confirmedStatus = isMoneyDonation ? DonationStatus.ImmediateTransferToNGOConfirmed : DonationStatus.TransferredToVendorConfirmed;
 
             try
-            {    
+            {
                 var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionId);
 
-                if (receipt == null) return pendingStatus; 
+                if (receipt == null) return pendingStatus;
 
                 if (receipt.Status.Value == 0) return DonationStatus.Failed;
 
@@ -177,16 +178,16 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
                     var amount = Web3.Convert.FromWei(log.Event.Amount);
                     var vendorMatch = string.Equals(vendor, expectedReceivingVendorWallet, StringComparison.OrdinalIgnoreCase);
                     var amountMatch = amount == expectedAmountInETH;
-                    
+
                     _logger.LogInformation(
                         "Event log check - Vendor: {ActualVendor} (Expected: {ExpectedVendor}) Match: {VendorMatch}, Amount: {ActualAmount} (Expected: {ExpectedAmount}) Match: {AmountMatch}",
                         vendor, expectedReceivingVendorWallet, vendorMatch,
                         amount, expectedAmountInETH, amountMatch
                     );
-                    
+
                     return vendorMatch && amountMatch;
                 });
-                
+
 
                 if (validLog != null)
                 {
@@ -203,5 +204,24 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
             }
         }
 
+        public void ValidateEthereumWallet(string walletAddress)
+        {
+            if (string.IsNullOrWhiteSpace(walletAddress))
+            {
+                throw new FormatException("O endereço da carteira Ethereum não pode estar vazio.");
+            }
+
+            var addressUtil = new AddressUtil();
+
+            if (!addressUtil.IsValidEthereumAddressHexFormat(walletAddress))
+            {
+                throw new FormatException($"O endereço '{walletAddress}' não possui um formato Ethereum válido.");
+            }
+
+            if (!addressUtil.IsChecksumAddress(walletAddress))
+            {
+                throw new FormatException($"O endereço '{walletAddress}' é inválido. Falha na validação de Checksum.");
+            }
+        }
     }
 }

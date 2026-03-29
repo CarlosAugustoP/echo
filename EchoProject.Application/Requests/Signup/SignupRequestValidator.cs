@@ -10,6 +10,7 @@ namespace EchoProject.Application.Requests.Signup
         public SignupRequestValidator()
         {
             RuleFor(x => x.Name)
+                .MaximumLength(100)
                 .NotEmpty()
                 .WithMessage("Name is required.");
             

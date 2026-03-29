@@ -4,22 +4,27 @@ using EchoProject.Application.Common.PaginatedList;
 using EchoProject.Application.DTO;
 using EchoProject.Application.DTO.Projects;
 using EchoProject.Application.Exceptions;
+using EchoProject.Application.Requests.Docs;
+using EchoProject.Application.Requests.Pagination;
 using EchoProject.Application.Requests.Projects;
+using EchoProject.Domain.Common;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.ValueObjects;
 using EchoProject.Domain.VendorAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
+using EchoProject.Infrastructure.Storage.Client;
 using Microsoft.Extensions.Logging;
 namespace EchoProject.Application.Services
 {
     [AppService]
-    public class ProjectService(IUnitOfWork unitOfWork, IMapper mapper, IEthereumService ethereumService, ILogger<ProjectService> logger)
+    public class ProjectService(IUnitOfWork unitOfWork, IMapper mapper, IEthereumService ethereumService, ILogger<ProjectService> logger, IStorageClient storage)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<ProjectService> _logger = logger;
         private readonly IEthereumService _ethereumService = ethereumService;
+        private readonly IStorageClient _storage = storage;
 
         public PaginatedList<ProjectDTO> GetByNGO(Guid ngoId, int page, int pageSize)
         {
@@ -137,5 +142,127 @@ namespace EchoProject.Application.Services
 
             return _mapper.Map<ProjectDTO>(project);
         }
+
+        public async Task<ProjectDTO> UpdateMainImageAsync(Guid projectId, string? mainImage, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can update the project's main image.");
+
+            if (mainImage is null)
+            {
+                project.RemoveMainImage();
+            }
+            else
+            {
+                project.AddOrUpdateMainImage(mainImage);
+            }
+            await _unitOfWork.CommitAsync();
+            return _mapper.Map<ProjectDTO>(project);
+        }
+
+        public async Task<ProjectDTO> AddImageAsync(Guid projectId, string imageUrl, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can add images to the project.");
+
+            project.AddImage(imageUrl);
+            await _unitOfWork.CommitAsync();
+            return _mapper.Map<ProjectDTO>(project);
+        }
+
+        public async Task<ProjectDTO> RemoveImageAsync(Guid projectId, string imageUrl, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can remove images from the project.");
+
+            project.RemoveImage(imageUrl); //TODO test this!!!
+            await _unitOfWork.CommitAsync();
+            return _mapper.Map<ProjectDTO>(project);
+        }
+
+        public async Task<ProjectBlogPostDTO> AddBlogPostAsync(Guid projectId, CreateBlogPostRequest request, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can add blog posts to the project.");
+
+            string? headerImageUrl = null;
+            
+            if (request.HeaderImageBase64 != null)
+            {
+                using var stream = request.HeaderImageBase64.ToStream();
+                headerImageUrl = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{Guid.NewGuid()}", stream);
+            }
+            
+            var blogPost = new ProjectBlogPost
+            (
+                headerImageUrl is not null ? new ImageUrl(headerImageUrl) : null,
+                request.Title, 
+                request.Content,
+                project
+            );
+
+            await _unitOfWork.BlogPosts.AddAsync(blogPost);
+            await _unitOfWork.CommitAsync();
+            return _mapper.Map<ProjectBlogPostDTO>(blogPost);
+        }
+
+        public PaginatedList<ProjectBlogPostHeaderDTO> GetBlogPostsbyProject(Guid projectId, PageRequest pr)
+        {
+            var blogPosts = _unitOfWork.BlogPosts.FindAll(x => x.ProjectId == projectId)
+                .Paginate(pr.PageNumber, pr.PageSize)
+                .Select(_mapper.Map<ProjectBlogPostHeaderDTO>);
+
+            return blogPosts;
+        }
+
+        public async Task<ProjectBlogPostDTO> GetBlogPostByIdAsync(Guid blogPostId)
+        {
+            var blogPost = await _unitOfWork.BlogPosts.FindByIdAsync(blogPostId)
+                ?? throw new NotFoundException($"Blog post with ID {blogPostId} not found.");
+
+            return _mapper.Map<ProjectBlogPostDTO>(blogPost);
+        }
+
+        public async Task AddImageToProjectBlogPostAsync(Guid projectId, Guid blogPostId, DocumentRequest req, UserDTO user)
+        {
+            var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
+                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+
+            if (project.ManagerId != user.Id)
+                throw new UnauthorizedException("Only the project manager can add images to the project.");
+
+            var blogPost = await _unitOfWork.BlogPosts.FindByIdAsync(blogPostId)
+                ?? throw new NotFoundException($"Blog post with ID {blogPostId} not found.");
+
+            using var stream = req.Base64String.ToStream();
+            var url = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{blogPostId}_{Guid.NewGuid()}", stream);
+
+            blogPost.AddImage(new ImageUrl(url));
+            await _unitOfWork.CommitAsync();
+        }
+        public async Task<PaginatedList<ProjectHeaderDTO>> GetTrendingProjectsAsync(PageRequest pr)
+        {
+            var projects = _unitOfWork.Projects.FindTrendingProjects();
+            return projects.Paginate(pr.PageNumber, pr.PageSize).Select(x => _mapper.Map<ProjectHeaderDTO>(x));
+        }
+
+        public async Task<PaginatedList<ProjectHeaderDTO>> GetForYouAsync(UserDTO user, PageRequest pr)
+        {
+            var projects = await _unitOfWork.Projects.FindForYou(user.Id);
+            return projects.Paginate(pr.PageNumber, pr.PageSize).Select(x => _mapper.Map<ProjectHeaderDTO>(x));
+        }
+
     }
 }

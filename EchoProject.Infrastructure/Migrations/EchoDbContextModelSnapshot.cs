@@ -193,11 +193,25 @@ namespace EchoProject.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
                         .HasColumnName("description");
+
+                    b.Property<string[]>("Images")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("images");
+
+                    b.Property<string>("MainImage")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("main_image_url");
 
                     b.Property<Guid>("ManagerId")
                         .HasColumnType("uuid")
@@ -220,6 +234,43 @@ namespace EchoProject.Infrastructure.Migrations
                     b.HasIndex("ManagerId");
 
                     b.ToTable("projects", (string)null);
+                });
+
+            modelBuilder.Entity("EchoProject.Domain.ProjectAggregate.ProjectBlogPost", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string[]>("Images")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("additional_images");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("project_blog_posts", (string)null);
                 });
 
             modelBuilder.Entity("EchoProject.Domain.UserAggregate.User", b =>
@@ -389,8 +440,58 @@ namespace EchoProject.Infrastructure.Migrations
                     b.Navigation("Manager");
                 });
 
+            modelBuilder.Entity("EchoProject.Domain.ProjectAggregate.ProjectBlogPost", b =>
+                {
+                    b.HasOne("EchoProject.Domain.ProjectAggregate.Project", "Project")
+                        .WithMany("BlogPosts")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("EchoProject.Domain.ValueObjects.ImageUrl", "HeaderImage", b1 =>
+                        {
+                            b1.Property<Guid>("ProjectBlogPostId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("header_image_url");
+
+                            b1.HasKey("ProjectBlogPostId");
+
+                            b1.ToTable("project_blog_posts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProjectBlogPostId");
+                        });
+
+                    b.Navigation("HeaderImage");
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("EchoProject.Domain.UserAggregate.User", b =>
                 {
+                    b.OwnsOne("EchoProject.Domain.ValueObjects.ImageUrl", "ProfilePicture", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Url")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("character varying(255)")
+                                .HasColumnName("profile_picture_url");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("users");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
                     b.OwnsOne("EchoProject.Domain.ValueObjects.WalletAddress", "WalletAddress", b1 =>
                         {
                             b1.Property<Guid>("UserId")
@@ -488,6 +589,8 @@ namespace EchoProject.Infrastructure.Migrations
                     b.Navigation("Address")
                         .IsRequired();
 
+                    b.Navigation("ProfilePicture");
+
                     b.Navigation("TaxId")
                         .IsRequired();
 
@@ -549,6 +652,8 @@ namespace EchoProject.Infrastructure.Migrations
 
             modelBuilder.Entity("EchoProject.Domain.ProjectAggregate.Project", b =>
                 {
+                    b.Navigation("BlogPosts");
+
                     b.Navigation("Goals");
                 });
 #pragma warning restore 612, 618

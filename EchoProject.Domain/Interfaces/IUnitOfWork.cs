@@ -10,7 +10,7 @@ namespace EchoProject.Domain.Interfaces
         IUserRepository Users { get; }
         IDonationRepository Donations { get; }
         IDonationEventRepository DonationEvents { get; }
-
+        IBlogPostRepository BlogPosts { get; }
         IGoalTypeRepository GoalTypes { get; }
         IVendorRepository Vendors { get; }
 

@@ -4,6 +4,8 @@ namespace EchoProject.Domain.Repositories
 {
     public interface IProjectRepository : IRepository<Project>
     {
-        IEnumerable<Project> FindByManager(Guid managerId);
+        IQueryable<Project> FindByManager(Guid managerId);
+        IQueryable<Project> FindTrendingProjects();
+        Task<IQueryable<Project>> FindForYou(Guid userId);
     }
 }

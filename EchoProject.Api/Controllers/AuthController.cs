@@ -28,6 +28,12 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        /// <summary>
+        /// Authenticate user and return JWT token if successful.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -35,6 +41,10 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        /// <summary>
+        /// Get current authenticated user's profile.
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("me")]
         [Authorize]
         [MandatoryUserFilter]

@@ -46,6 +46,8 @@ namespace EchoProject.Application.Services
             try
             {
                 await _unitOfWork.Donations.AddAsync(donation);
+                // Saves a timeline of the donation for auditing purposes
+                await _unitOfWork.DonationEvents.AddAsync(DonationEventFactory.Create(donation, donation.Status));
                 goal.RegisterDonation(request.Amount);
                 await _unitOfWork.CommitAsync();
             }
@@ -58,21 +60,23 @@ namespace EchoProject.Application.Services
             return true;
         }
 
-        public void VerifyTransaction(Guid donationId)
-        {
-            var donation = _unitOfWork.Donations.FindByIdAsync(donationId).Result
-                ?? throw new NotFoundException($"Donation with ID {donationId} not found.");
-
-            _ethereum.GetDonationStatus(donation.TransactionHash, donation.TransferredToVendor.Wallet, donation.TotalCost, false).GetAwaiter().GetResult();
-    
-        }
-
-        public PaginatedList<DonationDTO> GetByDonorId(Guid userId, PageRequest pr)
+        public PaginatedList<DonationDTO> GetHistoryByDonorId(Guid userId, PageRequest pr)
         {
             return _unitOfWork.Donations
                 .FindUserHistory(userId, CancellationToken.None)
+                .OrderByDescending(x => x.CreatedAt)
                 .Paginate(pr.PageNumber, pr.PageSize)
                 .Select(x => _mapper.Map<DonationDTO>(x));
+        }
+
+        public List<DonationEventDTO> GetTimeline(UserDTO user, Guid donationId)
+        {
+            return _unitOfWork.DonationEvents
+                .FindAll(x => x.Donation.DonorId == user.Id && x.DonationId == donationId)
+                .ToList()
+                .DistinctBy(x => x.Status)
+                .Select(_mapper.Map<DonationEventDTO>)
+                .ToList();
         }
 
         public async Task<DonationDTO> GetByIdAsync(Guid donationId, UserDTO user)
@@ -88,7 +92,7 @@ namespace EchoProject.Application.Services
             return _mapper.Map<DonationDTO>(donation);
         }
 
-        public async Task<PaginatedList<DonationDTO>> FindByProject(Guid projectId, PageRequest pr, UserDTO user)
+        public async Task<PaginatedList<DonationDTO>> FindByProjectAsync(Guid projectId, PageRequest pr, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
                 ?? throw new NotFoundException($"Project with ID {projectId} not found.");
@@ -120,15 +124,20 @@ namespace EchoProject.Application.Services
             donation.TransferToVendor(vendor);
             var project = donation.Goal.Project;
 
-            _logger.LogInformation("Beginning transfer of funds to vendor. Donation ID: {DonationId}, Vendor ID: {VendorId}, Amount: {Amount}"
-                ,donId, vendorId, donation.Amount);
+            _logger.LogInformation("Beginning transfer of funds to vendor. Donation ID: {DonationId}, Vendor ID: {VendorId}, Amount: {Amount}",
+                donId, vendorId, donation.Amount);
             
             var finalTransactionHash = await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.TotalCost);
             
             donation.SetFundsReleasedHash(finalTransactionHash);
+            await _unitOfWork.DonationEvents.AddAsync(DonationEventFactory.Create(donation, donation.Status));
             
             await _unitOfWork.CommitAsync();
             return true;
         }
+
+        public async Task<Dictionary<string,decimal>> GetGlobalDonationDistributionPerGoalTypeAsync(int topN) 
+            => await _unitOfWork.GoalTypes.GetTrendingGoalTypes(topN);
+        
     }
 }

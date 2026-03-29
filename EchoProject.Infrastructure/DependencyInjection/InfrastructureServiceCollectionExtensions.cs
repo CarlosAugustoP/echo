@@ -10,6 +10,7 @@ namespace EchoProject.Infrastructure.DependencyInjection
             services.AddPostgresDatabase(configuration);
             services.ConfigureBlockChain(configuration);
             services.AddRepositoriesAndUnitOfWork();
+            services.AddStorageServices(configuration);
         }
     }
 }

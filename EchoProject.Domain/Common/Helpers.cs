@@ -13,6 +13,13 @@ namespace EchoProject.Domain.Common
             return l / 100m;
         }
 
+        public static Stream ToStream(this string base64String)
+        {
+            var base64Data = base64String.Contains(',') ? base64String.Split(',', 2)[1] : base64String;
+            var bytes = Convert.FromBase64String(base64Data);
+            return new MemoryStream(bytes);
+        }
+
         public static BigInteger ToWei(this decimal d)
         {
            BigInteger weiPerEth = BigInteger.Pow(10, 18);
