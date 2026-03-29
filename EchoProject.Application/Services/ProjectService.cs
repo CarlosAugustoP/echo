@@ -207,8 +207,8 @@ namespace EchoProject.Application.Services
             var blogPost = new ProjectBlogPost
             (
                 headerImageUrl is not null ? new ImageUrl(headerImageUrl) : null,
-                request.Content, 
-                request.Title,
+                request.Title, 
+                request.Content,
                 project
             );
 
@@ -217,7 +217,7 @@ namespace EchoProject.Application.Services
             return _mapper.Map<ProjectBlogPostDTO>(blogPost);
         }
 
-        public async Task<PaginatedList<ProjectBlogPostHeaderDTO>> GetBlogPostsbyProjectAsync(Guid projectId, PageRequest pr)
+        public PaginatedList<ProjectBlogPostHeaderDTO> GetBlogPostsbyProject(Guid projectId, PageRequest pr)
         {
             var blogPosts = _unitOfWork.BlogPosts.FindAll(x => x.ProjectId == projectId)
                 .Paginate(pr.PageNumber, pr.PageSize)

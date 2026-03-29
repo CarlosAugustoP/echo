@@ -27,7 +27,7 @@ namespace EchoProject.Infrastructure.Configuration
             {
                 cb.Property(p => p.Url)
                     .HasColumnName("header_image_url")
-                    .IsRequired();
+                    .IsRequired(false);
             });
 
             var imageUrlComparer = new ValueComparer<IReadOnlyCollection<ImageUrl>>(

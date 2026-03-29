@@ -130,9 +130,9 @@ namespace EchoProject.Api.Controllers
         /// <param name="pageRequest"></param>
         /// <returns></returns>
         [HttpGet("blog-posts/{projectId}")]
-        public async Task<IActionResult> GetBlogPosts(Guid projectId, [FromQuery] PageRequest pageRequest)
+        public IActionResult GetBlogPosts(Guid projectId, [FromQuery] PageRequest pageRequest)
         {
-            var blogPosts = await _service.GetBlogPostsbyProjectAsync(projectId, pageRequest);
+            var blogPosts = _service.GetBlogPostsbyProject(projectId, pageRequest);
             return Success(blogPosts);
         }
 

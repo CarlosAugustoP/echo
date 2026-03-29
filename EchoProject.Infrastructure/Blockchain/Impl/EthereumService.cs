@@ -218,7 +218,7 @@ namespace EchoProject.Infrastructure.Blockchain.Impl
                 throw new FormatException($"O endereço '{walletAddress}' não possui um formato Ethereum válido.");
             }
 
-            if (addressUtil.IsChecksumAddress(walletAddress))
+            if (!addressUtil.IsChecksumAddress(walletAddress))
             {
                 throw new FormatException($"O endereço '{walletAddress}' é inválido. Falha na validação de Checksum.");
             }
