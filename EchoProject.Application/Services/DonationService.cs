@@ -46,6 +46,8 @@ namespace EchoProject.Application.Services
             try
             {
                 await _unitOfWork.Donations.AddAsync(donation);
+                // Saves a timeline of the donation for auditing purposes
+                await _unitOfWork.DonationEvents.AddAsync(DonationEventFactory.Create(donation, donation.Status));
                 goal.RegisterDonation(request.Amount);
                 await _unitOfWork.CommitAsync();
             }
@@ -127,6 +129,7 @@ namespace EchoProject.Application.Services
             var finalTransactionHash = await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.TotalCost);
             
             donation.SetFundsReleasedHash(finalTransactionHash);
+            await _unitOfWork.DonationEvents.AddAsync(DonationEventFactory.Create(donation, donation.Status));
             
             await _unitOfWork.CommitAsync();
             return true;

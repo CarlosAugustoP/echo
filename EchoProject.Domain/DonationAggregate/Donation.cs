@@ -44,8 +44,6 @@ namespace EchoProject.Domain.DonationAggregate
                 ? DonationStatus.TransferredToContract : DonationStatus.ImmediateTransferToNGOInContract;
 
             ValidatePayment();
-            Events.Add(DonationEventFactory.Create(this, Status));
-
         }
 
         public void SetFundsReleasedHash(string fundsReleaseHash)
