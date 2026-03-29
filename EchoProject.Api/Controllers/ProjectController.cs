@@ -97,6 +97,12 @@ namespace EchoProject.Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Add a blog post to the project. Only accessible by the project manager (NGO user who created the project). 
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("blog-post/{projectId}")]
         [MandatoryUserFilter([UserRole.NGO])]
         public async Task<IActionResult> AddBlogPost(Guid projectId, [FromBody] CreateBlogPostRequest request)
@@ -105,6 +111,11 @@ namespace EchoProject.Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = blogPost.Id }, blogPost);
         }
 
+        /// <summary>
+        /// Get blog post by ID. Used to view the details of a specific blog post, including its content and associated images.
+        /// </summary>
+        /// <param name="blogPostId"></param>
+        /// <returns></returns>
         [HttpGet("blog-post/{blogPostId}")]
         public async Task<IActionResult> GetBlogPost(Guid blogPostId)
         {
@@ -112,6 +123,12 @@ namespace EchoProject.Api.Controllers
             return Success(blogPost);
         }
 
+        /// <summary>
+        /// Get all blog posts for a project with pagination.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="pageRequest"></param>
+        /// <returns></returns>
         [HttpGet("blog-posts/{projectId}")]
         public async Task<IActionResult> GetBlogPosts(Guid projectId, [FromQuery] PageRequest pageRequest)
         {
@@ -119,6 +136,13 @@ namespace EchoProject.Api.Controllers
             return Success(blogPosts);
         }
 
+        /// <summary>
+        /// Adds an image to a blog post.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="blogPostId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("blog-post/{projectId}/{blogPostId}/add-image")]
         [MandatoryUserFilter([UserRole.NGO])]
         public async Task<IActionResult> AddImageToBlogPost(Guid projectId, Guid blogPostId, [FromBody] DocumentRequest request)
@@ -127,6 +151,11 @@ namespace EchoProject.Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Get trending projects based on the total amount of donations received in the last 7 days. 
+        /// </summary>
+        /// <param name="pageRequest"></param>
+        /// <returns></returns> <summary>
         [HttpGet("trending")]
         public async Task<IActionResult> GetTrendingProjects([FromQuery] PageRequest pageRequest)
         {
@@ -134,11 +163,14 @@ namespace EchoProject.Api.Controllers
             return Success(projects);
         }
 
+        /// <summary>
+        /// Get personalized project recommendations for the current donor user based on their donation history and preferences.
+        /// </summary>
         [HttpGet("for-you")]
         [MandatoryUserFilter([UserRole.Donor])]
         public async Task<IActionResult> GetForYou([FromQuery] PageRequest pageRequest)
         {
-            var projects = await _service.GetForYou(CurrentUser!, pageRequest);
+            var projects = await _service.GetForYouAsync(CurrentUser!, pageRequest);
             return Success(projects);
         }
 

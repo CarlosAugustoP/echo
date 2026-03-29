@@ -60,18 +60,19 @@ namespace EchoProject.Application.Services
             return true;
         }
 
-        public PaginatedList<DonationDTO> GetByDonorId(Guid userId, PageRequest pr)
+        public PaginatedList<DonationDTO> GetHistoryByDonorId(Guid userId, PageRequest pr)
         {
             return _unitOfWork.Donations
                 .FindUserHistory(userId, CancellationToken.None)
+                .OrderByDescending(x => x.CreatedAt)
                 .Paginate(pr.PageNumber, pr.PageSize)
                 .Select(x => _mapper.Map<DonationDTO>(x));
         }
 
-        public List<DonationEventDTO> GetTimeline(PageRequest pr, UserDTO user, Guid donationId)
+        public List<DonationEventDTO> GetTimeline(UserDTO user, Guid donationId)
         {
             return _unitOfWork.DonationEvents
-                .FindAll(x => x.Donation.DonorId == user.Id && x.Donation.Id == donationId)
+                .FindAll(x => x.Donation.DonorId == user.Id && x.DonationId == donationId)
                 .ToList()
                 .DistinctBy(x => x.Status)
                 .Select(_mapper.Map<DonationEventDTO>)

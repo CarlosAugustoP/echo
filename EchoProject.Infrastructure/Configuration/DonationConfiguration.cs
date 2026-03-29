@@ -38,6 +38,11 @@ namespace EchoProject.Infrastructure.Configuration
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.Property(d => d.FundsReleaseHash)
+                .HasColumnName("funds_release_hash")
+                .HasMaxLength(100)
+                .IsRequired(false);
+
             builder.Property(d => d.Status)
                 .HasColumnName("status")
                 .HasConversion<int>() 

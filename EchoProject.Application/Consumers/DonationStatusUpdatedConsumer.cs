@@ -39,6 +39,7 @@ namespace EchoProject.Application.Consumers
 
                 if (message.FundsReleasedHash != null)
                 {
+                    _logger.LogInformation(">>> [Consumer] Atualizando hash de liberação de fundos para a doação {Id}.", message.DonationId);
                     donation.SetFundsReleasedHash(message.FundsReleasedHash);    
                 }
 

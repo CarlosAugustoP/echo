@@ -1,3 +1,5 @@
+using EchoProject.Domain.DonationAggregate;
+
 namespace EchoProject.Application.DTO.Donations
 {
     public class DonationDTO
@@ -6,6 +8,8 @@ namespace EchoProject.Application.DTO.Donations
         public decimal Amount { get; set; }
         public decimal TotalCost { get; set; }
         public string TransactionHash { get; set; } = string.Empty;
+        public DonationStatus Status  { get; set; }
+        public string StatusDesc => Status.ToShortFriendlyString();
         public string NameItem { get; set; } = string.Empty;
         public Guid DonorId { get; set; }
         public Guid GoalId { get; set; }

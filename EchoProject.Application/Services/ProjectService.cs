@@ -256,7 +256,7 @@ namespace EchoProject.Application.Services
             return projects.Paginate(pr.PageNumber, pr.PageSize).Select(x => _mapper.Map<ProjectHeaderDTO>(x));
         }
 
-        public async Task<PaginatedList<ProjectHeaderDTO>> GetForYou(UserDTO user, PageRequest pr)
+        public async Task<PaginatedList<ProjectHeaderDTO>> GetForYouAsync(UserDTO user, PageRequest pr)
         {
             var projects = await _unitOfWork.Projects.FindForYou(user.Id);
             return projects.Paginate(pr.PageNumber, pr.PageSize).Select(x => _mapper.Map<ProjectHeaderDTO>(x));

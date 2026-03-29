@@ -17,7 +17,14 @@ namespace EchoProject.BlockchainWorker
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
-
+        
+        /// <summary>
+        /// Worker runs every 5 minutes to handle pending transactions:
+        /// - For donations pending transfer to vendor: checks if transfer to vendor was confirmed on blockchain. If confirmed, messages the Core API.
+        /// - For money donations pending direct transfer to NGO: if not yet released, it releases funds to the NGO and messages the Core API. 
+        /// </summary>
+        /// <param name="stoppingToken"></param>
+        /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Worker de Validação de Transações iniciado.");
@@ -61,16 +68,10 @@ namespace EchoProject.BlockchainWorker
 
                     var isMoneyDonation = pendingStatus == DonationStatus.ImmediateTransferToNGOInContract;
 
-                    if (donation.FundsReleaseHash is null)
-                    {
-                        _logger.LogWarning("Doação {Id} está pendente, mas sem hash de liberação. Ignorando por enquanto.", donation.Id);
-                        continue;
-                    }
-
                     if (isMoneyDonation)
                     {
                         // We release funds directly to the NGO.
-                        var txHash = ethService.ReleaseFundsToSupplierAsync
+                        var txHash = await ethService.ReleaseFundsToSupplierAsync
                         (
                             donation.Goal.Project.SmartContractAddress, 
                             donation.Goal.Project.Manager.WalletAddress,
@@ -81,11 +82,18 @@ namespace EchoProject.BlockchainWorker
                             donation.Id,
                             DonationStatus.ImmediateTransferToNGOConfirmed,
                             donation.TransactionHash, 
-                            donation.FundsReleaseHash
+                            txHash
                         ));    
                         
                         continue;        
                     }
+
+                    if (donation.FundsReleaseHash is null)
+                    {
+                        _logger.LogWarning("Doação {Id} está pendente, mas sem hash de liberação. Ignorando por enquanto.", donation.Id);
+                        continue;
+                    }
+
 
                     var currentStatus = await ethService.GetDonationStatus(
                         donation.FundsReleaseHash!, 

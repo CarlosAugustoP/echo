@@ -131,7 +131,7 @@ namespace EchoProject.Application.Services
             return (long)(echoAmount * 10000);
         }
 
-        public async Task<UserDTO> UpdateProfile(UpdateUserRequest request, UserDTO user)
+        public async Task<UserDTO> UpdateProfileAsync(UpdateUserRequest request, UserDTO user)
         {
             var userEntity = await _unitOfWork.Users.FindByIdAsync(user.Id)
                 ?? throw new NotFoundException("User not found.");
@@ -163,7 +163,7 @@ namespace EchoProject.Application.Services
             return _mapper.Map<UserDTO>(userEntity);
         }
 
-        public async Task<UserDTO> UpdateWalletAddress(Guid userId, string newWalletAddress)
+        public async Task<UserDTO> UpdateWalletAddressAsync(Guid userId, string newWalletAddress)
         {
             var user = await _unitOfWork.Users.FindByIdAsync(userId)
                 ?? throw new NotFoundException("User not found.");

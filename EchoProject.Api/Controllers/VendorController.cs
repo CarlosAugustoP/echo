@@ -13,6 +13,11 @@ namespace EchoProject.Api.Controllers
     {
         private readonly VendorService _vendorService = vendorService;   
         
+        /// <summary>
+        /// Approve a vendor application. Changes the vendor's status to approved, allowing them to be assigned to goals and receive donations.
+        /// </summary>
+        /// <param name="vendorId"></param>
+        /// <returns></returns>
         [HttpPost("approve/{vendorId}")]
         [MandatoryUserFilter([UserRole.EchoAdmin])]
         public async Task<IActionResult> ApproveVendor([FromRoute] Guid vendorId)
@@ -21,6 +26,10 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        /// <summary>
+        /// Reject a vendor application. Changes the vendor's status to rejected, preventing them from being assigned to goals or receiving donations. This action is irreversible. 
+        /// <param name="vendorId"></param>
+        /// <returns></returns>
         [HttpPost("deny/{vendorId}")]
         [MandatoryUserFilter([UserRole.EchoAdmin])]
         public async Task<IActionResult> DenyVendor([FromRoute] Guid vendorId)
@@ -29,6 +38,11 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        /// <summary>
+        /// Create a new vendor application. The vendor's status is set to pending by default and must be approved by an EchoAdmin before they can be assigned to goals or receive donations. 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
         [MandatoryUserFilter([UserRole.NGO])]
         public async Task<IActionResult> CreateVendor([FromBody] VendorRequest request)
@@ -37,6 +51,11 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        /// <summary>
+        /// Get by id
+        /// </summary>
+        /// <param name="vendorId"></param>
+        /// <returns></returns>
         [HttpGet("{vendorId}")]
         public async Task<IActionResult> GetVendor([FromRoute] Guid vendorId)
         {
@@ -44,6 +63,12 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
+        /// <summary>
+        /// Assign a vendor to a goal.
+        /// </summary>
+        /// <param name="vendorId"></param>
+        /// <param name="goalId"></param>
+        /// <returns></returns>
         [HttpPost("vendor/{vendorId}/goal/{goalId}")]
         [MandatoryUserFilter([UserRole.NGO])]
         public async Task<IActionResult> AssignVendorToGoal([FromRoute] Guid vendorId, [FromRoute] Guid goalId)

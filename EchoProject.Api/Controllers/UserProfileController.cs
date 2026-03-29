@@ -28,7 +28,7 @@ namespace EchoProject.Api.Controllers
         [MandatoryUserFilter([UserRole.Donor, UserRole.NGO])]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserRequest request)
         {
-            var updatedUser = await _userService.UpdateProfile(request, CurrentUser!);
+            var updatedUser = await _userService.UpdateProfileAsync(request, CurrentUser!);
             return Success(updatedUser);
         }
 
@@ -36,7 +36,7 @@ namespace EchoProject.Api.Controllers
         [MandatoryUserFilter([UserRole.Donor, UserRole.NGO])]
         public async Task<IActionResult> UpdateWalletAddress([FromBody] UpdateWalletAddressRequest request)
         {
-            var user = await _userService.UpdateWalletAddress(CurrentUser!.Id, request.WalletAddress);
+            var user = await _userService.UpdateWalletAddressAsync(CurrentUser!.Id, request.WalletAddress);
             return Success(user);
         }
     }

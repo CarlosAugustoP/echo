@@ -57,7 +57,7 @@ namespace EchoProject.Infrastructure.Repositories
 
         public IQueryable<T> FindAll(Expression<Func<T, bool>>? predicate = null)
         {
-            return Query;
+            return Query.Where(predicate ?? (x => true));
         }
     }
 }

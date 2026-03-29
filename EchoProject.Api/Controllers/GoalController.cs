@@ -15,6 +15,11 @@ namespace EchoProject.Api.Controllers
     {
         private readonly GoalService _service = service;
 
+        /// <summary>
+        /// Creates a new goal type.
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
         [HttpPost("types")]
         [MandatoryUserFilter([UserRole.EchoAdmin])]
         public async Task<IActionResult> CreateGoalType([FromBody] GoalTypeRequest req)
@@ -23,6 +28,11 @@ namespace EchoProject.Api.Controllers
             return Success(goalType);
         }
 
+        /// <summary>
+        /// Gets all goal types
+        /// </summary>
+        /// <param name="pr"></param>
+        /// <returns></returns>
         [HttpGet("types")]
         [MandatoryUserFilter([UserRole.EchoAdmin])]
         public IActionResult GetGoalTypes([FromQuery] PageRequest pr)
