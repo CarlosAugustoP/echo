@@ -17,7 +17,7 @@ Traditional donation platforms offer little visibility into where money actually
 
 ## Architecture Overview
 
-The solution is structured as a **.NET 9 Clean Architecture** with four projects and a background worker, all orchestrated via Docker Compose.
+The solution is structured as a **.NET 9 DDD Clean Architecture** with four projects and a background worker, all orchestrated via Docker Compose.
 
 ```
 EchoProject.sln
