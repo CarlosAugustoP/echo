@@ -16,6 +16,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public decimal? CostPerUnit { get; private set; }
         private readonly List<Vendor> _vendors = [];
         public IReadOnlyCollection<Vendor> Vendors => _vendors.AsReadOnly();
+        public bool IsAchieved => CurrentAmount >= TargetAmount;
 
         // Construtor atualizado
         internal Goal(Guid projectId, string title, decimal target, GoalType goalType, decimal? costPerUnit = null)

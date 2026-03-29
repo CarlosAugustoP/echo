@@ -33,6 +33,10 @@ namespace EchoProject.Domain.DonationAggregate
             TransactionHash = transactionHash;
             CreatedAt = DateTime.UtcNow;
             Goal = goal;
+            
+            if (goal.IsAchieved)
+                throw new DomainException("Cannot donate to a goal that has already been achieved.");
+            
             // 1st scenario: costPurchase is passed (not money) so user paid a total amount of money for the donation. 
             // 2nd scenario: costPurchase is null (money) so we consider the amount of ETH donated as the total cost paid by the user.
             TotalCost = costPurchase ?? amount;
