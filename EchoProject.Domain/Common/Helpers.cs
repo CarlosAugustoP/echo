@@ -15,7 +15,8 @@ namespace EchoProject.Domain.Common
 
         public static Stream ToStream(this string base64String)
         {
-            var bytes = Convert.FromBase64String(base64String);
+            var base64Data = base64String.Contains(',') ? base64String.Split(',', 2)[1] : base64String;
+            var bytes = Convert.FromBase64String(base64Data);
             return new MemoryStream(bytes);
         }
 

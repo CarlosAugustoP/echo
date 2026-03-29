@@ -7,7 +7,7 @@ namespace EchoProject.Application.Common.Utils
         
             if (string.IsNullOrEmpty(base64String)) return true;
 
-            var base64Data = base64String.Contains(',') ? base64String.Split(',')[1] : base64String;
+            var base64Data = base64String.Contains(',') ? base64String.Split(',', 2)[1] : base64String;
 
             try
             {
