@@ -108,7 +108,7 @@ namespace EchoProject.Api.Controllers
         public async Task<IActionResult> AddBlogPost(Guid projectId, [FromBody] CreateBlogPostRequest request)
         {
             var blogPost = await _service.AddBlogPostAsync(projectId, request, CurrentUser!);
-            return CreatedAtAction(nameof(GetById), new { id = blogPost.Id }, blogPost);
+            return CreatedAtAction(nameof(GetBlogPost), new { blogPostId = blogPost.Id }, blogPost);
         }
 
         /// <summary>
@@ -152,10 +152,10 @@ namespace EchoProject.Api.Controllers
         }
 
         /// <summary>
-        /// Get trending projects based on the total amount of donations received in the last 7 days. 
+        /// Get trending projects based on the total amount of donations received.
         /// </summary>
-        /// <param name="pageRequest"></param>
-        /// <returns></returns> <summary>
+        /// <param name="pageRequest">Pagination parameters for the trending projects list.</param>
+        /// <returns>A paged list of trending projects.</returns>
         [HttpGet("trending")]
         public async Task<IActionResult> GetTrendingProjects([FromQuery] PageRequest pageRequest)
         {
