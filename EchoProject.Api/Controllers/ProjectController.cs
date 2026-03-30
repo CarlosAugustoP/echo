@@ -5,7 +5,6 @@ using EchoProject.Application.Requests.Pagination;
 using EchoProject.Application.Requests.Projects;
 using EchoProject.Application.Services;
 using EchoProject.Domain.UserAggregate;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EchoProject.Api.Controllers
@@ -98,12 +97,35 @@ namespace EchoProject.Api.Controllers
         }
 
         /// <summary>
+        /// Get trending projects based on the total amount of donations received.
+        /// </summary>
+        /// <param name="pageRequest">Pagination parameters for the trending projects list.</param>
+        /// <returns>A paged list of trending projects.</returns>
+        [HttpGet("trending")]
+        public async Task<IActionResult> GetTrendingProjects([FromQuery] PageRequest pageRequest)
+        {
+            var projects = await _service.GetTrendingProjectsAsync(pageRequest);
+            return Success(projects);
+        }
+
+        /// <summary>
+        /// Get personalized project recommendations for the current donor user based on their donation history and preferences.
+        /// </summary>
+        [HttpGet("for-you")]
+        [MandatoryUserFilter([UserRole.Donor])]
+        public async Task<IActionResult> GetForYou([FromQuery] PageRequest pageRequest)
+        {
+            var projects = await _service.GetForYouAsync(CurrentUser!, pageRequest);
+            return Success(projects);
+        }
+
+        /// <summary>
         /// Add a blog post to the project. Only accessible by the project manager (NGO user who created the project). 
         /// </summary>
         /// <param name="projectId"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost("blog-post/{projectId}")]
+        [HttpPost("blog-post/project/{projectId}")]
         [MandatoryUserFilter([UserRole.NGO])]
         public async Task<IActionResult> AddBlogPost(Guid projectId, [FromBody] CreateBlogPostRequest request)
         {
@@ -129,7 +151,7 @@ namespace EchoProject.Api.Controllers
         /// <param name="projectId"></param>
         /// <param name="pageRequest"></param>
         /// <returns></returns>
-        [HttpGet("blog-posts/{projectId}")]
+        [HttpGet("blog-post/project/{projectId}")]
         public IActionResult GetBlogPosts(Guid projectId, [FromQuery] PageRequest pageRequest)
         {
             var blogPosts = _service.GetBlogPostsbyProject(projectId, pageRequest);
@@ -158,31 +180,5 @@ namespace EchoProject.Api.Controllers
             var blogPosts = await _service.GetBlogPostsForYouAsync(CurrentUser!, pageRequest);
             return Success(blogPosts);
         }
-
-        /// <summary>
-        /// Get trending projects based on the total amount of donations received.
-        /// </summary>
-        /// <param name="pageRequest">Pagination parameters for the trending projects list.</param>
-        /// <returns>A paged list of trending projects.</returns>
-        [HttpGet("trending")]
-        public async Task<IActionResult> GetTrendingProjects([FromQuery] PageRequest pageRequest)
-        {
-            var projects = await _service.GetTrendingProjectsAsync(pageRequest);
-            return Success(projects);
-        }
-
-        /// <summary>
-        /// Get personalized project recommendations for the current donor user based on their donation history and preferences.
-        /// </summary>
-        [HttpGet("for-you")]
-        [MandatoryUserFilter([UserRole.Donor])]
-        public async Task<IActionResult> GetForYou([FromQuery] PageRequest pageRequest)
-        {
-            var projects = await _service.GetForYouAsync(CurrentUser!, pageRequest);
-            return Success(projects);
-        }
-
-
-
     }
 }
