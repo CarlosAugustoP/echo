@@ -1,0 +1,377 @@
+/**
+ * Echo Project - Context Mapper (CML) Model
+ *
+ * Generated from the EchoProject.Domain layer.
+ * This model captures the four bounded contexts identified from the
+ * aggregate structure, along with their entities, value objects,
+ * domain events, repositories, and inter-context relationships.
+ *
+ * Bounded Contexts:
+ *   - IdentityContext          : User registration, roles, and profile management
+ *   - ProjectManagementContext : NGO projects, fundraising goals, blog posts
+ *   - VendorContext            : Vendor/supplier onboarding and approval workflow
+ *   - DonationContext          : Donation lifecycle and blockchain settlement
+ */
+
+ContextMap EchoContextMap {
+    type = SYSTEM_LANDSCAPE
+    state = AS_IS
+
+    contains IdentityContext
+    contains ProjectManagementContext
+    contains VendorContext
+    contains DonationContext
+
+    /* IdentityContext is an Open Host Service consumed by the other contexts */
+    IdentityContext [OHS, PL] -> [CF] ProjectManagementContext {
+        exposedAggregates = UserAggregate
+    }
+
+    IdentityContext [OHS, PL] -> [CF] VendorContext {
+        exposedAggregates = UserAggregate
+    }
+
+    IdentityContext [OHS, PL] -> [CF] DonationContext {
+        exposedAggregates = UserAggregate
+    }
+
+    /* ProjectManagementContext exposes Goals to the Donation context */
+    ProjectManagementContext [OHS, PL] -> [CF] DonationContext {
+        exposedAggregates = ProjectAggregate
+    }
+
+    /* VendorContext exposes Vendors to the Donation context (fund transfer) */
+    VendorContext [OHS, PL] -> [CF] DonationContext {
+        exposedAggregates = VendorAggregate
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   SHARED KERNEL – value objects and domain primitives reused across contexts
+   ────────────────────────────────────────────────────────────────────────── */
+
+BoundedContext SharedKernel {
+    type = FEATURE
+    domainVisionStatement = "Reusable value objects and domain primitives shared by all bounded contexts."
+
+    Aggregate SharedValueObjects {
+
+        ValueObject Address {
+            - String postCode     // 8-digit Brazilian postal code (CEP)
+            - String street
+            - String neighborhood
+            - String city
+            - String state        // 2-letter state code, e.g. "SP"
+            - String countryCode  // 2-letter country code, e.g. "BR"
+            - int? number
+        }
+
+        ValueObject TaxId {
+            - String value        // 11-digit CPF or 14-digit CNPJ
+            - boolean isCpf
+            - boolean isCnpj
+        }
+
+        ValueObject WalletAddress {
+            - String address      // Ethereum wallet address starting with "0x"
+        }
+
+        ValueObject SmartContractAddress {
+            - String value        // Ethereum smart-contract address
+        }
+
+        ValueObject ImageUrl {
+            - String url          // Well-formed absolute URI to an image resource
+        }
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   IDENTITY CONTEXT
+   Responsible for user registration, authentication, roles and profile.
+   ────────────────────────────────────────────────────────────────────────── */
+
+BoundedContext IdentityContext {
+    type = FEATURE
+    domainVisionStatement = "Manages user identity, authentication, roles (Donor, NGO, EchoAdmin) and profile information."
+    implementationTechnology = ".NET 9 / C#"
+    responsibilities = "User registration, password hashing, role assignment, profile updates, wallet assignment"
+
+    Aggregate UserAggregate {
+
+        Entity User {
+            aggregateRoot
+
+            - Guid id
+            - String name
+            - String email         // stored lowercase, validated format
+            - String passwordHash
+            - TaxId taxId          // CPF for Donors, CNPJ required for NGOs
+            - UserRole role
+            - Address address
+            - WalletAddress walletAddress
+            - ImageUrl? profilePicture
+
+            def void updateWalletAddress(@WalletAddress walletAddress)
+            def void updateInformation(String? name, String? email, @Address address, @ImageUrl? profilePicture)
+        }
+
+        Enum UserRole {
+            Donor,
+            NGO,
+            EchoAdmin
+        }
+
+        Repository IUserRepository {
+            @User findByIdAsync(Guid id);
+            @User findByEmailAsync(String email);
+            @User findByWalletAddressAsync(@WalletAddress address);
+            @User findByTaxId(@TaxId taxId);
+            List<@User> findByRole(@UserRole role);
+            void addAsync(@User user);
+            void update(@User user);
+            void remove(@User user);
+        }
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   PROJECT MANAGEMENT CONTEXT
+   Responsible for NGO projects, fundraising goals and project blog.
+   ────────────────────────────────────────────────────────────────────────── */
+
+BoundedContext ProjectManagementContext {
+    type = FEATURE
+    domainVisionStatement = "Allows NGOs to create and manage fundraising projects, define goals and publish blog posts."
+    implementationTechnology = ".NET 9 / C#"
+    responsibilities = "Project lifecycle, goal management (money & item-based), blog posts, image gallery, smart-contract binding"
+
+    Aggregate ProjectAggregate {
+
+        Entity Project {
+            aggregateRoot
+
+            - Guid id
+            - String title              // 1–100 characters
+            - String description        // 1–500 characters
+            - DateTime createdAt
+            - Guid managerId            // reference to User (NGO)
+            - SmartContractAddress smartContractAddress
+            - ImageUrl? mainImage
+            - List<ImageUrl> images     // up to 10 additional images
+            - List<@Goal> goals
+            - List<@ProjectBlogPost> blogPosts
+
+            def void addGoal(String title, decimal targetAmount, @GoalType type, decimal? costPerUnit)
+            def void removeGoal(Guid goalId)
+            def void addOrUpdateMainImage(@ImageUrl image)
+            def void removeMainImage()
+            def void addImage(@ImageUrl image)
+            def void removeImage(@ImageUrl image)
+            def void addBlogPost(@ImageUrl? headerImage, String title, String content, List<@ImageUrl> images)
+            def void updateDetails(String title, String description)
+            def void setSmartContractAddress(@SmartContractAddress address)
+        }
+
+        Entity Goal {
+            - Guid id
+            - Guid projectId
+            - Guid goalTypeId
+            - String title             // 1–50 characters
+            - decimal targetAmount     // must be > 0
+            - decimal currentAmount
+            - decimal? costPerUnit     // null for money goals, required for item goals
+            - List<@Vendor> vendors    // approved vendors assigned to non-money goals
+            - boolean isAchieved       // currentAmount >= targetAmount (non-money)
+
+            def boolean isMoney()
+            def boolean requiresVendor()
+            def void assignVendor(@Vendor vendor)
+            def void assignVendors(List<@Vendor> vendors)
+            def void registerDonation(decimal amount)
+        }
+
+        Entity GoalType {
+            - Guid id
+            - String name              // e.g. "MONEY" (preset constant)
+            - String description       // 1–200 characters
+            - boolean isActive
+        }
+
+        Entity ProjectBlogPost {
+            - Guid id
+            - Guid projectId
+            - ImageUrl? headerImage
+            - List<ImageUrl> images
+            - String title
+            - String content
+            - DateTime createdAt
+
+            def void addImage(@ImageUrl image)
+            def void removeImage(@ImageUrl image)
+        }
+
+        Repository IProjectRepository {
+            @Project findByIdAsync(Guid id);
+            List<@Project> findByManager(Guid managerId);
+            List<@Project> findTrendingProjects();
+            List<@Project> findForYou(Guid userId);
+            void addAsync(@Project project);
+            void update(@Project project);
+            void remove(@Project project);
+        }
+
+        Repository IGoalRepository {
+            @Goal findByIdAsync(Guid id);
+            List<@Goal> findByProjectId(Guid projectId);
+            void addAsync(@Goal goal);
+            void update(@Goal goal);
+            void remove(@Goal goal);
+        }
+
+        Repository IGoalTypeRepository {
+            @GoalType findByIdAsync(Guid id);
+            List<@GoalType> getAll();
+            List<@GoalType> getTrendingGoalTypes(int topN);
+            void addAsync(@GoalType goalType);
+            void update(@GoalType goalType);
+        }
+
+        Repository IBlogPostRepository {
+            @ProjectBlogPost findByIdAsync(Guid id);
+            List<@ProjectBlogPost> findAll();
+            void addAsync(@ProjectBlogPost post);
+            void update(@ProjectBlogPost post);
+            void remove(@ProjectBlogPost post);
+        }
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   VENDOR CONTEXT
+   Responsible for vendor/supplier onboarding, approval workflow, and status.
+   ────────────────────────────────────────────────────────────────────────── */
+
+BoundedContext VendorContext {
+    type = FEATURE
+    domainVisionStatement = "Manages the lifecycle of vendors (suppliers) from application through admin approval to operational status."
+    implementationTechnology = ".NET 9 / C#"
+    responsibilities = "Vendor registration, admin approval/rejection, disable/re-evaluate workflow, vendor assignment to goals"
+
+    Aggregate VendorAggregate {
+
+        Entity Vendor {
+            aggregateRoot
+
+            - Guid id
+            - String name
+            - TaxId document           // CNPJ required (company only)
+            - WalletAddress wallet
+            - VendorStatus status
+            - String typeItemSupply    // category of items/services supplied
+            - Guid? approvedById       // admin User ID
+            - DateTime? decisionDate
+
+            def void approve(Guid adminId)
+            def void deny(Guid adminId)
+            def void disable()
+            def void reevaluate()      // re-submit after 30-day cooldown
+            def boolean isValid()      // true only when status = Approved
+        }
+
+        Enum VendorStatus {
+            Pending,
+            Approved,
+            Rejected,
+            Disabled
+        }
+
+        Repository IVendorRepository {
+            @Vendor findByIdAsync(Guid id);
+            @Vendor findAsync(Expression predicate);
+            List<@Vendor> listAsync(Expression predicate);
+            void addAsync(@Vendor vendor);
+            void update(@Vendor vendor);
+            void remove(@Vendor vendor);
+        }
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   DONATION CONTEXT
+   Responsible for the full donation lifecycle, blockchain settlement
+   and the immutable event log for each donation.
+   ────────────────────────────────────────────────────────────────────────── */
+
+BoundedContext DonationContext {
+    type = FEATURE
+    domainVisionStatement = "Handles the complete donation lifecycle including blockchain smart-contract interactions, fund routing to NGOs and vendors, and an immutable audit trail."
+    implementationTechnology = ".NET 9 / C#"
+    responsibilities = "Donation creation, status machine, smart-contract settlement, vendor fund transfer, event sourcing for audit trail"
+
+    Aggregate DonationAggregate {
+
+        Entity Donation {
+            aggregateRoot
+
+            - Guid id
+            - Guid donorId             // reference to User (Donor)
+            - Guid goalId              // reference to Goal
+            - DonationStatus status
+            - decimal amount           // units donated (items) or ETH (money)
+            - decimal totalCost        // ETH actually paid
+            - String transactionHash   // on-chain transaction hash
+            - String? fundsReleaseHash // on-chain hash for fund release
+            - Guid? transferredToVendorId
+            - DateTime createdAt
+            - List<@DonationEvent> events
+
+            def void setFundsReleasedHash(String hash)
+            def void transferToVendor(@Vendor vendor)
+            def void updateStatus(@DonationStatus newStatus)
+            def void addEvent(@DonationEvent event)
+        }
+
+        DomainEvent DonationEvent {
+            - Guid id
+            - Guid donationId
+            - DonationStatus status    // status captured at event creation
+            - DateTime timestamp       // UTC timestamp
+            - String message           // human-readable event description
+        }
+
+        Enum DonationStatus {
+            ImmediateTransferToNGOInContract,   // money donation locked in smart contract
+            ImmediateTransferToNGOConfirmed,    // money donation confirmed on-chain
+            TransferredToContract,              // item donation locked in smart contract
+            TransferredToVendorPending,         // awaiting on-chain confirmation for vendor
+            TransferredToVendorConfirmed,       // confirmed transfer to vendor on-chain
+            Failed,                             // transaction reverted or amount mismatch
+            ExpiredAndRefunded                  // expired; funds returned to donor
+        }
+
+        Service DonationEventFactory {
+            @DonationEvent create(@Donation donation, @DonationStatus status)
+        }
+
+        Repository IDonationRepository {
+            @Donation findByIdAsync(Guid id);
+            List<@Donation> findByUserIdAndProjectId(Guid userId, Guid projectId);
+            List<@Donation> findByProjectId(Guid projectId);
+            List<@Donation> findUserHistory(Guid userId);
+            List<@Donation> findPendingConfirmations();
+            List<@Donation> findDirectPendingNGOLiberation();
+            void addAsync(@Donation donation);
+            void update(@Donation donation);
+            void remove(@Donation donation);
+        }
+
+        Repository IDonationEventRepository {
+            @DonationEvent findByIdAsync(Guid id);
+            List<@DonationEvent> listAsync(Expression predicate);
+            void addAsync(@DonationEvent event);
+            void update(@DonationEvent event);
+            void remove(@DonationEvent event);
+        }
+    }
+}
