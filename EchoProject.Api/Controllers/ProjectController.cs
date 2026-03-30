@@ -151,6 +151,14 @@ namespace EchoProject.Api.Controllers
             return NoContent();
         }
 
+        [HttpGet("blog-post/for-you")]
+        [MandatoryUserFilter([UserRole.Donor])]
+        public async Task<IActionResult> GetBlogPostsForYou([FromQuery] PageRequest pageRequest)
+        {
+            var blogPosts = await _service.GetBlogPostsForYouAsync(CurrentUser!, pageRequest);
+            return Success(blogPosts);
+        }
+
         /// <summary>
         /// Get trending projects based on the total amount of donations received.
         /// </summary>
