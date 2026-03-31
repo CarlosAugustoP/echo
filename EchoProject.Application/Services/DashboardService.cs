@@ -49,7 +49,7 @@ namespace EchoProject.Application.Services
             var u = _unitOfWork.Donations
                 .FindAll(d => d.DonorId == userId);
 
-            return new ContributionTotalDTO(u.Count(), (int)u.Sum(d => d.TotalCost));
+            return new ContributionTotalDTO(u.Sum(d => d.TotalCost), u.Count());
         }
 
         public List<DonationEventDTO> GetDonationEventsAsync(UserDTO currentUser)
