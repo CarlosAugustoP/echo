@@ -17,7 +17,7 @@ namespace EchoProject.Infrastructure.Repositories
 
         public void AddGoalType(GoalType goalType)
         {
-            throw new NotImplementedException();
+            _db.GoalTypes.Add(goalType);
         }
 
         public IQueryable<GoalType> FindAllGoalTypes()
