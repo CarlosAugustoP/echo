@@ -12,6 +12,7 @@ using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
+using EchoProject.Infrastructure.Migrations;
 using Microsoft.Extensions.Logging;
 
 namespace EchoProject.Application.Services
@@ -47,7 +48,9 @@ namespace EchoProject.Application.Services
             {
                 await _unitOfWork.Donations.AddAsync(donation);
                 // Saves a timeline of the donation for auditing purposes
-                await _unitOfWork.DonationEvents.AddAsync(DonationEventFactory.Create(donation, donation.Status));
+                var donationEvent = donation.AddEvent(donation.Status);
+                
+                _unitOfWork.Donations.AddDonationEvent(donationEvent);
                 goal.RegisterDonation(request.Amount);
                 await _unitOfWork.CommitAsync();
             }
@@ -71,8 +74,8 @@ namespace EchoProject.Application.Services
 
         public List<DonationEventDTO> GetTimeline(UserDTO user, Guid donationId)
         {
-            return _unitOfWork.DonationEvents
-                .FindAll(x => x.Donation.DonorId == user.Id && x.DonationId == donationId)
+            return _unitOfWork.Donations.FindDonationEventsByDonationId(donationId, CancellationToken.None)
+                .Where(x => x.Donation.DonorId == user.Id)
                 .ToList()
                 .DistinctBy(x => x.Status)
                 .Select(_mapper.Map<DonationEventDTO>)
@@ -130,14 +133,18 @@ namespace EchoProject.Application.Services
             var finalTransactionHash = await _ethereum.ReleaseFundsToSupplierAsync(project.SmartContractAddress, vendor.Wallet, donation.TotalCost);
             
             donation.SetFundsReleasedHash(finalTransactionHash);
-            await _unitOfWork.DonationEvents.AddAsync(DonationEventFactory.Create(donation, donation.Status));
+            var donationevent = donation.AddEvent(donation.Status);
+            
+            _unitOfWork.Donations.AddDonationEvent(donationevent);
             
             await _unitOfWork.CommitAsync();
             return true;
         }
 
         public async Task<Dictionary<string,decimal>> GetGlobalDonationDistributionPerGoalTypeAsync(int topN) 
-            => await _unitOfWork.GoalTypes.GetTrendingGoalTypes(topN);
+            => await _unitOfWork.Goals.GetTrendingGoalTypes(topN);
+
+       
         
     }
 }

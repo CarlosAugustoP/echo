@@ -27,5 +27,6 @@ namespace EchoProject.Infrastructure.Repositories
             return Query.Where(u => u.Role == role);
         }
 
+       
     }
 }

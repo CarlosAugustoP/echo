@@ -83,9 +83,11 @@ namespace EchoProject.Domain.DonationAggregate
             Goal.RegisterDonation(Amount);
         }
 
-        public void AddEvent(DonationEvent donationEvent)
+        public DonationEvent AddEvent( DonationStatus status)
         {
-            Events.Add(donationEvent);
+            var evt = DonationEventFactory.Create(this, status);
+            Events.Add(evt);
+            return evt;
         }
 
         public void UpdateStatus(DonationStatus newStatus)

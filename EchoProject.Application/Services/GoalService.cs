@@ -17,14 +17,14 @@ namespace EchoProject.Application.Services
 
         public async Task<GoalTypeDTO> CreateGoalType(GoalTypeRequest req)
         {
-            var goalType = await _unitOfWork.GoalTypes.FindAsync(x => x.Name == req.Name);
+            var goalType = await _unitOfWork.Goals.FindGoalTypeByNameAsync(req.Name);
             
             if (goalType != null)
                 throw new ConflictException("CONFLICT", $"GoalType with name {req.Name} already exists.");
 
             var goal = new GoalType(req.Name, req.Description);
             
-            await _unitOfWork.GoalTypes.AddAsync(goal);
+            _unitOfWork.Goals.AddGoalType(goal);
             await _unitOfWork.CommitAsync();
 
             return _mapper.Map<GoalTypeDTO>(goal);
@@ -32,7 +32,7 @@ namespace EchoProject.Application.Services
 
         public PaginatedList<GoalTypeDTO> GetGoalTypes(int page, int pageSize)
         {
-            var goalTypes = _unitOfWork.GoalTypes.FindAll();
+            var goalTypes = _unitOfWork.Goals.FindAllGoalTypes();
             return goalTypes
                 .Paginate(page, pageSize)
                 .Select(x => _mapper.Map<GoalTypeDTO>(x));
