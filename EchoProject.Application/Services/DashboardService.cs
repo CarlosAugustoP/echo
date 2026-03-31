@@ -32,9 +32,9 @@ namespace EchoProject.Application.Services
             ];
         }
 
-        public async Task<List<ImpactByRegionDTO>> GetImpactByRegionAsync(UserDTO currentUser)
+        public async Task<List<ImpactByRegionDTO>> GetImpactByRegionAsync(Guid projectId)
         {
-            var impactData = await _unitOfWork.Donations.FindImpactByRegionForProjectAsync(currentUser.Id);
+            var impactData = await _unitOfWork.Donations.FindImpactByRegionForProjectAsync(projectId);
             return 
             [
                 .. impactData
