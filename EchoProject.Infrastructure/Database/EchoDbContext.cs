@@ -14,6 +14,8 @@ namespace EchoProject.Infrastructure.Database
         public required DbSet<Project> Projects { get; set; }
         public required DbSet<Vendor> Vendors { get; set; }
         public required DbSet<GoalType> GoalTypes { get; set; }
+        public required DbSet<ProjectBlogPost> ProjectBlogPosts { get; set; }
+        public required DbSet<DonationEvent> DonationEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

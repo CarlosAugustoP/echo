@@ -32,7 +32,7 @@ namespace EchoProject.Api.Controllers
         [MandatoryUserFilter([UserRole.Donor])]
         public async Task<IActionResult> GetImpactByRegion()
         {
-            var impact = await _dashboardService.GetImpactByRegionAsync(CurrentUser!);
+            var impact = await _dashboardService.GetImpactByRegionAsync(CurrentUser!.Id);
             return Success(impact);
         }
 
@@ -40,7 +40,7 @@ namespace EchoProject.Api.Controllers
         [MandatoryUserFilter([UserRole.Donor])]
         public IActionResult GetDonationEvents()
         {
-            var events = _dashboardService.GetDonationEventsAsync(CurrentUser!);
+            var events = _dashboardService.GetDonationEvents(CurrentUser!);
             return Success(events);
         }
 

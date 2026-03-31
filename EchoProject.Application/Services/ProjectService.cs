@@ -54,7 +54,7 @@ namespace EchoProject.Application.Services
         {
             foreach (var goalReq in goalRequests)
             {
-                var goalType = await _unitOfWork.GoalTypes.FindByIdAsync(goalReq.GoalTypeId)
+                var goalType = await _unitOfWork.Goals.FindGoalTypeByIdAsync(goalReq.GoalTypeId)
                     ?? throw new NotFoundException($"GoalType {goalReq.GoalTypeId} not found.");
 
                 var goal = project.AddGoal(goalReq.Title, goalReq.TargetAmount, goalType, goalReq.CostPerUnit);
@@ -114,7 +114,7 @@ namespace EchoProject.Application.Services
             if (project.ManagerId != user.Id)
                 throw new UnauthorizedException("Only the project manager can add goals to the project.");
 
-            var goalType = await _unitOfWork.GoalTypes.FindByIdAsync(goalRequest.GoalTypeId)
+            var goalType = await _unitOfWork.Goals.FindGoalTypeByIdAsync(goalRequest.GoalTypeId)
                 ?? throw new NotFoundException($"GoalType with ID {goalRequest.GoalTypeId} not found.");
 
             var goal = project.AddGoal(goalRequest.Title, goalRequest.TargetAmount, goalType, goalRequest.CostPerUnit);
@@ -213,14 +213,16 @@ namespace EchoProject.Application.Services
                 project
             );
 
-            await _unitOfWork.BlogPosts.AddAsync(blogPost);
+            project.AddBlogPost(blogPost);
+
+            _unitOfWork.Projects.AddBlogPost(blogPost);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<ProjectBlogPostDTO>(blogPost);
         }
 
         public PaginatedList<ProjectBlogPostHeaderDTO> GetBlogPostsbyProject(Guid projectId, PageRequest pr)
         {
-            var blogPosts = _unitOfWork.BlogPosts.FindAll(x => x.ProjectId == projectId)
+            var blogPosts = _unitOfWork.Projects.FindAllProjectBlogPosts().Where(x => x.ProjectId == projectId)
                 .Paginate(pr.PageNumber, pr.PageSize)
                 .Select(_mapper.Map<ProjectBlogPostHeaderDTO>);
 
@@ -229,7 +231,7 @@ namespace EchoProject.Application.Services
 
         public async Task<ProjectBlogPostDTO> GetBlogPostByIdAsync(Guid blogPostId)
         {
-            var blogPost = await _unitOfWork.BlogPosts.FindByIdAsync(blogPostId)
+            var blogPost = await _unitOfWork.Projects.FindProjectBlogPostByIdAsync(blogPostId)
                 ?? throw new NotFoundException($"Blog post with ID {blogPostId} not found.");
 
             return _mapper.Map<ProjectBlogPostDTO>(blogPost);
@@ -243,7 +245,7 @@ namespace EchoProject.Application.Services
             if (project.ManagerId != user.Id)
                 throw new UnauthorizedException("Only the project manager can add images to the project.");
 
-            var blogPost = await _unitOfWork.BlogPosts.FindByIdAsync(blogPostId)
+            var blogPost = await _unitOfWork.Projects.FindProjectBlogPostByIdAsync(blogPostId)
                 ?? throw new NotFoundException($"Blog post with ID {blogPostId} not found.");
 
             using var stream = req.Base64String.ToStream();
@@ -262,6 +264,13 @@ namespace EchoProject.Application.Services
         {
             var projects = await _unitOfWork.Projects.FindForYou(user.Id);
             return projects.Paginate(pr.PageNumber, pr.PageSize).Select(x => _mapper.Map<ProjectHeaderDTO>(x));
+        }
+
+        public async Task<PaginatedList<ProjectBlogPostHeaderDTO>> GetBlogPostsForYouAsync(UserDTO user, PageRequest pr)
+        {
+            return _unitOfWork.Projects.FindBlogPostByUserInvolvement(user.Id)
+                .Paginate(pr.PageNumber, pr.PageSize)
+                .Select(_mapper.Map<ProjectBlogPostHeaderDTO>);
         }
 
     }

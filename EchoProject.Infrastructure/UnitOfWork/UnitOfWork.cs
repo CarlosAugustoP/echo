@@ -14,10 +14,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
         public IProjectRepository Projects { get; }
         public IUserRepository Users { get; }
         public IDonationRepository Donations { get; }
-        public IGoalTypeRepository GoalTypes { get; }
         public IVendorRepository Vendors { get; }
-        public IDonationEventRepository DonationEvents { get; }
-        public IBlogPostRepository BlogPosts { get; }
 
 
         public UnitOfWork(
@@ -26,20 +23,15 @@ namespace EchoProject.Infrastructure.UnitOfWork
             IProjectRepository projects,
             IUserRepository users,
             IDonationRepository donations,
-            IGoalTypeRepository goalTypes,
-            IVendorRepository vendors,
-            IDonationEventRepository donationEvents,
-            IBlogPostRepository blogPosts)
+            IVendorRepository vendors
+        )
         {
             _context = context;
             Goals = goals;
             Projects = projects;
             Users = users;
             Donations = donations;
-            GoalTypes = goalTypes;
             Vendors = vendors;
-            DonationEvents = donationEvents;
-            BlogPosts = blogPosts;
 
         }
 

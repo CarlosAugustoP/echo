@@ -44,9 +44,8 @@ namespace EchoProject.Application.Consumers
                 }
 
                 donation.UpdateStatus(message.NewStatus);
-                var statusEvent = DonationEventFactory.Create(donation, message.NewStatus);
-                
-                await _unitOfWork.DonationEvents.AddAsync(statusEvent);                
+                var statusEvent = donation.AddEvent(message.NewStatus);
+                _unitOfWork.Donations.AddDonationEvent(statusEvent);                
 
                 await _unitOfWork.CommitAsync();
 

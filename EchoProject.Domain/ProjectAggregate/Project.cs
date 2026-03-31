@@ -47,11 +47,10 @@ namespace EchoProject.Domain.ProjectAggregate
             return goal;
         }
 
-        public ProjectBlogPost AddBlogPost(ImageUrl? headerImage, string title, string content, List<ImageUrl>? images = null)
+        public ProjectBlogPost AddBlogPost(ProjectBlogPost pbp)
         {
-            var blogPost = new ProjectBlogPost(headerImage, title, content, this, images);
-            _blogPosts.Add(blogPost);
-            return blogPost;
+            _blogPosts.Add(pbp);
+            return pbp;
         }
 
         public Goal RemoveGoal(Guid goalId)

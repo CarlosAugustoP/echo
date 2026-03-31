@@ -16,6 +16,7 @@ namespace EchoProject.Infrastructure.Repositories
         {
             return Query.Where(p => p.ManagerId == managerId);
         }
+        
 
         public IQueryable<Project> FindTrendingProjects()
         {
@@ -60,6 +61,34 @@ namespace EchoProject.Infrastructure.Repositories
                 .AsQueryable();
 
             return projects;
+        }
+
+        public IQueryable<ProjectBlogPost> FindBlogPostByUserInvolvement(Guid userId)
+        {
+            var donatedToProjects = _db.Donations
+                .Include(x => x.Goal)
+                .ThenInclude(x => x.Project)
+                .Where(x => x.DonorId == userId)
+                .Select(x => x.Goal.ProjectId);
+
+            return _db.ProjectBlogPosts.
+                OrderByDescending(bp => donatedToProjects.Contains(bp.ProjectId))
+                .ThenByDescending(bp => bp.CreatedAt);
+        }
+
+        public void AddBlogPost(ProjectBlogPost blogPost)
+        {
+            _db.ProjectBlogPosts.Add(blogPost);
+        }
+
+        public IQueryable<ProjectBlogPost> FindAllProjectBlogPosts()
+        {
+            return _db.ProjectBlogPosts;
+        }
+
+        public Task<ProjectBlogPost?> FindProjectBlogPostByIdAsync(Guid blogPostId, CancellationToken ct = default)
+        {
+            return _db.ProjectBlogPosts.FirstOrDefaultAsync(bp => bp.Id == blogPostId, ct);
         }
     }
 }
