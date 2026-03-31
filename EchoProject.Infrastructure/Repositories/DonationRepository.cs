@@ -49,7 +49,7 @@ namespace EchoProject.Infrastructure.Repositories
         }
         public (decimal TotalContributedThisMonth, decimal TotalContributedLastMonth) FindContributionSummaryAsync(Guid userId, CancellationToken ct = default)
         {
-            var donationsByUser = Query.Where(u => u.Id == userId);
+            var donationsByUser = Query.Where(u => u.DonorId == userId);
 
             var totalContributedThisMonth = donationsByUser
                 .Where(d => d.CreatedAt >= DateTime.UtcNow.AddMonths(-1))
