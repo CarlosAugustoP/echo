@@ -12,7 +12,6 @@ namespace EchoProject.Infrastructure.DependencyInjection
         {
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
-            services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IGoalRepository, GoalRepository>();
             services.AddScoped<IDonationRepository, DonationRepository>();
             services.AddScoped<IVendorRepository, VendorRepository>();
