@@ -12,7 +12,6 @@ using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
-using EchoProject.Infrastructure.Migrations;
 using Microsoft.Extensions.Logging;
 
 namespace EchoProject.Application.Services
