@@ -22,8 +22,8 @@ The solution is structured as a **.NET 9 DDD Clean Architecture** with four proj
 ```
 EchoProject.sln
 ├── EchoProject.Api               # ASP.NET Core REST API (entry point)
-├── EchoProject.Application       # Business logic, services, DTOs, validators
-├── EchoProject.Domain            # Domain entities, aggregates, value objects
+├── EchoProject.Application       # System flow, services, DTOs, validators
+├── EchoProject.Domain            # Business logic, Domain entities, aggregates, value objects
 ├── EchoProject.Infrastructure    # EF Core/PostgreSQL, Nethereum, Supabase, Rebus
 ├── EchoProject.BlockchainWorker  # Background service for blockchain polling
 └── EchoProjectScrow.sol          # Solidity escrow smart contract
