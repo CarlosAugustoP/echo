@@ -45,7 +45,7 @@ namespace EchoProject.Api.Controllers
         /// Get current authenticated user's profile.
         /// </summary>
         /// <returns></returns>
-        [HttpPost("me")]
+        [HttpGet("me")]
         [Authorize]
         [MandatoryUserFilter]
         public IActionResult Me()

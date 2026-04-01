@@ -47,7 +47,7 @@ namespace EchoProject.Infrastructure.Repositories
                 .ThenInclude(g => g.Manager)
                 .Where(x => x.Status == DonationStatus.ImmediateTransferToNGOInContract);
         }
-        public (decimal TotalContributedThisMonth, decimal TotalContributedLastMonth) FindContributionSummaryAsync(Guid userId, CancellationToken ct = default)
+        public (decimal TotalContributedThisMonth, decimal TotalContributedLastMonth) FindContributionSummary(Guid userId, CancellationToken ct = default)
         {
             var donationsByUser = Query.Where(u => u.DonorId == userId);
 

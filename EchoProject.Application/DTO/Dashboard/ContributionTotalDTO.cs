@@ -1,4 +1,4 @@
 namespace EchoProject.Application.DTO.Dashboard
 {
-    public record ContributionTotalDTO(int Amount, decimal TotalCost);
+    public record ContributionTotalDTO(decimal Amount, decimal TotalCost);
 }
