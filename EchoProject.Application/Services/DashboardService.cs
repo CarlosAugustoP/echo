@@ -15,7 +15,7 @@ namespace EchoProject.Application.Services
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         public ContributionSummaryDTO GetContributionSummary(UserDTO currentUser)
         {
-            var (thisMonth, lastMonth) = _unitOfWork.Donations.FindContributionSummaryAsync(currentUser.Id);
+            var (thisMonth, lastMonth) = _unitOfWork.Donations.FindContributionSummary(currentUser.Id);
             return new ContributionSummaryDTO(thisMonth, lastMonth == 0 ? 0 : (thisMonth - lastMonth) / lastMonth);
         }
 
@@ -52,7 +52,7 @@ namespace EchoProject.Application.Services
             return new ContributionTotalDTO(u.Sum(d => d.TotalCost), u.Count());
         }
 
-        public List<DonationEventDTO> GetDonationEventsAsync(UserDTO currentUser)
+        public List<DonationEventDTO> GetDonationEvents(UserDTO currentUser)
         {
             var events = _unitOfWork.Donations.FindDonationEventsByUserId(currentUser.Id);
             
