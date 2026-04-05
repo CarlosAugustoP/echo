@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EchoProject.Api.Controllers
 {
+    [ApiController]
+    [Route("api/user-profile")]
     public class UserProfileController : EchoController
     {
         private readonly UserService _userService;
