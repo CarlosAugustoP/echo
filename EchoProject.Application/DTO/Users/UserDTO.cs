@@ -13,5 +13,6 @@ namespace EchoProject.Application.DTO
         public string WalletAddress { get; set; } = walletAddress;
         public TaxId TaxId { get; set; } = taxId;
         public UserRole Role { get; set; } = role;
+        public ImageUrl? ProfilePicture { get; set; } = null;
     }
 }

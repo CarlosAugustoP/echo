@@ -23,12 +23,12 @@ namespace EchoProject.Application.Requests.Signup
                 .Must(x => x != UserRole.EchoAdmin)
                 .WithMessage("Role must be either Donor or NGO.");
 
-            RuleFor(x => x.Password)
-                .NotEmpty()
-                .MinimumLength(8)
-                .WithMessage("Password must be at least 8 characters long.")
-                .Must(x=> x.Any(char.IsDigit) && x.Any(char.IsLetter) && x.Any(char.IsSymbol))
-                .WithMessage("Password must contain at least one letter, one number and one symbol.");
+                RuleFor(x => x.Password)
+                    .NotEmpty()
+                    .MinimumLength(8)
+                    .WithMessage("Password must be at least 8 characters long.")
+                    .Must(x=> x.Any(char.IsDigit) && x.Any(char.IsLetter) && x.Any(c => char.IsSymbol(c) || char.IsPunctuation(c)))
+                    .WithMessage("Password must contain at least one letter, one number and one symbol.");
 
             RuleFor(x => x.TaxId)
                 .NotEmpty()

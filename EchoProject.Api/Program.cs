@@ -16,6 +16,7 @@ builder.Services.AddLogging(config =>
     config.AddConsole();
     config.AddDebug();
 });
+builder.Services.AddCorsPolicy();
 builder.Services.ConfigureSwagger();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddControllers();
@@ -26,6 +27,7 @@ if (app.Environment.IsDevelopment())
     app.AddSwagger();
 }
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+app.UseCors("DefaultCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 await app.SubscribeRebusEventsAsync();
