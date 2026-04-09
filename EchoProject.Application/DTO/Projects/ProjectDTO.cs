@@ -14,5 +14,6 @@ namespace EchoProject.Application.DTO.Projects
         public string SmartContractAddress { get; set; } = string.Empty;
         public string? MainImage { get; set; }
         public List<string> Images { get; set; } = [];
+        public decimal Progress { get; set; } = 0;
     }
 }

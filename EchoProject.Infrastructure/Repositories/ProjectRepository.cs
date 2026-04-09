@@ -20,16 +20,20 @@ namespace EchoProject.Infrastructure.Repositories
 
         public IQueryable<Project> FindTrendingProjects()
         {
-            return _db.Donations
-                .GroupBy(d => d.Goal.Project)
+            var donationTotals = _db.Donations
+                .GroupBy(d => d.Goal.ProjectId)
                 .Select(group => new
                 {
-                    Project = group.Key,
+                    ProjectId = group.Key,
                     TotalAmount = group.Sum(d => d.Amount)
-                })
-                .OrderByDescending(x => x.TotalAmount)
-                .Select(x => x.Project)
-                .AsQueryable();
+                });
+
+            return Query
+                .Where(p => donationTotals.Any(total => total.ProjectId == p.Id))
+                .OrderByDescending(p => donationTotals
+                    .Where(total => total.ProjectId == p.Id)
+                    .Select(total => total.TotalAmount)
+                    .FirstOrDefault());
         }
 
         public async Task<IQueryable<Project>> FindForYou(Guid userId)

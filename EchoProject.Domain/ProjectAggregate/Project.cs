@@ -39,6 +39,11 @@ namespace EchoProject.Domain.ProjectAggregate
         {
             SmartContractAddress = new SmartContractAddress(address);
         }
+        public decimal GetProgress()
+        {
+            var g = Goals.ToDictionary(g => g.Id, g => g.CurrentAmount / g.TargetAmount);
+            return g.Count > 0 ? g.Values.Average() * 100 : 0;
+        }
 
         public Goal AddGoal(string title, decimal target, GoalType goalType, decimal? costPerUnit)
         {

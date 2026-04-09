@@ -9,5 +9,6 @@ namespace EchoProject.Application.DTO.Projects
         public string? HeaderImage { get; set; }
         public string Title { get; set; } = string.Empty;
         public DateTime CreatedAt { get; private set; }
+        public string First100CharsOfContent { get; set; } = string.Empty;
     }
 }

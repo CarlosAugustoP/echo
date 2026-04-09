@@ -51,12 +51,13 @@ namespace EchoProject.Infrastructure.Repositories
                 .Select(group => new
                 {
                     GoalTypeName = group.Key,
+                    GoalDescription = group.FirstOrDefault()!.Goal.GoalType.Description,
                     Percentage = group.Sum(d => d.Amount) / globalTotal * 100
                 })
                 .OrderByDescending(x => x.Percentage)
                 .Take(topN)
                 .ToDictionaryAsync(
-                    x => x.GoalTypeName,
+                    x => x.GoalDescription,
                     x => Math.Round(x.Percentage, 2)
                 );
         }
