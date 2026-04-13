@@ -13,6 +13,9 @@ namespace EchoProject.Domain.ProjectAggregate
         public string Title { get; private set; }
         public decimal TargetAmount { get; private set; }
         public decimal CurrentAmount { get; private set; } = 0;
+        public decimal Progress => GoalType.Name == PresetName.Money 
+            ? CurrentAmount 
+            : TargetAmount > 0 ? CurrentAmount / TargetAmount * 100 : 0;
         public decimal? CostPerUnit { get; private set; }
         private readonly List<Vendor> _vendors = [];
         public IReadOnlyCollection<Vendor> Vendors => _vendors.AsReadOnly();
