@@ -187,5 +187,13 @@ namespace EchoProject.Application.Services
             await _unitOfWork.CommitAsync();
             return _mapper.Map<UserDTO>(user);
         }
+
+        public async Task<UserDTO> GetByIdAsync(Guid id)
+        {
+            var user = await _unitOfWork.Users.FindByIdAsync(id)
+                ?? throw new NotFoundException("User not found.");
+
+            return _mapper.Map<UserDTO>(user);
+        }
     }
 }

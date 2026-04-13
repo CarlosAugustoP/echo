@@ -41,5 +41,12 @@ namespace EchoProject.Api.Controllers
             var user = await _userService.UpdateWalletAddressAsync(CurrentUser!.Id, request.WalletAddress);
             return Success(user);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        {
+            var user = await _userService.GetByIdAsync(id);
+            return Success(user);
+        }
     }
 }

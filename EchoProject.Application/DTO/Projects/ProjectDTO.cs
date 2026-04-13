@@ -15,5 +15,7 @@ namespace EchoProject.Application.DTO.Projects
         public string? MainImage { get; set; }
         public List<string> Images { get; set; } = [];
         public decimal Progress { get; set; } = 0;
+        public string CreatedByName { get; set; } = string.Empty;
+        public Guid CreatedById { get; set; }
     }
 }

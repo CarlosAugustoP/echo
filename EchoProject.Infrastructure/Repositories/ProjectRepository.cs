@@ -8,7 +8,7 @@ namespace EchoProject.Infrastructure.Repositories
     public class ProjectRepository(EchoDbContext context) : EfRepository<Project>(context), IProjectRepository
     {
         protected override IQueryable<Project> Query 
-            => base.Query.Include(p => p.Goals).ThenInclude(g => g.GoalType);
+            => base.Query.Include(x => x.Manager).Include(p => p.Goals).ThenInclude(g => g.GoalType);
 
         private readonly EchoDbContext _db = context;
         
