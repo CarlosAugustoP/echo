@@ -45,9 +45,9 @@ namespace EchoProject.Domain.ProjectAggregate
             return g.Count > 0 ? g.Values.Average() * 100 : 0;
         }
 
-        public Goal AddGoal(string title, decimal target, GoalType goalType, decimal? costPerUnit)
+        public Goal AddGoal(string title, decimal target, GoalType goalType, decimal? costPerUnit, string? description = null)
         {
-            var goal = new Goal(Id, title, target, goalType, costPerUnit);
+            var goal = new Goal(Id, title, target, goalType, costPerUnit, description);
             _goals.Add(goal);
             return goal;
         }

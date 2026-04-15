@@ -13,8 +13,19 @@ namespace EchoProject.Domain.DonationAggregate
         public Guid GoalId { get; private set; }
         public Goal Goal { get; private set; } = null!;
         public DonationStatus Status { get; private set; }
-
+        /// <summary>
+        /// The amount of an item donated.
+        /// For money goals, this is equal to the amount of ETH donated.
+        /// For non-money goals, this is equal to the amount of units donated.
+        /// </summary>
         public decimal Amount { get; private set; }
+
+        /// <summary>
+        /// The actual total cost, in ETH paid by the user for this donation. 
+        /// For money goals, this is equal to the amount of ETH donated. 
+        /// For non-money goals, this is equal to the cost per unit defined in
+        /// the goal multiplied by the amount of units donated. 
+        /// </summary>
         public decimal TotalCost { get; private set; }
         public string TransactionHash { get; private set; }
         public string? FundsReleaseHash { get; private set; }
@@ -25,25 +36,44 @@ namespace EchoProject.Domain.DonationAggregate
 
         private Donation() { }
 
-        public Donation(Guid donorId, Goal goal, decimal amount, decimal? costPurchase, string transactionHash)
+        public Donation(Guid donorId, Goal goal, decimal amount, decimal costPurchase, string transactionHash)
         {
             DonorId = donorId;
             GoalId = goal.Id;
-            Amount = amount > 0 ? amount : throw new ArgumentException("Amount must be greater than zero.");
             TransactionHash = transactionHash;
             CreatedAt = DateTime.UtcNow;
             Goal = goal;
-            
+
             if (goal.IsAchieved)
                 throw new DomainException("Cannot donate to a goal that has already been achieved.");
-            
-            // 1st scenario: costPurchase is passed (not money) so user paid a total amount of money for the donation. 
-            // 2nd scenario: costPurchase is null (money) so we consider the amount of ETH donated as the total cost paid by the user.
-            TotalCost = costPurchase ?? amount;
-            Status = goal.MoneyPendingOnTrustedVendorLiberation()
-                ? DonationStatus.TransferredToContract : DonationStatus.ImmediateTransferToNGOInContract;
 
-            ValidatePayment();
+            if (goal.IsMoney())
+            {
+                // For money goals, the ETH paid (costPurchase) IS the amount donated.
+                // We set both to costPurchase to ensure the 'progress' matches the 'payment'.
+                Amount = costPurchase;
+                TotalCost = costPurchase;
+            }
+            else
+            {
+                // For item goals, Amount = Quantity (units) and TotalCost = ETH Value.
+                Amount = amount;
+                TotalCost = costPurchase;
+            }
+
+            if (Amount <= 0) throw new ArgumentException("Amount must be greater than zero.");
+
+            Status = goal.MoneyPendingOnTrustedVendorLiberation()
+                ? DonationStatus.TransferredToContract
+                : DonationStatus.ImmediateTransferToNGOInContract;
+
+            ValidateIfEnoughPayment();
+
+            // Item goals will call RegisterDonation later inside TransferToVendor().
+            if (goal.IsMoney())
+            {
+                goal.RegisterDonation(Amount);
+            }
         }
 
         public void SetFundsReleasedHash(string fundsReleaseHash)
@@ -51,7 +81,7 @@ namespace EchoProject.Domain.DonationAggregate
             FundsReleaseHash = fundsReleaseHash;
         }
 
-        private void ValidatePayment()
+        private void ValidateIfEnoughPayment()
         {
             // Only for non-money goals we need to validate the cost purchase against the goal's cost per unit
             if (Goal.GoalType.Name != PresetName.Money)
@@ -83,7 +113,7 @@ namespace EchoProject.Domain.DonationAggregate
             Goal.RegisterDonation(Amount);
         }
 
-        public DonationEvent AddEvent( DonationStatus status)
+        public DonationEvent AddEvent(DonationStatus status)
         {
             var evt = DonationEventFactory.Create(this, status);
             Events.Add(evt);

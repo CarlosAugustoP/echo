@@ -32,7 +32,7 @@ namespace EchoProject.Application.Services
             bool isTransactionValid = await _ethereum.VerifyTransactionAsync(
                 request.TransactionHash,
                 goal.Project.SmartContractAddress,
-                request.TotalAmount
+                request.TotalAmountETH
             );
 
             if (!isTransactionValid)
@@ -41,7 +41,7 @@ namespace EchoProject.Application.Services
                 throw new DomainException("The blockchain transaction is invalid, has failed, or the data does not match.");
             }
 
-            var donation = new Donation(donor.Id, goal, request.Amount, request.TotalAmount, request.TransactionHash);
+            var donation = new Donation(donor.Id, goal, request.Amount, request.TotalAmountETH, request.TransactionHash);
 
             try
             {
@@ -50,7 +50,6 @@ namespace EchoProject.Application.Services
                 var donationEvent = donation.AddEvent(donation.Status);
                 
                 _unitOfWork.Donations.AddDonationEvent(donationEvent);
-                goal.RegisterDonation(request.Amount);
                 await _unitOfWork.CommitAsync();
             }
             catch (Exception ex)

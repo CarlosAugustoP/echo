@@ -12,5 +12,8 @@ namespace EchoProject.Application.DTO.Projects
         public decimal CurrentAmount { get; set; }
         public GoalTypeDTO GoalType { get; set; } = new(); 
         public decimal Progress {get;set;}
+        public decimal? CostPerUnit { get; private set; }
+        public string? Description { get; private set; }
+        public bool IsAchieved { get; private set; }
     }
 }

@@ -43,7 +43,7 @@ contract EchoProjectEscrow {
      */
     function releaseFunds(address payable _supplier, uint256 _amount) external onlyPlatform {
         require(address(this).balance >= _amount, "Saldo insuficiente no contrato.");
-        require(_supplier != address(0), "Endereco de fornecedor invalido.");
+        require(_supplier != address(0), "co de fornecedor invalido.");
 
         // Realiza a transferência
         (bool success, ) = _supplier.call{value: _amount}("");

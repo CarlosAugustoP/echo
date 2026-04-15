@@ -57,7 +57,7 @@ namespace EchoProject.Application.Services
                 var goalType = await _unitOfWork.Goals.FindGoalTypeByIdAsync(goalReq.GoalTypeId)
                     ?? throw new NotFoundException($"GoalType {goalReq.GoalTypeId} not found.");
 
-                var goal = project.AddGoal(goalReq.Title, goalReq.TargetAmount, goalType, goalReq.CostPerUnit);
+                var goal = project.AddGoal(goalReq.Title, goalReq.TargetAmount, goalType, goalReq.CostPerUnit, goalReq.Description);
                 
                 var vendors = await FetchVendorsAsync(goalReq.VendorIds);
                 goal.AssignVendors(vendors);

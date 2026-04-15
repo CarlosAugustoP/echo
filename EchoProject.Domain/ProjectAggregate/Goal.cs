@@ -20,13 +20,15 @@ namespace EchoProject.Domain.ProjectAggregate
         private readonly List<Vendor> _vendors = [];
         public IReadOnlyCollection<Vendor> Vendors => _vendors.AsReadOnly();
         public bool IsAchieved => CurrentAmount >= TargetAmount && !IsMoney();
+        public string? Description { get; private set; }
 
         // Construtor atualizado
-        internal Goal(Guid projectId, string title, decimal target, GoalType goalType, decimal? costPerUnit = null)
+        internal Goal(Guid projectId, string title, decimal target, GoalType goalType, decimal? costPerUnit = null, string? description = null)
         {
             ProjectId = projectId;
             GoalType = goalType ?? throw new ArgumentNullException(nameof(goalType));
             GoalTypeId = goalType.Id;
+            Description = description;
 
             if (goalType.Name == PresetName.Money && CostPerUnit is not null)
             {
