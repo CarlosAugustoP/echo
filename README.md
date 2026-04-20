@@ -2,7 +2,7 @@
 
 Echo is a transparent donation platform that connects **Donors**, **NGOs**, and **Vendors** through Ethereum smart contracts. Donations are held in escrow on-chain and released only when funds are properly directed to verified suppliers or directly to NGOs, guaranteeing full traceability of every transaction.
 
-The project is built for academic purposes, as an artifact for my bachelor's degree thesis: **From Trust to Impact: Applying Blockchain in Philanthropy**
+The project is built for academic purposes, as an artifact for my bachelor's degree thesis: **From Trust to Impact: Applying Blockchain in Philanthropy.**
 
 ---
 
