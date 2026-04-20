@@ -69,8 +69,8 @@ jobs:
 
       - name: Configure ACR on echo-api
         env:
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          API_APP_NAME: ${{ vars.API_CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          API_APP_NAME: ${{ secrets.API_CONTAINER_APP_NAME }}
           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
         run: |
@@ -83,8 +83,8 @@ jobs:
 
       - name: Configure ACR on echo-worker
         env:
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          WORKER_APP_NAME: ${{ vars.WORKER_CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          WORKER_APP_NAME: ${{ secrets.WORKER_CONTAINER_APP_NAME }}
           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
         run: |
@@ -97,8 +97,8 @@ jobs:
 
       - name: Set secrets on echo-api
         env:
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          API_APP_NAME: ${{ vars.API_CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          API_APP_NAME: ${{ secrets.API_CONTAINER_APP_NAME }}
           ECHO_CONNECTION_STRING: ${{ secrets.ECHO_CONNECTION_STRING }}
           BLOCKCHAIN_RPC_URL: ${{ secrets.BLOCKCHAIN_RPC_URL }}
           BLOCKCHAIN_PRIVATE_KEY: ${{ secrets.BLOCKCHAIN_PRIVATE_KEY }}
@@ -127,8 +127,8 @@ jobs:
 
       - name: Set secrets on echo-worker
         env:
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          WORKER_APP_NAME: ${{ vars.WORKER_CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          WORKER_APP_NAME: ${{ secrets.WORKER_CONTAINER_APP_NAME }}
           ECHO_CONNECTION_STRING: ${{ secrets.ECHO_CONNECTION_STRING }}
           BLOCKCHAIN_RPC_URL: ${{ secrets.BLOCKCHAIN_RPC_URL }}
           BLOCKCHAIN_PRIVATE_KEY: ${{ secrets.BLOCKCHAIN_PRIVATE_KEY }}
@@ -149,8 +149,8 @@ jobs:
 
       - name: Deploy echo-api
         env:
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          API_APP_NAME: ${{ vars.API_CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          API_APP_NAME: ${{ secrets.API_CONTAINER_APP_NAME }}
           API_IMAGE: ${{ needs.build-images.outputs.api_image }}
           BLOCKCHAIN_CHAIN_ID: ${{ vars.BLOCKCHAIN_CHAIN_ID }}
           JWT_EXPIRATION_HOURS: ${{ vars.JWT_EXPIRATION_HOURS }}
@@ -190,8 +190,8 @@ jobs:
 
       - name: Deploy echo-worker
         env:
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          WORKER_APP_NAME: ${{ vars.WORKER_CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          WORKER_APP_NAME: ${{ secrets.WORKER_CONTAINER_APP_NAME }}
           WORKER_IMAGE: ${{ needs.build-images.outputs.worker_image }}
           BLOCKCHAIN_CHAIN_ID: ${{ vars.BLOCKCHAIN_CHAIN_ID }}
           RABBITMQ_HOST: ${{ vars.RABBITMQ_HOST }}
