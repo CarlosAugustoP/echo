@@ -197,7 +197,7 @@ Compose files are split by responsibility:
 - `docker-compose.override.yml`: local Docker build, localhost port mappings, and local-only mounts
 - `docker-compose.prod.yml`: production image tags for CI/CD and no localhost port publishing
 
-The production secret contract mirrors the `EchoProject.Api/appsettings.json` structure through .NET environment-variable binding. GitHub Actions now pushes both images to ACR and deploys `echo-api` and `echo-worker` to Azure Container Apps, updating the app secrets and environment variables directly from repository secrets and variables.
+The production secret contract mirrors the `EchoProject.Api/appsettings.json` structure through .NET environment-variable binding. GitHub Actions pushes both images to ACR and deploys `echo-api` and `echo-worker` to Azure Container Apps, updating the app secrets and environment variables directly from repository secrets and variables.
 
 Required GitHub repository **secrets**:
 
@@ -229,7 +229,7 @@ Optional GitHub repository **variables** with safe defaults:
 - `RABBITMQ_HOST` -> default `rabbitmq`
 - `RABBITMQ_VHOST` -> default `/`
 
-The workflow in `.github/workflows/prepare-deploy.yml` now:
+The workflow in `.github/workflows/prepare-deploy.yml`:
 
 - builds and pushes `echo-api` and `echo-worker` to `echoappregistry.azurecr.io`
 - configures ACR pull credentials on both Azure Container Apps
