@@ -9,7 +9,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHostedService<TransactionValidationWorker>();
 
 var rabbitHost = builder.Configuration["RabbitMqSettings:Host"] ?? "localhost";
-var rabbitConnString = $"amqp://guest:guest@{rabbitHost}";
+var rabbitUser = builder.Configuration["RabbitMqSettings:Username"] ?? "guest";
+var rabbitPass = builder.Configuration["RabbitMqSettings:Password"] ?? "guest";
+var rabbitVHost = builder.Configuration["RabbitMqSettings:VirtualHost"] ?? "/";
+var rabbitConnString = $"amqp://{rabbitUser}:{rabbitPass}@{rabbitHost}/{Uri.EscapeDataString(rabbitVHost)}";
 
 builder.Services.AddRebus(configure => configure
     .Transport(t => t.UseRabbitMqAsOneWayClient(rabbitConnString))

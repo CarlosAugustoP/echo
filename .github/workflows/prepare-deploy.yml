@@ -52,38 +52,167 @@ jobs:
           tags: |
             ${{ steps.images.outputs.worker_image }}
 
-
-  render-production-compose:
+  deploy-container-apps:
     runs-on: ubuntu-latest
     needs: build-images
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Render production compose with injected secrets
+      - name: Ensure Container Apps extension is available
+        run: az extension add --name containerapp --upgrade --allow-preview true
+
+      - name: Configure ACR on echo-api
         env:
-          ECHO_API_IMAGE: ${{ needs.build-images.outputs.api_image }}
-          ECHO_WORKER_IMAGE: ${{ needs.build-images.outputs.worker_image }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          API_APP_NAME: ${{ vars.API_CONTAINER_APP_NAME }}
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+        run: |
+          az containerapp registry set \
+            --name "$API_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --server echoappregistry.azurecr.io \
+            --username "$ACR_USERNAME" \
+            --password "$ACR_PASSWORD"
+
+      - name: Configure ACR on echo-worker
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          WORKER_APP_NAME: ${{ vars.WORKER_CONTAINER_APP_NAME }}
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+        run: |
+          az containerapp registry set \
+            --name "$WORKER_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --server echoappregistry.azurecr.io \
+            --username "$ACR_USERNAME" \
+            --password "$ACR_PASSWORD"
+
+      - name: Set secrets on echo-api
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          API_APP_NAME: ${{ vars.API_CONTAINER_APP_NAME }}
           ECHO_CONNECTION_STRING: ${{ secrets.ECHO_CONNECTION_STRING }}
           BLOCKCHAIN_RPC_URL: ${{ secrets.BLOCKCHAIN_RPC_URL }}
           BLOCKCHAIN_PRIVATE_KEY: ${{ secrets.BLOCKCHAIN_PRIVATE_KEY }}
           BLOCKCHAIN_ACCOUNT_ADDRESS: ${{ secrets.BLOCKCHAIN_ACCOUNT_ADDRESS }}
-          BLOCKCHAIN_CHAIN_ID: ${{ vars.BLOCKCHAIN_CHAIN_ID }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-          JWT_EXPIRATION_HOURS: ${{ vars.JWT_EXPIRATION_HOURS }}
-          JWT_ISSUER: ${{ vars.JWT_ISSUER }}
           AUTOMAPPER_LICENSE_KEY: ${{ secrets.AUTOMAPPER_LICENSE_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+        run: |
+          az containerapp secret set \
+            --name "$API_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --secrets \
+            echo-connection-string="$ECHO_CONNECTION_STRING" \
+            blockchain-rpc-url="$BLOCKCHAIN_RPC_URL" \
+            blockchain-private-key="$BLOCKCHAIN_PRIVATE_KEY" \
+            blockchain-account-address="$BLOCKCHAIN_ACCOUNT_ADDRESS" \
+            jwt-secret-key="$JWT_SECRET_KEY" \
+            automapper-license-key="$AUTOMAPPER_LICENSE_KEY" \
+            supabase-url="$SUPABASE_URL" \
+            supabase-key="$SUPABASE_KEY" \
+            rabbitmq-username="$RABBITMQ_USERNAME" \
+            rabbitmq-password="$RABBITMQ_PASSWORD"
+
+      - name: Set secrets on echo-worker
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          WORKER_APP_NAME: ${{ vars.WORKER_CONTAINER_APP_NAME }}
+          ECHO_CONNECTION_STRING: ${{ secrets.ECHO_CONNECTION_STRING }}
+          BLOCKCHAIN_RPC_URL: ${{ secrets.BLOCKCHAIN_RPC_URL }}
+          BLOCKCHAIN_PRIVATE_KEY: ${{ secrets.BLOCKCHAIN_PRIVATE_KEY }}
+          BLOCKCHAIN_ACCOUNT_ADDRESS: ${{ secrets.BLOCKCHAIN_ACCOUNT_ADDRESS }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+        run: |
+          az containerapp secret set \
+            --name "$WORKER_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --secrets \
+            echo-connection-string="$ECHO_CONNECTION_STRING" \
+            blockchain-rpc-url="$BLOCKCHAIN_RPC_URL" \
+            blockchain-private-key="$BLOCKCHAIN_PRIVATE_KEY" \
+            blockchain-account-address="$BLOCKCHAIN_ACCOUNT_ADDRESS" \
+            rabbitmq-username="$RABBITMQ_USERNAME" \
+            rabbitmq-password="$RABBITMQ_PASSWORD"
+
+      - name: Deploy echo-api
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          API_APP_NAME: ${{ vars.API_CONTAINER_APP_NAME }}
+          API_IMAGE: ${{ needs.build-images.outputs.api_image }}
+          BLOCKCHAIN_CHAIN_ID: ${{ vars.BLOCKCHAIN_CHAIN_ID }}
+          JWT_EXPIRATION_HOURS: ${{ vars.JWT_EXPIRATION_HOURS }}
+          JWT_ISSUER: ${{ vars.JWT_ISSUER }}
           SUPABASE_BUCKET_NAME: ${{ vars.SUPABASE_BUCKET_NAME }}
           RABBITMQ_HOST: ${{ vars.RABBITMQ_HOST }}
           RABBITMQ_VHOST: ${{ vars.RABBITMQ_VHOST }}
-          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
-          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
-        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml config > docker-compose.rendered.yml
+        run: |
+          az containerapp revision set-mode \
+            --name "$API_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --mode single
+          az containerapp update \
+            --name "$API_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --image "$API_IMAGE" \
+            --revision-suffix "${GITHUB_SHA::7}" \
+            --replace-env-vars \
+            ASPNETCORE_ENVIRONMENT=Production \
+            ASPNETCORE_URLS=http://+:8080 \
+            ConnectionStrings__DefaultConnection=secretref:echo-connection-string \
+            BlockChainSettings__RpcUrl=secretref:blockchain-rpc-url \
+            BlockChainSettings__EthereumPrivateKey=secretref:blockchain-private-key \
+            BlockChainSettings__EthereumAccountAddress=secretref:blockchain-account-address \
+            BlockChainSettings__ChainId="${BLOCKCHAIN_CHAIN_ID:-11155111}" \
+            JwtSettings__SecretKey=secretref:jwt-secret-key \
+            JwtSettings__Expiration="${JWT_EXPIRATION_HOURS:-8}" \
+            JwtSettings__Issuer="${JWT_ISSUER:-EchoProject}" \
+            AutoMapper__LicenseKey=secretref:automapper-license-key \
+            Supabase__Url=secretref:supabase-url \
+            Supabase__Key=secretref:supabase-key \
+            Supabase__BucketName="${SUPABASE_BUCKET_NAME:-echo-public-bucket}" \
+            RabbitMqSettings__Host="${RABBITMQ_HOST:-rabbitmq}" \
+            RabbitMqSettings__VirtualHost="${RABBITMQ_VHOST:-/}" \
+            RabbitMqSettings__Username=secretref:rabbitmq-username \
+            RabbitMqSettings__Password=secretref:rabbitmq-password
 
-      - name: Upload rendered compose file
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-compose-rendered
-          path: docker-compose.rendered.yml
+      - name: Deploy echo-worker
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          WORKER_APP_NAME: ${{ vars.WORKER_CONTAINER_APP_NAME }}
+          WORKER_IMAGE: ${{ needs.build-images.outputs.worker_image }}
+          BLOCKCHAIN_CHAIN_ID: ${{ vars.BLOCKCHAIN_CHAIN_ID }}
+          RABBITMQ_HOST: ${{ vars.RABBITMQ_HOST }}
+          RABBITMQ_VHOST: ${{ vars.RABBITMQ_VHOST }}
+        run: |
+          az containerapp revision set-mode \
+            --name "$WORKER_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --mode single
+          az containerapp update \
+            --name "$WORKER_APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --image "$WORKER_IMAGE" \
+            --revision-suffix "${GITHUB_SHA::7}" \
+            --replace-env-vars \
+            DOTNET_ENVIRONMENT=Production \
+            ConnectionStrings__DefaultConnection=secretref:echo-connection-string \
+            BlockChainSettings__RpcUrl=secretref:blockchain-rpc-url \
+            BlockChainSettings__EthereumPrivateKey=secretref:blockchain-private-key \
+            BlockChainSettings__EthereumAccountAddress=secretref:blockchain-account-address \
+            BlockChainSettings__ChainId="${BLOCKCHAIN_CHAIN_ID:-11155111}" \
+            RabbitMqSettings__Host="${RABBITMQ_HOST:-rabbitmq}" \
+            RabbitMqSettings__VirtualHost="${RABBITMQ_VHOST:-/}" \
+            RabbitMqSettings__Username=secretref:rabbitmq-username \
+            RabbitMqSettings__Password=secretref:rabbitmq-password

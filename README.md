@@ -197,35 +197,44 @@ Compose files are split by responsibility:
 - `docker-compose.override.yml`: local Docker build, localhost port mappings, and local-only mounts
 - `docker-compose.prod.yml`: production image tags for CI/CD and no localhost port publishing
 
-The production secret contract mirrors the `EchoProject.Api/appsettings.json` structure through .NET environment-variable binding. GitHub Actions should inject these values directly into the deploy step environment instead of generating any `.env` file:
+The production secret contract mirrors the `EchoProject.Api/appsettings.json` structure through .NET environment-variable binding. GitHub Actions now pushes both images to ACR and deploys `echo-api` and `echo-worker` to Azure Container Apps, updating the app secrets and environment variables directly from repository secrets and variables.
+
+Required GitHub repository **secrets**:
 
 - `ACR_USERNAME`, `ACR_PASSWORD` -> credentials used by the workflow to log in to `echoappregistry.azurecr.io` and push the `echo-api` and `echo-worker` images
+- `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` -> Azure login used by the workflow to update the Container Apps
 - `ECHO_CONNECTION_STRING` -> `ConnectionStrings:DefaultConnection`
 - `BLOCKCHAIN_RPC_URL` -> `BlockChainSettings:RpcUrl`
 - `BLOCKCHAIN_PRIVATE_KEY` -> `BlockChainSettings:EthereumPrivateKey`
 - `BLOCKCHAIN_ACCOUNT_ADDRESS` -> `BlockChainSettings:EthereumAccountAddress`
-- `BLOCKCHAIN_CHAIN_ID` -> `BlockChainSettings:ChainId`
 - `JWT_SECRET_KEY` -> `JwtSettings:SecretKey`
-- `JWT_EXPIRATION_HOURS` -> `JwtSettings:Expiration`
-- `JWT_ISSUER` -> `JwtSettings:Issuer`
 - `AUTOMAPPER_LICENSE_KEY` -> `AutoMapper:LicenseKey`
 - `SUPABASE_URL` -> `Supabase:Url`
 - `SUPABASE_KEY` -> `Supabase:Key`
-- `SUPABASE_BUCKET_NAME` -> `Supabase:BucketName`
-- `RABBITMQ_HOST` -> `RabbitMqSettings:Host`
-- `RABBITMQ_VHOST` -> `RabbitMqSettings:VirtualHost`
 - `RABBITMQ_USERNAME` -> `RabbitMqSettings:Username`
 - `RABBITMQ_PASSWORD` -> `RabbitMqSettings:Password`
-- `ECHO_API_IMAGE` and `ECHO_WORKER_IMAGE` -> production image tags consumed by `docker-compose.prod.yml`
 
-The workflow in `.github/workflows/prepare-deploy.yml` now pushes both images to `echoappregistry.azurecr.io` using the ACR credentials stored in `ACR_USERNAME` and `ACR_PASSWORD`.
+Required GitHub repository **variables**:
 
-The GitHub Actions runner can then render and deploy production compose directly:
+- `AZURE_RESOURCE_GROUP` -> resource group that contains the Azure Container Apps
+- `API_CONTAINER_APP_NAME` -> Azure Container App name for the API
+- `WORKER_CONTAINER_APP_NAME` -> Azure Container App name for the blockchain worker
 
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml config
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
+Optional GitHub repository **variables** with safe defaults:
+
+- `BLOCKCHAIN_CHAIN_ID` -> default `11155111`
+- `JWT_EXPIRATION_HOURS` -> default `8`
+- `JWT_ISSUER` -> default `EchoProject`
+- `SUPABASE_BUCKET_NAME` -> default `echo-public-bucket`
+- `RABBITMQ_HOST` -> default `rabbitmq`
+- `RABBITMQ_VHOST` -> default `/`
+
+The workflow in `.github/workflows/prepare-deploy.yml` now:
+
+- builds and pushes `echo-api` and `echo-worker` to `echoappregistry.azurecr.io`
+- configures ACR pull credentials on both Azure Container Apps
+- updates the Azure Container App secrets from GitHub repository secrets
+- deploys new single-revision releases for both apps with the new image tags and runtime environment variables
 
 ### Database Migrations
 
