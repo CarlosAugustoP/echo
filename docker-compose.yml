@@ -1,14 +1,37 @@
+x-rabbitmq-env: &rabbitmq-env
+  RabbitMqSettings__Host: ${RABBITMQ_HOST:-rabbitmq}
+  RabbitMqSettings__VirtualHost: ${RABBITMQ_VHOST:-/}
+  RabbitMqSettings__Username: ${RABBITMQ_USERNAME:-guest}
+  RabbitMqSettings__Password: ${RABBITMQ_PASSWORD:-guest}
+
+x-api-config: &api-config
+  ConnectionStrings__DefaultConnection: "${ECHO_CONNECTION_STRING:-}"
+  BlockChainSettings__RpcUrl: ${BLOCKCHAIN_RPC_URL:-}
+  BlockChainSettings__EthereumPrivateKey: ${BLOCKCHAIN_PRIVATE_KEY:-}
+  BlockChainSettings__EthereumAccountAddress: ${BLOCKCHAIN_ACCOUNT_ADDRESS:-}
+  BlockChainSettings__ChainId: ${BLOCKCHAIN_CHAIN_ID:-11155111}
+  JwtSettings__SecretKey: ${JWT_SECRET_KEY:-}
+  JwtSettings__Expiration: ${JWT_EXPIRATION_HOURS:-8}
+  JwtSettings__Issuer: ${JWT_ISSUER:-EchoProject}
+  AutoMapper__LicenseKey: ${AUTOMAPPER_LICENSE_KEY:-}
+  Supabase__Url: ${SUPABASE_URL:-}
+  Supabase__Key: ${SUPABASE_KEY:-}
+  Supabase__BucketName: ${SUPABASE_BUCKET_NAME:-echo-public-bucket}
+
+x-worker-config: &worker-config
+  ConnectionStrings__DefaultConnection: "${ECHO_CONNECTION_STRING:-}"
+  BlockChainSettings__RpcUrl: ${BLOCKCHAIN_RPC_URL:-}
+  BlockChainSettings__EthereumPrivateKey: ${BLOCKCHAIN_PRIVATE_KEY:-}
+  BlockChainSettings__EthereumAccountAddress: ${BLOCKCHAIN_ACCOUNT_ADDRESS:-}
+  BlockChainSettings__ChainId: ${BLOCKCHAIN_CHAIN_ID:-11155111}
+
 services:
-  # --- INFRAESTRUTURA ---
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: echo-rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    restart: unless-stopped
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -17,32 +40,25 @@ services:
     networks:
       - echo-network
 
-  # --- BACK-END API ---
   echo-api:
-    build:
-      context: .
-      dockerfile: EchoProject.API/Dockerfile
-    container_name: echo-api
-    ports:
-      - "5087:8080" # Mapeia porta 5000 externa para 8080 interna do container
+    image: echo-api:local
+    restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - RabbitMqSettings__Host=rabbitmq # IMPORTANTE: No docker, o host é o nome do serviço
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      <<: [*rabbitmq-env, *api-config]
     depends_on:
       rabbitmq:
         condition: service_healthy
     networks:
       - echo-network
 
-  # --- BLOCKCHAIN WORKER ---
   echo-worker:
-    build:
-      context: .
-      dockerfile: EchoProject.BlockchainWorker/Dockerfile
-    container_name: echo-worker
+    image: echo-worker:local
+    restart: unless-stopped
     environment:
-      - DOTNET_ENVIRONMENT=Development
-      - RabbitMqSettings__Host=rabbitmq # Mesmo host aqui
+      DOTNET_ENVIRONMENT: ${DOTNET_ENVIRONMENT:-Development}
+      <<: [*rabbitmq-env, *worker-config]
     depends_on:
       rabbitmq:
         condition: service_healthy

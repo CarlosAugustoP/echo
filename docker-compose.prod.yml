@@ -1,0 +1,48 @@
+x-rabbitmq-prod-env: &rabbitmq-prod-env
+  RabbitMqSettings__Host: ${RABBITMQ_HOST:-rabbitmq}
+  RabbitMqSettings__VirtualHost: ${RABBITMQ_VHOST:-/}
+  RabbitMqSettings__Username: ${RABBITMQ_USERNAME:?RABBITMQ_USERNAME is required}
+  RabbitMqSettings__Password: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
+
+x-api-prod-config: &api-prod-config
+  ConnectionStrings__DefaultConnection: "${ECHO_CONNECTION_STRING:?ECHO_CONNECTION_STRING is required}"
+  BlockChainSettings__RpcUrl: ${BLOCKCHAIN_RPC_URL:?BLOCKCHAIN_RPC_URL is required}
+  BlockChainSettings__EthereumPrivateKey: ${BLOCKCHAIN_PRIVATE_KEY:?BLOCKCHAIN_PRIVATE_KEY is required}
+  BlockChainSettings__EthereumAccountAddress: ${BLOCKCHAIN_ACCOUNT_ADDRESS:?BLOCKCHAIN_ACCOUNT_ADDRESS is required}
+  BlockChainSettings__ChainId: ${BLOCKCHAIN_CHAIN_ID:-11155111}
+  JwtSettings__SecretKey: ${JWT_SECRET_KEY:?JWT_SECRET_KEY is required}
+  JwtSettings__Expiration: ${JWT_EXPIRATION_HOURS:-8}
+  JwtSettings__Issuer: ${JWT_ISSUER:-EchoProject}
+  AutoMapper__LicenseKey: ${AUTOMAPPER_LICENSE_KEY:?AUTOMAPPER_LICENSE_KEY is required}
+  Supabase__Url: ${SUPABASE_URL:?SUPABASE_URL is required}
+  Supabase__Key: ${SUPABASE_KEY:?SUPABASE_KEY is required}
+  Supabase__BucketName: ${SUPABASE_BUCKET_NAME:-echo-public-bucket}
+
+x-worker-prod-config: &worker-prod-config
+  ConnectionStrings__DefaultConnection: "${ECHO_CONNECTION_STRING:?ECHO_CONNECTION_STRING is required}"
+  BlockChainSettings__RpcUrl: ${BLOCKCHAIN_RPC_URL:?BLOCKCHAIN_RPC_URL is required}
+  BlockChainSettings__EthereumPrivateKey: ${BLOCKCHAIN_PRIVATE_KEY:?BLOCKCHAIN_PRIVATE_KEY is required}
+  BlockChainSettings__EthereumAccountAddress: ${BLOCKCHAIN_ACCOUNT_ADDRESS:?BLOCKCHAIN_ACCOUNT_ADDRESS is required}
+  BlockChainSettings__ChainId: ${BLOCKCHAIN_CHAIN_ID:-11155111}
+
+services:
+  rabbitmq:
+    ports: []
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:?RABBITMQ_USERNAME is required}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
+
+  echo-api:
+    image: ${ECHO_API_IMAGE:?ECHO_API_IMAGE is required}
+    pull_policy: always
+    ports: []
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      <<: [*rabbitmq-prod-env, *api-prod-config]
+
+  echo-worker:
+    image: ${ECHO_WORKER_IMAGE:?ECHO_WORKER_IMAGE is required}
+    pull_policy: always
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      <<: [*rabbitmq-prod-env, *worker-prod-config]

@@ -1,0 +1,88 @@
+name: Prepare Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build-images:
+    runs-on: ubuntu-latest
+    outputs:
+      api_image: ${{ steps.images.outputs.api_image }}
+      worker_image: ${{ steps.images.outputs.worker_image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve image tags
+        id: images
+        shell: bash
+        run: |
+          registry="echoappregistry.azurecr.io"
+          echo "api_image=${registry}/echo-api:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "worker_image=${registry}/echo-worker:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Login no ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: echoappregistry.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: EchoProject.Api/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.images.outputs.api_image }}
+
+      - name: Build and push worker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: EchoProject.BlockchainWorker/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.images.outputs.worker_image }}
+
+  render-production-compose:
+    runs-on: ubuntu-latest
+    needs: build-images
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Render production compose with injected secrets
+        env:
+          ECHO_API_IMAGE: ${{ needs.build-images.outputs.api_image }}
+          ECHO_WORKER_IMAGE: ${{ needs.build-images.outputs.worker_image }}
+          ECHO_CONNECTION_STRING: ${{ secrets.ECHO_CONNECTION_STRING }}
+          BLOCKCHAIN_RPC_URL: ${{ secrets.BLOCKCHAIN_RPC_URL }}
+          BLOCKCHAIN_PRIVATE_KEY: ${{ secrets.BLOCKCHAIN_PRIVATE_KEY }}
+          BLOCKCHAIN_ACCOUNT_ADDRESS: ${{ secrets.BLOCKCHAIN_ACCOUNT_ADDRESS }}
+          BLOCKCHAIN_CHAIN_ID: ${{ vars.BLOCKCHAIN_CHAIN_ID }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATION_HOURS: ${{ vars.JWT_EXPIRATION_HOURS }}
+          JWT_ISSUER: ${{ vars.JWT_ISSUER }}
+          AUTOMAPPER_LICENSE_KEY: ${{ secrets.AUTOMAPPER_LICENSE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_BUCKET_NAME: ${{ vars.SUPABASE_BUCKET_NAME }}
+          RABBITMQ_HOST: ${{ vars.RABBITMQ_HOST }}
+          RABBITMQ_VHOST: ${{ vars.RABBITMQ_VHOST }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml config > docker-compose.rendered.yml
+
+      - name: Upload rendered compose file
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-rendered
+          path: docker-compose.rendered.yml

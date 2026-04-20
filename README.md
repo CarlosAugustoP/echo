@@ -182,13 +182,48 @@ The API subscribes to these events via **Rebus** and updates donation statuses a
 ### With Docker Compose
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 This starts:
 - **RabbitMQ** on ports `5672` (AMQP) and `15672` (management UI)
 - **echo-api** on port `5087`
 - **echo-worker** (blockchain background service)
+
+Compose files are split by responsibility:
+- `docker-compose.yml`: stable service definitions, shared environment-variable wiring, images, and network
+- `docker-compose.override.yml`: local Docker build, localhost port mappings, and local-only mounts
+- `docker-compose.prod.yml`: production image tags for CI/CD and no localhost port publishing
+
+The production secret contract mirrors the `EchoProject.Api/appsettings.json` structure through .NET environment-variable binding. GitHub Actions should inject these values directly into the deploy step environment instead of generating any `.env` file:
+
+- `ACR_USERNAME`, `ACR_PASSWORD` -> credentials used by the workflow to log in to `echoappregistry.azurecr.io` and push the `echo-api` and `echo-worker` images
+- `ECHO_CONNECTION_STRING` -> `ConnectionStrings:DefaultConnection`
+- `BLOCKCHAIN_RPC_URL` -> `BlockChainSettings:RpcUrl`
+- `BLOCKCHAIN_PRIVATE_KEY` -> `BlockChainSettings:EthereumPrivateKey`
+- `BLOCKCHAIN_ACCOUNT_ADDRESS` -> `BlockChainSettings:EthereumAccountAddress`
+- `BLOCKCHAIN_CHAIN_ID` -> `BlockChainSettings:ChainId`
+- `JWT_SECRET_KEY` -> `JwtSettings:SecretKey`
+- `JWT_EXPIRATION_HOURS` -> `JwtSettings:Expiration`
+- `JWT_ISSUER` -> `JwtSettings:Issuer`
+- `AUTOMAPPER_LICENSE_KEY` -> `AutoMapper:LicenseKey`
+- `SUPABASE_URL` -> `Supabase:Url`
+- `SUPABASE_KEY` -> `Supabase:Key`
+- `SUPABASE_BUCKET_NAME` -> `Supabase:BucketName`
+- `RABBITMQ_HOST` -> `RabbitMqSettings:Host`
+- `RABBITMQ_VHOST` -> `RabbitMqSettings:VirtualHost`
+- `RABBITMQ_USERNAME` -> `RabbitMqSettings:Username`
+- `RABBITMQ_PASSWORD` -> `RabbitMqSettings:Password`
+- `ECHO_API_IMAGE` and `ECHO_WORKER_IMAGE` -> production image tags consumed by `docker-compose.prod.yml`
+
+The workflow in `.github/workflows/prepare-deploy.yml` now pushes both images to `echoappregistry.azurecr.io` using the ACR credentials stored in `ACR_USERNAME` and `ACR_PASSWORD`.
+
+The GitHub Actions runner can then render and deploy production compose directly:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml config
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
 
 ### Database Migrations
 

@@ -1,0 +1,32 @@
+services:
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  echo-api:
+    build:
+      context: .
+      dockerfile: EchoProject.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=host.docker.internal;Database=echo;Port=5432;Username=postgres;Password=postgres;"
+    ports:
+      - "5087:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  echo-worker:
+    build:
+      context: .
+      dockerfile: EchoProject.BlockchainWorker/Dockerfile
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=host.docker.internal;Database=echo;Port=5432;Username=postgres;Password=postgres;"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  rabbitmq-data:
