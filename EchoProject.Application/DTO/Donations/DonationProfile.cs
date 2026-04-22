@@ -20,6 +20,7 @@ namespace EchoProject.Application.DTO.Donations
                 .ForMember(dest => dest.TransactionHash, opt => opt.MapFrom(src => src.TransactionHash))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.FundsReleaseHash, opt => opt.MapFrom(src => src.FundsReleaseHash))
+                .ForMember(dest => dest.TransferredToVendorId, opt => opt.MapFrom(src => src.TransferredToVendorId))
                 .ReverseMap();
         }
     }

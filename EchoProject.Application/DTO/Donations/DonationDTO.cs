@@ -18,5 +18,6 @@ namespace EchoProject.Application.DTO.Donations
         public string ProjectName { get; set; } = string.Empty;
         public Guid ProjectId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid? TransferredToVendorId { get; set; }
     }
 }
