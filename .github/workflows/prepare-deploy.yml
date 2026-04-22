@@ -152,12 +152,12 @@ jobs:
           RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
           API_APP_NAME: ${{ secrets.API_CONTAINER_APP_NAME }}
           API_IMAGE: ${{ needs.build-images.outputs.api_image }}
-          BLOCKCHAIN_CHAIN_ID: ${{ vars.BLOCKCHAIN_CHAIN_ID }}
-          JWT_EXPIRATION_HOURS: ${{ vars.JWT_EXPIRATION_HOURS }}
-          JWT_ISSUER: ${{ vars.JWT_ISSUER }}
-          SUPABASE_BUCKET_NAME: ${{ vars.SUPABASE_BUCKET_NAME }}
-          RABBITMQ_HOST: ${{ vars.RABBITMQ_HOST }}
-          RABBITMQ_VHOST: ${{ vars.RABBITMQ_VHOST }}
+          BLOCKCHAIN_CHAIN_ID: ${{ secrets.BLOCKCHAIN_CHAIN_ID }}
+          JWT_EXPIRATION_HOURS: ${{ secrets.JWT_EXPIRATION_HOURS }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          SUPABASE_BUCKET_NAME: ${{ secrets.SUPABASE_BUCKET_NAME }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_VHOST: ${{ secrets.RABBITMQ_VHOST }}
         run: |
           az containerapp revision set-mode \
             --name "$API_APP_NAME" \
@@ -193,9 +193,9 @@ jobs:
           RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
           WORKER_APP_NAME: ${{ secrets.WORKER_CONTAINER_APP_NAME }}
           WORKER_IMAGE: ${{ needs.build-images.outputs.worker_image }}
-          BLOCKCHAIN_CHAIN_ID: ${{ vars.BLOCKCHAIN_CHAIN_ID }}
-          RABBITMQ_HOST: ${{ vars.RABBITMQ_HOST }}
-          RABBITMQ_VHOST: ${{ vars.RABBITMQ_VHOST }}
+          BLOCKCHAIN_CHAIN_ID: ${{ secrets.BLOCKCHAIN_CHAIN_ID }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_VHOST: ${{ secrets.RABBITMQ_VHOST }}
         run: |
           az containerapp revision set-mode \
             --name "$WORKER_APP_NAME" \
