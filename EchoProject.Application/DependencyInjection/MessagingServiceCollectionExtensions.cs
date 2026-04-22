@@ -15,7 +15,7 @@ namespace EchoProject.Application.DependencyInjection
             var user = configuration["RabbitMqSettings:Username"] ?? "guest";
             var pass = configuration["RabbitMqSettings:Password"] ?? "guest";
             var vHost = configuration["RabbitMqSettings:VirtualHost"] ?? "/";
-            var connectionString = $"amqp://{user}:{pass}@{host}/{Uri.EscapeDataString(vHost)}";
+            var connectionString = $"amqps://{user}:{pass}@{host}/{Uri.EscapeDataString(vHost)}";
             Console.WriteLine("[API] try to connect to "+ connectionString);
 
             services.AutoRegisterHandlersFromAssemblyOf<DonationStatusUpdatedConsumer>();

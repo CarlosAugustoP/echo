@@ -12,7 +12,7 @@ var rabbitHost = builder.Configuration["RabbitMqSettings:Host"] ?? "localhost";
 var rabbitUser = builder.Configuration["RabbitMqSettings:Username"] ?? "guest";
 var rabbitPass = builder.Configuration["RabbitMqSettings:Password"] ?? "guest";
 var rabbitVHost = builder.Configuration["RabbitMqSettings:VirtualHost"] ?? "/";
-var rabbitConnString = $"amqp://{rabbitUser}:{rabbitPass}@{rabbitHost}/{Uri.EscapeDataString(rabbitVHost)}";
+var rabbitConnString = $"amqps://{rabbitUser}:{rabbitPass}@{rabbitHost}/{Uri.EscapeDataString(rabbitVHost)}";
 Console.WriteLine("[BC WORKER] try to connect to "+ rabbitConnString);
 builder.Services.AddRebus(configure => configure
     .Transport(t => t.UseRabbitMqAsOneWayClient(rabbitConnString))
