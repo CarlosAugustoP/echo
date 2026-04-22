@@ -14,14 +14,15 @@ namespace EchoProject.Application.DependencyInjection
             var host = configuration["RabbitMqSettings:Host"] ?? "localhost";
             var user = configuration["RabbitMqSettings:Username"] ?? "guest";
             var pass = configuration["RabbitMqSettings:Password"] ?? "guest";
-            
-            var connectionString = $"amqp://{user}:{pass}@{host}";
-            Console.WriteLine("try to connect to "+ connectionString);
+            var vHost = configuration["RabbitMqSettings:VirtualHost"] ?? "/";
+            var rabbitConnString = $"amqp://{user}:{pass}@{host}/{Uri.EscapeDataString(vHost)}";
+
+            Console.WriteLine("try to connect to "+ rabbitConnString);
             services.AutoRegisterHandlersFromAssemblyOf<DonationStatusUpdatedConsumer>();
 
             services.AddRebus(configure => configure
                 .Logging(l => l.Console()) 
-                .Transport(t => t.UseRabbitMq(connectionString, "echo-project-queue"))
+                .Transport(t => t.UseRabbitMq(rabbitConnString, "echo-project-queue"))
                 .Routing(r => r.TypeBased().MapAssemblyOf<Events.DonationStatusUpdatedMessage>("echo-project-queue"))
             );
         }
