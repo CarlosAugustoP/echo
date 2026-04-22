@@ -16,7 +16,7 @@ namespace EchoProject.Application.DependencyInjection
             var pass = configuration["RabbitMqSettings:Password"] ?? "guest";
             
             var connectionString = $"amqp://{user}:{pass}@{host}";
-
+            Console.WriteLine("try to connect to "+ connectionString);
             services.AutoRegisterHandlersFromAssemblyOf<DonationStatusUpdatedConsumer>();
 
             services.AddRebus(configure => configure
