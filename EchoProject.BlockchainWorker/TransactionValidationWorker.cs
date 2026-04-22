@@ -11,11 +11,16 @@ namespace EchoProject.BlockchainWorker
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<TransactionValidationWorker> _logger;
+        private readonly IBus _bus;
 
-        public TransactionValidationWorker(IServiceProvider serviceProvider, ILogger<TransactionValidationWorker> logger)
+        public TransactionValidationWorker(
+            IServiceProvider serviceProvider,
+            ILogger<TransactionValidationWorker> logger,
+            IBus bus)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
+            _bus = bus;
         }
         
         /// <summary>
@@ -35,14 +40,12 @@ namespace EchoProject.BlockchainWorker
                 {
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
                     var ethService = scope.ServiceProvider.GetRequiredService<IEthereumService>();
-                    
-                    var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 
                     var pendingVendor = unitOfWork.Donations.FindPendingConfirmations(stoppingToken);
                     var pendingNGO = unitOfWork.Donations.FindDirectPendingNGOLiberation(stoppingToken);
 
-                    await ProcessDonationsAsync(pendingVendor, DonationStatus.TransferredToVendorPending, ethService, bus, stoppingToken);
-                    await ProcessDonationsAsync(pendingNGO, DonationStatus.ImmediateTransferToNGOInContract, ethService, bus, stoppingToken);
+                    await ProcessDonationsAsync(pendingVendor, DonationStatus.TransferredToVendorPending, ethService, _bus, stoppingToken);
+                    await ProcessDonationsAsync(pendingNGO, DonationStatus.ImmediateTransferToNGOInContract, ethService, _bus, stoppingToken);
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
