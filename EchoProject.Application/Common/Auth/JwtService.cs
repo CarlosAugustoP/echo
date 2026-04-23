@@ -31,7 +31,7 @@ namespace EchoProject.Application.Common.Auth
                     new Claim(ClaimTypes.Role, user.Role.ToString()),
                     new Claim("walletAddress", user.WalletAddress),
                     new Claim("taxId", user.TaxId.Value),
-                    new Claim("profilePicture", user.ProfilePicture?.ToString() ?? string.Empty)
+                    new Claim("profilePicture", user.ProfilePicture?.Url ?? string.Empty)
                 ]),
                 Issuer = _settings.Issuer,
                 Expires = DateTime.UtcNow.AddHours(double.TryParse(_settings.Expiration, out var exp) ? exp : 8),
