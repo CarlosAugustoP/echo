@@ -26,10 +26,10 @@ namespace EchoProject.Api.Middlewares
                 var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString();
                 var wallet = user.FindFirst("walletAddress")?.Value ?? string.Empty;
                 var taxId = user.FindFirst("taxId")?.Value ?? string.Empty;
-
+                var profilePicture = user.FindFirst("profilePicture")?.Value ?? string.Empty;
                 if (Enum.TryParse<UserRole>(userRoleStr, true, out var roleEnum))
                 {
-                    var userDto = new UserDTO(Guid.Parse(id), userName, userEmail, wallet, new TaxId(taxId), roleEnum);
+                    var userDto = new UserDTO(Guid.Parse(id), userName, userEmail, wallet, new TaxId(taxId), roleEnum, profilePicture);
                     context.Items["User"] = userDto;
                 }
             }
