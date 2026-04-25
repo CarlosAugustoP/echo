@@ -144,7 +144,7 @@ namespace EchoProject.Application.Services
                 pfp = await _storage.UploadFileAsync("profile_" + user.Id, stream);
             }
 
-            ImageUrl? profilePictureUrl = pfp != null ? new(pfp) : null;
+            ImageUrl? profilePictureUrl = pfp != null ? new(pfp) : userEntity.ProfilePicture;
 
             userEntity.UpdateInformation
                 (
