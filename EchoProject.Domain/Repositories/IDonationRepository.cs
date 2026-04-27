@@ -12,7 +12,7 @@ namespace EchoProject.Domain.Repositories
         IQueryable<Donation> FindDirectPendingNGOLiberation(CancellationToken ct = default);
         (decimal TotalContributedThisMonth, decimal TotalContributedLastMonth) FindContributionSummary(Guid userId, CancellationToken ct = default);
         Task<List<(string GoalType, int Count)>> FindDonationCountByGoalTypeForUserAsync(Guid userId, CancellationToken ct = default);
-        Task<List<(string CountryCode, string StateCode, decimal Amount)>> FindImpactByRegionForProjectAsync(Guid projectId, CancellationToken ct = default);
+        Task<List<(string CountryCode, string StateCode, decimal Amount)>> FindImpactByRegionForUserAsync(Guid userId, CancellationToken ct = default);
         IQueryable<DonationEvent> FindDonationEventsByUserId(Guid userId, CancellationToken ct = default);
         IQueryable<DonationEvent> FindDonationEventsByDonationId(Guid donationId, CancellationToken ct = default);
         void AddDonationEvent(DonationEvent donationEvent);

@@ -72,9 +72,9 @@ namespace EchoProject.Infrastructure.Repositories
             return initialQuery.Select(x => (x.GoalType, x.Count)).ToList();
         }
 
-        public async Task<List<(string CountryCode, string StateCode, decimal Amount)>> FindImpactByRegionForProjectAsync(Guid projectId, CancellationToken ct = default)
+        public async Task<List<(string CountryCode, string StateCode, decimal Amount)>> FindImpactByRegionForUserAsync(Guid userId, CancellationToken ct = default)
         {
-            var initialQuery = await Query.Where(d => d.Goal.ProjectId == projectId)
+            var initialQuery = await Query.Where(d => d.DonorId == userId)
                 .Include(x => x.Goal.Project.Manager)
                 .GroupBy(d => new { d.Goal.Project.Manager.Address.CountryCode, d.Goal.Project.Manager.Address.State })
                 .Select(g => new 
