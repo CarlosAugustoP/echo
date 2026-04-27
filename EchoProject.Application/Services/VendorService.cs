@@ -19,7 +19,7 @@ namespace EchoProject.Application.Services
         public async Task<bool> ApproveVendorAsync(Guid vendorId, UserDTO admin)
         {
             var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
-                ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
+                ?? throw new NotFoundException($"Fornecedor com ID {vendorId} não encontrado.");
             vendor.Approve(admin.Id);
             _unitOfWork.Commit();
             return true;
@@ -28,7 +28,7 @@ namespace EchoProject.Application.Services
         public async Task<bool> RejectVendorAsync(Guid vendorId, UserDTO admin)
         {
             var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
-                ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
+                ?? throw new NotFoundException($"Fornecedor com ID {vendorId} não encontrado.");
             vendor.Deny(admin.Id);
             _unitOfWork.Commit();
             return true;
@@ -59,20 +59,20 @@ namespace EchoProject.Application.Services
         public async Task<VendorDTO> GetByIdAsync(Guid vendorId)
         {
             var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
-                ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
+                ?? throw new NotFoundException($"Fornecedor com ID {vendorId} não encontrado.");
             return _mapper.Map<VendorDTO>(vendor);
         }
 
         public async Task<bool> AssignVendorToGoalAsync(Guid vendorId, Guid goalId, UserDTO ngo)
         {
             var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
-                ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
+                ?? throw new NotFoundException($"Fornecedor com ID {vendorId} não encontrado.");
             
             var goal = await _unitOfWork.Goals.FindByIdAsync(goalId)
-                ?? throw new NotFoundException($"Goal with ID {goalId} not found.");
+                ?? throw new NotFoundException($"Meta com ID {goalId} não encontrada.");
             
             if (goal.Project.ManagerId != ngo.Id)
-                throw new UnauthorizedException("Only the project manager can assign vendors to goals.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode vincular fornecedores às metas.");
 
             goal.AssignVendor(vendor);
             await _unitOfWork.CommitAsync();

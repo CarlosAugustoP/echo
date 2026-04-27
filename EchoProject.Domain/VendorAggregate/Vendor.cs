@@ -20,10 +20,10 @@ namespace EchoProject.Domain.VendorAggregate
         public Vendor(string? name, TaxId document, WalletAddress wallet, string typeItemSupply)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name cannot be empty.");
+                throw new ArgumentException("O nome não pode estar vazio.");
 
             Name = name;
-            Document = document.IsCnpj ? document : throw new ArgumentException("Vendors must be registered as a company (CNPJ)");
+            Document = document.IsCnpj ? document : throw new ArgumentException("Fornecedores devem ser cadastrados como empresa (CNPJ).");
             Wallet = wallet;
             TypeItemSupply = typeItemSupply;
         }
@@ -31,16 +31,16 @@ namespace EchoProject.Domain.VendorAggregate
         public void Approve(Guid adminId)
         {
             if (Status == VendorStatus.Approved)
-                throw new DomainException("Vendor is already approved.");
+                throw new DomainException("O fornecedor já foi aprovado.");
 
             if (Status == VendorStatus.Rejected)
-                throw new DomainException("Cannot approve a rejected vendor. Please review the vendor's information and submit a new application.");
+                throw new DomainException("Não é possível aprovar um fornecedor rejeitado. Revise as informações e envie uma nova solicitação.");
 
             if (Status == VendorStatus.Disabled)
-                throw new DomainException("Cannot approve a disabled vendor. Please review the vendor's information and submit a new application.");
+                throw new DomainException("Não é possível aprovar um fornecedor desativado. Revise as informações e envie uma nova solicitação.");
 
             if (Status != VendorStatus.Pending)
-                throw new DomainException("Only pending vendors can be approved.");
+                throw new DomainException("Apenas fornecedores pendentes podem ser aprovados.");
 
             Status = VendorStatus.Approved;
             ApprovedById = adminId;
@@ -50,16 +50,16 @@ namespace EchoProject.Domain.VendorAggregate
         public void Deny(Guid adminId)
         {
             if (Status == VendorStatus.Rejected)
-                throw new DomainException("Vendor is already rejected.");
+                throw new DomainException("O fornecedor já foi rejeitado.");
             
             if (Status == VendorStatus.Approved)
-                throw new DomainException("Cannot reject an approved vendor. Please review the vendor's information and submit a new application.");
+                throw new DomainException("Não é possível rejeitar um fornecedor aprovado. Revise as informações e envie uma nova solicitação.");
             
             if (Status == VendorStatus.Disabled)
-                throw new DomainException("Cannot reject a disabled vendor. Please review the vendor's information and submit a new application.");
+                throw new DomainException("Não é possível rejeitar um fornecedor desativado. Revise as informações e envie uma nova solicitação.");
             
             if (Status != VendorStatus.Pending)
-                throw new DomainException("Only pending vendors can be rejected.");
+                throw new DomainException("Apenas fornecedores pendentes podem ser rejeitados.");
 
             Status = VendorStatus.Rejected;
             ApprovedById = adminId;
@@ -69,10 +69,10 @@ namespace EchoProject.Domain.VendorAggregate
         public void Disable()
         {
             if (Status == VendorStatus.Disabled)
-                throw new DomainException("Vendor is already disabled.");
+                throw new DomainException("O fornecedor já está desativado.");
             
             if (Status != VendorStatus.Approved)
-                throw new DomainException("Only approved vendors can be disabled.");
+                throw new DomainException("Apenas fornecedores aprovados podem ser desativados.");
                 
             Status = VendorStatus.Disabled;
             DecisionDate = DateTime.UtcNow;
@@ -81,10 +81,10 @@ namespace EchoProject.Domain.VendorAggregate
         public void Reavaluate()
         {
             if (DecisionDate is not null && DecisionDate.Value.AddDays(30) > DateTime.UtcNow)
-                throw new DomainException("Vendors can only be re-evaluated after 30 days from the last decision date.");
+                throw new DomainException("Fornecedores só podem ser reavaliados 30 dias após a última decisão.");
                 
             if (Status != VendorStatus.Disabled)
-                throw new DomainException("Only disabled vendors can be submitted again for re-evaluation.");
+                throw new DomainException("Apenas fornecedores desativados podem ser reenviados para reavaliação.");
 
             Status = VendorStatus.Pending;
             DecisionDate = DateTime.UtcNow;

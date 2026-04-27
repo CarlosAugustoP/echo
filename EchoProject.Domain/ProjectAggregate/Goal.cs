@@ -32,20 +32,20 @@ namespace EchoProject.Domain.ProjectAggregate
 
             if (goalType.Name == PresetName.Money && CostPerUnit is not null)
             {
-                throw new ArgumentException("Cost per unit cannot be defined for money goals.");
+                throw new ArgumentException("O custo por unidade não pode ser definido para metas financeiras.");
             }
             if (RequiresVendor() && costPerUnit is null)
             {
-                throw new ArgumentException("Cost per unit must be defined for non-money goals.");
+                throw new ArgumentException("O custo por unidade deve ser definido para metas não financeiras.");
             }
             CostPerUnit = costPerUnit;
             Title = title.Length is > 0 and < 50 
                 ? title 
-                : throw new ArgumentException("Title must be between 1 and 50 characters long.");
+                : throw new ArgumentException("O título deve ter entre 1 e 50 caracteres.");
                 
             TargetAmount = target > 0 
                 ? target 
-                : throw new ArgumentException("Target amount must be greater than zero.");
+                : throw new ArgumentException("A quantidade alvo deve ser maior que zero.");
         }
 
         public bool IsMoney() => GoalType.Name == PresetName.Money;
@@ -56,7 +56,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public void AssignVendor(Vendor vendor)
         {
             if (!RequiresVendor())
-                throw new DomainException("Could not set vendor for money goal.");
+                throw new DomainException("Não é possível definir fornecedor para uma meta financeira.");
             
             if (vendor.Status != VendorStatus.Approved)
                 throw new DomainException("Somente fornecedores aprovados podem ser vinculados a uma meta.");
@@ -67,7 +67,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public void AssignVendors(IEnumerable<Vendor> vendors)
         {
             if (RequiresVendor() && !vendors.Any())
-                throw new DomainException("At least one vendor must be assigned to a non-money goal.");
+                throw new DomainException("Pelo menos um fornecedor deve ser vinculado a uma meta não financeira.");
             
             foreach (var vendor in vendors)
             {

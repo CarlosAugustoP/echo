@@ -21,10 +21,10 @@ namespace EchoProject.Domain.DonationAggregate
         public decimal Amount { get; private set; }
 
         /// <summary>
-        /// The actual total cost, in ETH paid by the user for this donation. 
-        /// For money goals, this is equal to the amount of ETH donated. 
+        /// The actual total cost, in ETH paid by the user for this donation.
+        /// For money goals, this is equal to the amount of ETH donated.
         /// For non-money goals, this is equal to the cost per unit defined in
-        /// the goal multiplied by the amount of units donated. 
+        /// the goal multiplied by the amount of units donated.
         /// </summary>
         public decimal TotalCost { get; private set; }
         public string TransactionHash { get; private set; }
@@ -45,7 +45,7 @@ namespace EchoProject.Domain.DonationAggregate
             Goal = goal;
 
             if (goal.IsAchieved)
-                throw new DomainException("Cannot donate to a goal that has already been achieved.");
+                throw new DomainException("Não é possível doar para uma meta que já foi alcançada.");
 
             if (goal.IsMoney())
             {
@@ -61,7 +61,8 @@ namespace EchoProject.Domain.DonationAggregate
                 TotalCost = costPurchase;
             }
 
-            if (Amount <= 0) throw new ArgumentException("Amount must be greater than zero.");
+            if (Amount <= 0)
+                throw new ArgumentException("O valor deve ser maior que zero.");
 
             Status = goal.MoneyPendingOnTrustedVendorLiberation()
                 ? DonationStatus.TransferredToContract
@@ -91,7 +92,7 @@ namespace EchoProject.Domain.DonationAggregate
 
                 if (userPaidThisMuch < weNeedThisMuch)
                 {
-                    throw new DomainException($"The amount paid: {userPaidThisMuch} is less than the cost per unit: {Goal.CostPerUnit} for this goal.");
+                    throw new DomainException($"O valor pago: {userPaidThisMuch} é menor que o custo por unidade: {Goal.CostPerUnit} desta meta.");
                 }
             }
         }
@@ -105,7 +106,7 @@ namespace EchoProject.Domain.DonationAggregate
                 throw new DomainException("O fornecedor não está vinculado à meta desta doação.");
 
             if (!vendor.IsValid())
-                throw new DomainException("O fornecedor não é aprovado para receber a doação.");
+                throw new DomainException("O fornecedor não foi aprovado para receber esta doação.");
 
             Status = DonationStatus.TransferredToVendorPending;
             TransferredToVendor = vendor;
@@ -136,7 +137,7 @@ namespace EchoProject.Domain.DonationAggregate
             }
             else
             {
-                throw new DomainException("Invalid status update.");
+                throw new DomainException("Atualização de status inválida.");
             }
         }
 
@@ -146,9 +147,8 @@ namespace EchoProject.Domain.DonationAggregate
             {
                 DonationStatus.TransferredToVendorPending => DonationStatus.TransferredToVendorConfirmed,
                 DonationStatus.ImmediateTransferToNGOInContract => DonationStatus.ImmediateTransferToNGOConfirmed,
-                _ => throw new DomainException($"Cannot confirm transfer. Current status: {Status}"),
+                _ => throw new DomainException($"Não é possível confirmar a transferência. Status atual: {Status}"),
             };
-
         }
 
         private void MarkAsFailed()
@@ -166,7 +166,5 @@ namespace EchoProject.Domain.DonationAggregate
 
             Status = DonationStatus.ExpiredAndRefunded;
         }
-
-
     }
 }

@@ -18,22 +18,22 @@ namespace EchoProject.Domain.UserAggregate
         public User(string? name, string? email, string? passwordHash, TaxId taxId, WalletAddress walletAddress, Address address, UserRole role)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name cannot be empty.");
+                throw new ArgumentException("O nome não pode estar vazio.");
             
             if (string.IsNullOrWhiteSpace(email))
-                throw new ArgumentException("Email cannot be empty.");
+                throw new ArgumentException("O e-mail não pode estar vazio.");
             
             if (!email.Contains("@") || !email.Contains("."))
-                throw new ArgumentException("Email must be valid.");
+                throw new ArgumentException("O e-mail deve ser válido.");
 
             if (string.IsNullOrWhiteSpace(passwordHash))
-                throw new ArgumentException("Password cannot be empty.");
+                throw new ArgumentException("A senha não pode estar vazia.");
 
             if (taxId == null)
-                throw new ArgumentException("TaxId cannot be null.");
+                throw new ArgumentException("O documento fiscal não pode ser nulo.");
 
             if (role == UserRole.NGO && taxId.IsCpf == true)
-                throw new ArgumentException("NGOs must have a CNPJ TaxId.");
+                throw new ArgumentException("ONGs devem possuir um CNPJ.");
 
             Name = name;
             Address = address;
@@ -59,7 +59,7 @@ namespace EchoProject.Domain.UserAggregate
             if (!string.IsNullOrWhiteSpace(email))
             {
                 if (!email.Contains("@") || !email.Contains("."))
-                    throw new ArgumentException("Email must be valid.");
+                    throw new ArgumentException("O e-mail deve ser válido.");
 
                 Email = email.ToLower();
             }

@@ -9,7 +9,7 @@ namespace EchoProject.Domain.ValueObjects
         public SmartContractAddress(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Smart contract address cannot be empty.");
+                throw new ArgumentException("O endereço do contrato inteligente não pode estar vazio.");
 
             Value = value;
         }

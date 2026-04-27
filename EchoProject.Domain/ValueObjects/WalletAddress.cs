@@ -10,7 +10,7 @@ namespace EchoProject.Domain.ValueObjects
         {
             if (string.IsNullOrEmpty(address) || !address.StartsWith("0x"))
             {
-                throw new ArgumentException("Invalid wallet address format.", nameof(address));
+                throw new ArgumentException("Formato de endereço de carteira inválido.", nameof(address));
             }
             Address = address;
         }

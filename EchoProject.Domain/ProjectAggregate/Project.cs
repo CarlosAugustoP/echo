@@ -27,10 +27,10 @@ namespace EchoProject.Domain.ProjectAggregate
             Id = Guid.NewGuid();
             Title = title.Length < 100 && title.Length > 0 
                 ? title 
-                : throw new ArgumentException("Title must be between 1 and 100 characters long.");
+                : throw new ArgumentException("O título deve ter entre 1 e 100 caracteres.");
             Description = (description.Length < 500 && description.Length > 0)  
                 ? description
-                : throw new ArgumentException("Description cannot exceed 500 characters and must be bigger than 0");
+                : throw new ArgumentException("A descrição deve ter entre 1 e 500 caracteres.");
             ManagerId = managerId;
             SmartContractAddress = new SmartContractAddress("TemporaryAddress");
         }
@@ -66,7 +66,7 @@ namespace EchoProject.Domain.ProjectAggregate
                 _goals.Remove(goal);
                 return goal;
             }
-            throw new ArgumentException("Goal not found.");
+            throw new ArgumentException("Meta não encontrada.");
         }
 
         public void AddOrUpdateMainImage(ImageUrl mainImage)
@@ -85,7 +85,7 @@ namespace EchoProject.Domain.ProjectAggregate
             {
                 _images.Add(image);
             }
-            else throw new DomainException("Cannot add more than 10 images to a project.");
+            else throw new DomainException("Não é possível adicionar mais de 10 imagens a um projeto.");
         }
 
         public void RemoveImage(ImageUrl image)
@@ -97,10 +97,10 @@ namespace EchoProject.Domain.ProjectAggregate
         {
             Title = title.Length < 100 && title.Length > 0 
                 ? title 
-                : throw new ArgumentException("Title must be between 1 and 100 characters long.");
+                : throw new ArgumentException("O título deve ter entre 1 e 100 caracteres.");
             Description = (description.Length < 500 && description.Length > 0)  
                 ? description
-                : throw new ArgumentException("Description cannot exceed 500 characters and must be bigger than 0");
+                : throw new ArgumentException("A descrição deve ter entre 1 e 500 caracteres.");
         }
     }
 }

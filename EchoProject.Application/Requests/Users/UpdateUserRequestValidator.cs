@@ -9,18 +9,18 @@ namespace EchoProject.Application.Requests.Users
         {
             RuleFor(x => x.Name)
                 .MaximumLength(100)
-                .WithMessage("Name must be at most 100 characters long.")
+                .WithMessage("O nome deve ter no máximo 100 caracteres.")
                 .When(x => x.Name != null); 
 
             RuleFor(x => x.Email)
                 .EmailAddress()
-                .WithMessage("Invalid email format.")
+                .WithMessage("Formato de e-mail inválido.")
                 .When(x => x.Email != null);
 
             RuleFor(x => x.ProfilePictureBase64)
                 .Must(ApplicationHelper.IsAValidBase64String!)
                 .When(x => !string.IsNullOrEmpty(x.ProfilePictureBase64))
-                .WithMessage("Profile picture must be a valid Base64 string.");
+                .WithMessage("A foto de perfil deve ser uma string Base64 válida.");
         }
 
 

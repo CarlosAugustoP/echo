@@ -27,7 +27,7 @@ namespace EchoProject.Application.Services
         public async Task<bool> DonateAsync(DonationRequest request, UserDTO donor)
         {
             var goal = await _unitOfWork.Goals.FindByIdAsync(request.GoalId)
-                ?? throw new NotFoundException($"Goal with ID {request.GoalId} not found.");
+                ?? throw new NotFoundException($"Meta com ID {request.GoalId} não encontrada.");
 
             bool isTransactionValid = await _ethereum.VerifyTransactionAsync(
                 request.TransactionHash,
@@ -38,7 +38,7 @@ namespace EchoProject.Application.Services
             if (!isTransactionValid)
             {
                 _logger.LogWarning("Invalid blockchain transaction attempt. Hash: {Hash}", request.TransactionHash);
-                throw new DomainException("The blockchain transaction is invalid, has failed, or the data does not match.");
+                throw new DomainException("A transação na blockchain é inválida, falhou ou os dados não conferem.");
             }
 
             var donation = new Donation(donor.Id, goal, request.Amount, request.TotalAmountETH, request.TransactionHash);
@@ -55,7 +55,7 @@ namespace EchoProject.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while saving the donation to the database.");
-                throw new ApplicationException("Donation verified on blockchain but failed to save in database.", ex);
+                throw new ApplicationException("A doação foi verificada na blockchain, mas não pôde ser salva no banco de dados.", ex);
             }
 
             return true;
@@ -83,11 +83,11 @@ namespace EchoProject.Application.Services
         public async Task<DonationDTO> GetByIdAsync(Guid donationId, UserDTO user)
         {
             var donation = await _unitOfWork.Donations.FindByIdAsync(donationId)
-                ?? throw new NotFoundException($"Donation with ID {donationId} not found.");
+                ?? throw new NotFoundException($"Doação com ID {donationId} não encontrada.");
 
             if (donation.DonorId != user.Id && user.Role != UserRole.EchoAdmin)
             {
-                throw new UnauthorizedException("You are not the donor of this donation.");
+                throw new UnauthorizedException("Você não é o doador desta doação.");
             }
 
             return _mapper.Map<DonationDTO>(donation);
@@ -96,11 +96,11 @@ namespace EchoProject.Application.Services
         public async Task<PaginatedList<DonationDTO>> FindByProjectAsync(Guid projectId, PageRequest pr, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id && user.Role != UserRole.EchoAdmin)
             {
-                throw new UnauthorizedException("You are not the manager of this project.");
+                throw new UnauthorizedException("Você não é o gestor deste projeto.");
             }
 
             return _unitOfWork.Donations
@@ -112,14 +112,14 @@ namespace EchoProject.Application.Services
         public async Task<bool> AssignDonationToVendorAsync(Guid donId, Guid vendorId, UserDTO user)
         {
             var donation = await _unitOfWork.Donations.FindByIdAsync(donId)
-                ?? throw new NotFoundException($"Donation with ID {donId} not found.");
+                ?? throw new NotFoundException($"Doação com ID {donId} não encontrada.");
 
             var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
-                ?? throw new NotFoundException($"Vendor with ID {vendorId} not found.");
+                ?? throw new NotFoundException($"Fornecedor com ID {vendorId} não encontrado.");
 
             if (donation.Goal.Project.ManagerId != user.Id)
             {
-                throw new UnauthorizedException("You are not the manager of this project.");
+                throw new UnauthorizedException("Você não é o gestor deste projeto.");
             }
 
             donation.TransferToVendor(vendor);

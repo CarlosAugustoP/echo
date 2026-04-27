@@ -20,7 +20,7 @@ namespace EchoProject.Application.Services
             var goalType = await _unitOfWork.Goals.FindGoalTypeByNameAsync(req.Name);
             
             if (goalType != null)
-                throw new ConflictException("CONFLICT", $"GoalType with name {req.Name} already exists.");
+                throw new ConflictException("CONFLICT", $"Já existe um tipo de meta com o nome {req.Name}.");
 
             var goal = new GoalType(req.Name, req.Description);
             

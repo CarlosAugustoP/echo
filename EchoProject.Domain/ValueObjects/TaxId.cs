@@ -15,27 +15,27 @@ namespace EchoProject.Domain.ValueObjects
         public TaxId(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("TaxId cannot be empty.");
+                throw new ArgumentException("O documento fiscal não pode estar vazio.");
 
             var digits = Helpers.OnlyDigits(value);
 
             if (digits.Length == 11)
             {
                 if (!IsValidCpf(digits))
-                    throw new ArgumentException("Invalid CPF.");
+                    throw new ArgumentException("CPF inválido.");
 
                 Value = digits;
             }
             else if (digits.Length == 14)
             {
                 if (!IsValidCnpj(digits))
-                    throw new ArgumentException("Invalid CNPJ.");
+                    throw new ArgumentException("CNPJ inválido.");
 
                 Value = digits;
             }
             else
             {
-                throw new ArgumentException("TaxId must be CPF (11) or CNPJ (14).");
+                throw new ArgumentException("O documento fiscal deve ser um CPF (11) ou CNPJ (14).");
             }
         }
 

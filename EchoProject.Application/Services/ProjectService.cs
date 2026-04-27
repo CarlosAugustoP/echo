@@ -55,7 +55,7 @@ namespace EchoProject.Application.Services
             foreach (var goalReq in goalRequests)
             {
                 var goalType = await _unitOfWork.Goals.FindGoalTypeByIdAsync(goalReq.GoalTypeId)
-                    ?? throw new NotFoundException($"GoalType {goalReq.GoalTypeId} not found.");
+                    ?? throw new NotFoundException($"Tipo de meta com ID {goalReq.GoalTypeId} não encontrado.");
 
                 var goal = project.AddGoal(goalReq.Title, goalReq.TargetAmount, goalType, goalReq.CostPerUnit, goalReq.Description);
                 
@@ -73,7 +73,7 @@ namespace EchoProject.Application.Services
             foreach (var id in vendorIds)
             {
                 var vendor = await _unitOfWork.Vendors.FindByIdAsync(id)
-                    ?? throw new NotFoundException($"Vendor {id} not found.");
+                    ?? throw new NotFoundException($"Fornecedor com ID {id} não encontrado.");
                 vendors.Add(vendor);
             }
             return vendors;
@@ -82,10 +82,10 @@ namespace EchoProject.Application.Services
         public async Task<ProjectDTO> UpdateAsync(Guid projectId, UpdateProjectRequest projectRequest, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id)
-                throw new UnauthorizedException("Only the project manager can update the project.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode atualizar o projeto.");
 
             project.UpdateDetails(projectRequest.Title, projectRequest.Description);
             await _unitOfWork.CommitAsync();
@@ -103,19 +103,19 @@ namespace EchoProject.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to deploy smart contract for project {ProjectId}", project.Id);
-                throw new ApplicationException("Failed to prepare blockchain smart contract for the project.", ex);
+                throw new ApplicationException("Falha ao preparar o contrato inteligente do projeto na blockchain.", ex);
             }
         }
         public async Task<GoalDTO> AddGoalAsync(Guid projectId, GoalRequest goalRequest, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id)
-                throw new UnauthorizedException("Only the project manager can add goals to the project.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode adicionar metas ao projeto.");
 
             var goalType = await _unitOfWork.Goals.FindGoalTypeByIdAsync(goalRequest.GoalTypeId)
-                ?? throw new NotFoundException($"GoalType with ID {goalRequest.GoalTypeId} not found.");
+                ?? throw new NotFoundException($"Tipo de meta com ID {goalRequest.GoalTypeId} não encontrado.");
 
             var goal = project.AddGoal(goalRequest.Title, goalRequest.TargetAmount, goalType, goalRequest.CostPerUnit);
             await _unitOfWork.CommitAsync();
@@ -125,10 +125,10 @@ namespace EchoProject.Application.Services
         public async Task RemoveGoalAsync(Guid projectId, Guid goalId, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id)
-                throw new UnauthorizedException("Only the project manager can remove goals from the project.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode remover metas do projeto.");
 
             var goal = project.RemoveGoal(goalId);
             _unitOfWork.Goals.Remove(goal);
@@ -138,7 +138,7 @@ namespace EchoProject.Application.Services
         public async Task<ProjectDTO> GetByIdAsync(Guid projectId)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             return _mapper.Map<ProjectDTO>(project);
         }
@@ -146,10 +146,10 @@ namespace EchoProject.Application.Services
         public async Task<ProjectDTO> UpdateMainImageAsync(Guid projectId, string? mainImage, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id)
-                throw new UnauthorizedException("Only the project manager can update the project's main image.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode atualizar a imagem principal do projeto.");
 
             if (mainImage is null)
             {
@@ -166,10 +166,10 @@ namespace EchoProject.Application.Services
         public async Task<ProjectDTO> AddImageAsync(Guid projectId, string imageUrl, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id)
-                throw new UnauthorizedException("Only the project manager can add images to the project.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode adicionar imagens ao projeto.");
 
             project.AddImage(imageUrl);
             await _unitOfWork.CommitAsync();
@@ -179,10 +179,10 @@ namespace EchoProject.Application.Services
         public async Task<ProjectDTO> RemoveImageAsync(Guid projectId, string imageUrl, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id)
-                throw new UnauthorizedException("Only the project manager can remove images from the project.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode remover imagens do projeto.");
 
             project.RemoveImage(imageUrl); //TODO test this!!!
             await _unitOfWork.CommitAsync();
@@ -192,10 +192,10 @@ namespace EchoProject.Application.Services
         public async Task<ProjectBlogPostDTO> AddBlogPostAsync(Guid projectId, CreateBlogPostRequest request, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id)
-                throw new UnauthorizedException("Only the project manager can add blog posts to the project.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode adicionar publicações ao projeto.");
 
             string? headerImageUrl = null;
             
@@ -232,7 +232,7 @@ namespace EchoProject.Application.Services
         public async Task<ProjectBlogPostDTO> GetBlogPostByIdAsync(Guid blogPostId)
         {
             var blogPost = await _unitOfWork.Projects.FindProjectBlogPostByIdAsync(blogPostId)
-                ?? throw new NotFoundException($"Blog post with ID {blogPostId} not found.");
+                ?? throw new NotFoundException($"Publicação com ID {blogPostId} não encontrada.");
 
             return _mapper.Map<ProjectBlogPostDTO>(blogPost);
         }
@@ -240,13 +240,13 @@ namespace EchoProject.Application.Services
         public async Task AddImageToProjectBlogPostAsync(Guid projectId, Guid blogPostId, DocumentRequest req, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
-                ?? throw new NotFoundException($"Project with ID {projectId} not found.");
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
 
             if (project.ManagerId != user.Id)
-                throw new UnauthorizedException("Only the project manager can add images to the project.");
+                throw new UnauthorizedException("Apenas o gestor do projeto pode adicionar imagens ao projeto.");
 
             var blogPost = await _unitOfWork.Projects.FindProjectBlogPostByIdAsync(blogPostId)
-                ?? throw new NotFoundException($"Blog post with ID {blogPostId} not found.");
+                ?? throw new NotFoundException($"Publicação com ID {blogPostId} não encontrada.");
 
             using var stream = req.Base64String.ToStream();
             var url = await _storage.UploadFileAsync($"project_{projectId}_blogpost_{blogPostId}_{Guid.NewGuid()}", stream);

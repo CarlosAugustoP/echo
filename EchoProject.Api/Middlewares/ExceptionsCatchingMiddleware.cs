@@ -47,12 +47,12 @@ namespace EchoProject.Api.Middlewares
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An unexpected error occurred: " + ex.Message);
+                Console.WriteLine("Ocorreu um erro inesperado: " + ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
                 var response = ApiResult<string?>
-                    .Failure("An unexpected error occurred", "INTERNAL_SERVER_ERROR");
+                    .Failure("Ocorreu um erro inesperado.", "INTERNAL_SERVER_ERROR");
 
                 await context.Response.WriteAsJsonAsync(response);
             }

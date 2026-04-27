@@ -9,10 +9,10 @@ namespace EchoProject.Domain.ValueObjects
         public ImageUrl(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("Image URL cannot be empty.");
+                throw new ArgumentException("A URL da imagem não pode estar vazia.");
 
             if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
-                throw new ArgumentException("Image URL must be a valid absolute URL.");
+                throw new ArgumentException("A URL da imagem deve ser uma URL absoluta válida.");
 
             Url = url;
         }

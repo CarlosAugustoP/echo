@@ -36,12 +36,12 @@ namespace EchoProject.Domain.ValueObjects
         private static string ValidatePostCode(string postCode)
         {
             if (string.IsNullOrWhiteSpace(postCode))
-                throw new ArgumentException("PostCode cannot be empty.");
+                throw new ArgumentException("O CEP não pode estar vazio.");
 
             var digits = Helpers.OnlyDigits(postCode);
 
             if (digits.Length != 8)
-                throw new ArgumentException("PostCode must have 8 digits.");
+                throw new ArgumentException("O CEP deve ter 8 dígitos.");
 
             return digits;
         }
@@ -49,11 +49,11 @@ namespace EchoProject.Domain.ValueObjects
         {
             if (countryCode.Length != 2)
             {
-                throw new ArgumentException("CountryCode must have 2 digits only");
+                throw new ArgumentException("O código do país deve ter exatamente 2 letras.");
             }
             if (countryCode.Any(char.IsDigit) || countryCode.Any(char.IsSymbol))
             {
-                throw new ArgumentException("CountryCode must contain only letters.");
+                throw new ArgumentException("O código do país deve conter apenas letras.");
             }
             return countryCode.ToUpper();
         }

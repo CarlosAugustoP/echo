@@ -52,7 +52,7 @@ namespace EchoProject.Application.Services
             var existingUser = await _unitOfWork.Users.FindByEmailAsync(request.Email);
             if (existingUser != null)
             {
-                throw new ConflictException("Email already in use", "USER_ALREADY_EXISTS");
+                throw new ConflictException("E-mail já está em uso.", "USER_ALREADY_EXISTS");
             }
 
             var hashedPassword = _passwordHasher.Hash(request.Password);
@@ -99,7 +99,7 @@ namespace EchoProject.Application.Services
 
             if (user == null || !_passwordHasher.Validate(req.Password, user.PasswordHash))
             {
-                throw new UnauthorizedException("Invalid email or password", "INVALID_CREDENTIALS");
+                throw new UnauthorizedException("E-mail ou senha inválidos.", "INVALID_CREDENTIALS");
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
@@ -134,7 +134,7 @@ namespace EchoProject.Application.Services
         public async Task<UserDTO> UpdateProfileAsync(UpdateUserRequest request, UserDTO user)
         {
             var userEntity = await _unitOfWork.Users.FindByIdAsync(user.Id)
-                ?? throw new NotFoundException("User not found.");
+                ?? throw new NotFoundException("Usuário não encontrado.");
 
             string? pfp = null;
 
@@ -171,7 +171,7 @@ namespace EchoProject.Application.Services
         public async Task<UserDTO> UpdateWalletAddressAsync(Guid userId, string newWalletAddress)
         {
             var user = await _unitOfWork.Users.FindByIdAsync(userId)
-                ?? throw new NotFoundException("User not found.");
+                ?? throw new NotFoundException("Usuário não encontrado.");
 
             try
             {
@@ -191,7 +191,7 @@ namespace EchoProject.Application.Services
         public async Task<UserDTO> GetByIdAsync(Guid id)
         {
             var user = await _unitOfWork.Users.FindByIdAsync(id)
-                ?? throw new NotFoundException("User not found.");
+                ?? throw new NotFoundException("Usuário não encontrado.");
 
             return _mapper.Map<UserDTO>(user);
         }

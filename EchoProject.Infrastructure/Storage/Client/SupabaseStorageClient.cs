@@ -46,11 +46,11 @@ namespace EchoProject.Infrastructure.Storage.Client
                 if (buffer[0] == 0xFF && buffer[1] == 0xD8 && buffer[2] == 0xFF)
                     return "jpeg";
 
-                throw new ArgumentException("Invalid format. Only PNG and JPEG are allowed.");
+                throw new ArgumentException("Formato inválido. Apenas PNG e JPEG são permitidos.");
             }
             catch (Exception)
             {
-                throw new ArgumentException("Error occurred while reading the file.");
+                throw new ArgumentException("Ocorreu um erro ao ler o arquivo.");
             }
 
         }

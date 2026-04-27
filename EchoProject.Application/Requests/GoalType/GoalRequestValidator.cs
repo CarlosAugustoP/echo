@@ -9,15 +9,15 @@ namespace EchoProject.Application.Requests.GoalType
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .WithMessage("Name cannot be null")
+                .WithMessage("O nome não pode ser vazio.")
                 .MaximumLength(30)
-                .WithMessage("Name must be at most 30 characters");
+                .WithMessage("O nome deve ter no máximo 30 caracteres.");
 
             RuleFor(x => x.Description)
                 .NotEmpty()
-                .WithMessage("Description cannot be null")
+                .WithMessage("A descrição não pode ser vazia.")
                 .MaximumLength(200)
-                .WithMessage("Description must be at most 200 characters");
+                .WithMessage("A descrição deve ter no máximo 200 caracteres.");
 
         }
     }

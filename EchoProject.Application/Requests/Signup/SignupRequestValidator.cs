@@ -12,63 +12,63 @@ namespace EchoProject.Application.Requests.Signup
             RuleFor(x => x.Name)
                 .MaximumLength(100)
                 .NotEmpty()
-                .WithMessage("Name is required.");
+                .WithMessage("O nome é obrigatório.");
             
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .EmailAddress()
-                .WithMessage("Valid email is required.");
+                .WithMessage("Um e-mail válido é obrigatório.");
 
             RuleFor(x => x.Role)
                 .Must(x => x != UserRole.EchoAdmin)
-                .WithMessage("Role must be either Donor or NGO.");
+                .WithMessage("O perfil deve ser Doador ou ONG.");
 
                 RuleFor(x => x.Password)
                     .NotEmpty()
                     .MinimumLength(8)
-                    .WithMessage("Password must be at least 8 characters long.")
+                    .WithMessage("A senha deve ter pelo menos 8 caracteres.")
                     .Must(x=> x.Any(char.IsDigit) && x.Any(char.IsLetter) && x.Any(c => char.IsSymbol(c) || char.IsPunctuation(c)))
-                    .WithMessage("Password must contain at least one letter, one number and one symbol.");
+                    .WithMessage("A senha deve conter pelo menos uma letra, um número e um símbolo.");
 
             RuleFor(x => x.TaxId)
                 .NotEmpty()
-                .WithMessage("Tax ID is required.")
+                .WithMessage("O documento fiscal é obrigatório.")
                 .Must(x => Helpers.ValidTaxId(x))
-                .WithMessage("Must be a valid tax ID.");
+                .WithMessage("O documento fiscal deve ser válido.");
             
             RuleFor(x => x.WalletAddress)
                 .NotEmpty()
-                .WithMessage("Wallet address is required.");
+                .WithMessage("O endereço da carteira é obrigatório.");
 
-            RuleFor(x => x.Address).NotNull().WithMessage("Address is required.")
+            RuleFor(x => x.Address).NotNull().WithMessage("O endereço é obrigatório.")
                 .ChildRules(address =>
                 {
                     address.RuleFor(a => a.Street)
                         .NotEmpty()
-                        .WithMessage("Street is required.");
+                        .WithMessage("A rua é obrigatória.");
                     
                     address.RuleFor(a => a.City)
                         .NotEmpty()
-                        .WithMessage("City is required.")
+                        .WithMessage("A cidade é obrigatória.")
                         .Must(a => a.All(char.IsLetter) || a.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-                        .WithMessage("City is required.");
+                        .WithMessage("A cidade é obrigatória.");
                     
                     address.RuleFor(a => a.State)
                         .NotEmpty()
-                        .WithMessage("State is required.")
+                        .WithMessage("O estado é obrigatório.")
                         .Must(a => a.Length == 2 && a.All(char.IsLetter))
-                        .WithMessage("State must be a 2-letter code.");
+                        .WithMessage("O estado deve ser uma sigla de 2 letras.");
                     
                     address.RuleFor(a => a.ZipCode)
                         .NotEmpty()
-                        .WithMessage("Zip code is required.")
+                        .WithMessage("O CEP é obrigatório.")
                         .Must(a => a.All(char.IsDigit));
                     
                     address.RuleFor(a => a.CountryCode)
                         .NotEmpty()
-                        .WithMessage("Country code is required.")
+                        .WithMessage("O código do país é obrigatório.")
                         .Must(a => a.Length == 2 && a.All(char.IsLetter))
-                        .WithMessage("Country code must be a 2-letter ISO code.");
+                        .WithMessage("O código do país deve ser um código ISO de 2 letras.");
                 });
         }
     }
