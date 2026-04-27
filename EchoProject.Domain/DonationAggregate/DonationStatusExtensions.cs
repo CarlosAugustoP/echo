@@ -6,14 +6,14 @@ namespace EchoProject.Domain.DonationAggregate
         {
             return status switch
             {
-                DonationStatus.TransferredToContract => "Awaiting transfer to trusted supplier",
-                DonationStatus.TransferredToVendorPending => "Awaiting blockchain confirmation",
-                DonationStatus.TransferredToVendorConfirmed => "Transferred to trusted supplier",
-                DonationStatus.ImmediateTransferToNGOInContract => "Awaiting transfer to NGO",
-                DonationStatus.ImmediateTransferToNGOConfirmed => "Transferred to NGO",
-                DonationStatus.Failed => "Failed",
-                DonationStatus.ExpiredAndRefunded => "Expired and refunded",
-                _ => "Unknown"
+                DonationStatus.TransferredToContract => "Aguardando transferência para fornecedor confiável",
+                DonationStatus.TransferredToVendorPending => "Aguardando confirmação na blockchain",
+                DonationStatus.TransferredToVendorConfirmed => "Transferido para fornecedor confiável",
+                DonationStatus.ImmediateTransferToNGOInContract => "Aguardando transferência para ONG",
+                DonationStatus.ImmediateTransferToNGOConfirmed => "Transferido para ONG",
+                DonationStatus.Failed => "Falhou",
+                DonationStatus.ExpiredAndRefunded => "Expirado e reembolsado",
+                _ => "Desconhecido"
             };
         }
     }
