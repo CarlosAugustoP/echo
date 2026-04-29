@@ -34,7 +34,6 @@ namespace EchoProject.Api.Controllers
         /// <param name="pr"></param>
         /// <returns></returns>
         [HttpGet("types")]
-        [MandatoryUserFilter([UserRole.EchoAdmin])]
         public IActionResult GetGoalTypes([FromQuery] PageRequest pr)
         {
             var goalType = _service.GetGoalTypes(pr.PageNumber, pr.PageSize);

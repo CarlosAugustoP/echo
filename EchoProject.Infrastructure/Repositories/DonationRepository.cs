@@ -105,5 +105,6 @@ namespace EchoProject.Infrastructure.Repositories
                 .ThenInclude(d => d.Goal)
                 .Where(de => de.Donation.Id == donationId);
         }
+
     }
 }
