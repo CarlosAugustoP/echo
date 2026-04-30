@@ -56,9 +56,9 @@ namespace EchoProject.Api.Controllers
 
         [HttpGet]
         [MandatoryUserFilter]
-        public async Task<PaginatedList<VendorDTO>> GetVendors([FromQuery] PageRequest p)
+        public PaginatedList<VendorDTO> GetVendors([FromQuery] PageRequest p)
         {
-            return await _vendorService.GetAllAsync(p);
+            return _vendorService.GetAll(p);
         }
 
         /// <summary>

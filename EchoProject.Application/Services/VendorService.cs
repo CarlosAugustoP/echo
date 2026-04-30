@@ -58,7 +58,7 @@ namespace EchoProject.Application.Services
             return _mapper.Map<VendorDTO>(vendor);
         }
 
-        public async Task<PaginatedList<VendorDTO>> GetAllAsync(PageRequest p)
+        public PaginatedList<VendorDTO> GetAll(PageRequest p)
         {
             var vendors = _unitOfWork.Vendors.FindAll();
             return vendors.Paginate(p.PageNumber, p.PageSize)
