@@ -1,8 +1,10 @@
 using AutoMapper;
 using EchoProject.Application.Common;
+using EchoProject.Application.Common.PaginatedList;
 using EchoProject.Application.DTO;
 using EchoProject.Application.DTO.Vendor;
 using EchoProject.Application.Exceptions;
+using EchoProject.Application.Requests.Pagination;
 using EchoProject.Application.Requests.Vendor;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.ValueObjects;
@@ -54,6 +56,13 @@ namespace EchoProject.Application.Services
             await _unitOfWork.Vendors.AddAsync(vendor);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<VendorDTO>(vendor);
+        }
+
+        public async Task<PaginatedList<VendorDTO>> GetAllAsync(PageRequest p)
+        {
+            var vendors = _unitOfWork.Vendors.FindAll();
+            return vendors.Paginate(p.PageNumber, p.PageSize)
+                .Select(x => _mapper.Map<VendorDTO>(x));
         }
 
         public async Task<VendorDTO> GetByIdAsync(Guid vendorId)

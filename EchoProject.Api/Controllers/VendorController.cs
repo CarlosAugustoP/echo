@@ -1,5 +1,8 @@
 using EchoProject.Api.Common;
 using EchoProject.Api.Middlewares;
+using EchoProject.Application.Common.PaginatedList;
+using EchoProject.Application.DTO.Vendor;
+using EchoProject.Application.Requests.Pagination;
 using EchoProject.Application.Requests.Vendor;
 using EchoProject.Application.Services;
 using EchoProject.Domain.UserAggregate;
@@ -49,6 +52,13 @@ namespace EchoProject.Api.Controllers
         {
             var result = await _vendorService.CreateAsync(request);
             return Success(result);
+        }
+
+        [HttpGet]
+        [MandatoryUserFilter]
+        public async Task<PaginatedList<VendorDTO>> GetVendors([FromQuery] PageRequest p)
+        {
+            return await _vendorService.GetAllAsync(p);
         }
 
         /// <summary>
