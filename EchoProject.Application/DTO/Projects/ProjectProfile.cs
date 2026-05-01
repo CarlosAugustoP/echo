@@ -20,6 +20,7 @@ namespace EchoProject.Application.DTO.Projects
                 .ForMember(dest => dest.Progress, opt => opt.MapFrom(src => src.GetProgress()))
                 .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.Manager.Name))
                 .ForMember(dest => dest.CreatedById, opt => opt.MapFrom(src => src.Manager.Id))
+                .ForMember(dest => dest.HasPendingDonations, opt => opt.MapFrom(src => src.HasPendingDonations()))
                 .ReverseMap();
             CreateMap<Project, ProjectHeaderDTO>()
                 .ForMember(dest => dest.MainImage, opt => 

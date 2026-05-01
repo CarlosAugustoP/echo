@@ -1,4 +1,5 @@
 using EchoProject.Domain.Common;
+using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.VendorAggregate;
 
@@ -19,6 +20,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public decimal? CostPerUnit { get; private set; }
         private readonly List<Vendor> _vendors = [];
         public IReadOnlyCollection<Vendor> Vendors => _vendors.AsReadOnly();
+        public virtual ICollection<Donation> Donations { get; private set; } = [];
         public bool IsAchieved => CurrentAmount >= TargetAmount && !IsMoney();
         public string? Description { get; private set; }
 

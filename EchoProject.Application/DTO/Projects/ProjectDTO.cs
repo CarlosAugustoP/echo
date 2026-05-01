@@ -17,5 +17,6 @@ namespace EchoProject.Application.DTO.Projects
         public decimal Progress { get; set; } = 0;
         public string CreatedByName { get; set; } = string.Empty;
         public Guid CreatedById { get; set; }
+        public bool HasPendingDonations {get; set;}
     }
 }
