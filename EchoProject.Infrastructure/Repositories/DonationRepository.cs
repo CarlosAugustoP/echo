@@ -110,7 +110,7 @@ namespace EchoProject.Infrastructure.Repositories
         {
             return _db.Donations
                 .Include(d => d.Goal)
-                .Where(d => d.Goal.ProjectId == projectId && d.Status == DonationStatus.TransferredToVendorPending);
+                .Where(d => d.Goal.ProjectId == projectId && d.Status == DonationStatus.TransferredToContract);
         }
     }
 }
