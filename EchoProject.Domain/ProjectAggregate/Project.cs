@@ -77,7 +77,7 @@ namespace EchoProject.Domain.ProjectAggregate
 
         public bool HasPendingDonations()
         {
-            return Goals.Any(g => g.Donations.Any(d => d.Status == DonationStatus.TransferredToVendorPending));
+            return Goals.Any(g => g.Donations.Any(d => d.Status == DonationStatus.TransferredToContract));
         }
         
         public void RemoveMainImage()
