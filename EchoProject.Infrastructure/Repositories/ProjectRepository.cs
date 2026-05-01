@@ -14,7 +14,7 @@ namespace EchoProject.Infrastructure.Repositories
         
         public IQueryable<Project> FindByManager(Guid managerId)
         {
-            return Query.Where(p => p.ManagerId == managerId);
+            return Query.Include(x => x.Goals).ThenInclude(x => x.Donations).Where(p => p.ManagerId == managerId);
         }
         
 

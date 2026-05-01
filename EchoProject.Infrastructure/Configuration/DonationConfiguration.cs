@@ -58,7 +58,7 @@ namespace EchoProject.Infrastructure.Configuration
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(d => d.Goal)
-                .WithMany()
+                .WithMany(g => g.Donations)
                 .HasForeignKey(d => d.GoalId)
                 .OnDelete(DeleteBehavior.Restrict);
 
