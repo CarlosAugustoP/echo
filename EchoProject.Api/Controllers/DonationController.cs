@@ -104,6 +104,13 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
-      
+        [HttpGet("pending-by-project/{projectId}")]
+        [MandatoryUserFilter([UserRole.NGO])]
+        public IActionResult GetPendingDonationsByProject(Guid projectId, [FromQuery] PageRequest p)
+        {
+            var result = _donationService.GetPendingDonationsByProject(projectId, p, CurrentUser!);
+            return Success(result);
+        }
+
     }
 }

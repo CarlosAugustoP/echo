@@ -106,5 +106,11 @@ namespace EchoProject.Infrastructure.Repositories
                 .Where(de => de.Donation.Id == donationId);
         }
 
+        public IQueryable<Donation> FindPendingDonationsByProjectId(Guid projectId)
+        {
+            return _db.Donations
+                .Include(d => d.Goal)
+                .Where(d => d.Goal.ProjectId == projectId && d.Status == DonationStatus.TransferredToVendorPending);
+        }
     }
 }

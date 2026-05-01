@@ -139,6 +139,16 @@ namespace EchoProject.Application.Services
             return true;
         }
 
+        public PaginatedList<DonationDTO> GetPendingDonationsByProject(Guid projectId, PageRequest p, UserDTO user)
+        {
+            var project = _unitOfWork.Projects.FindByManager(user.Id).FirstOrDefault(p => p.Id == projectId)
+                ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado ou você não o gerencia.");
+            
+            return _unitOfWork.Donations.FindPendingDonationsByProjectId(projectId)
+                .Paginate(p.PageNumber,p.PageSize)
+                .Select(x => _mapper.Map<DonationDTO>(x));
+        }
+
         public async Task<Dictionary<string,decimal>> GetGlobalDonationDistributionPerGoalTypeAsync(int topN) 
             => await _unitOfWork.Goals.GetTrendingGoalTypes(topN);
 
