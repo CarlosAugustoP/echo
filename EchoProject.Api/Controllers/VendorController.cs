@@ -62,6 +62,19 @@ namespace EchoProject.Api.Controllers
         }
 
         /// <summary>
+        /// Get all vendors associated with a goal.
+        /// </summary>
+        /// <param name="goalId"></param>
+        /// <returns></returns>
+        [HttpGet("by-goal/{goalId}")]
+        [MandatoryUserFilter]
+        public async Task<IActionResult> GetVendorsByGoal([FromRoute] Guid goalId)
+        {
+            var result = await _vendorService.GetVendorsByGoal(goalId);
+            return Success(result);
+        }
+
+        /// <summary>
         /// Get by id
         /// </summary>
         /// <param name="vendorId"></param>
@@ -86,5 +99,7 @@ namespace EchoProject.Api.Controllers
             var result = await _vendorService.AssignVendorToGoalAsync(vendorId, goalId, CurrentUser!);
             return Success(result);
         }
+
+        
     }
 }

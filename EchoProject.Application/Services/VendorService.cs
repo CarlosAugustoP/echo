@@ -88,5 +88,13 @@ namespace EchoProject.Application.Services
 
             return true;
         }
+
+        public async Task<List<VendorDTO>> GetVendorsByGoal(Guid goalId)
+        {
+            var goal = await _unitOfWork.Goals.FindByIdAsync(goalId)
+                ?? throw new NotFoundException($"Meta com ID {goalId} não encontrada.");
+
+            return goal.Vendors.Select(v => _mapper.Map<VendorDTO>(v)).ToList();
+        }
     }
 }

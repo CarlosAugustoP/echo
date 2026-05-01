@@ -13,7 +13,8 @@ namespace EchoProject.Infrastructure.Repositories
         protected override IQueryable<Goal> Query => base.Query
             .Include(x => x.Project)
             .ThenInclude(x => x.Manager)
-            .Include(p => p.GoalType);
+            .Include(p => p.GoalType)
+            .Include(x => x.Vendors);
 
         public void AddGoalType(GoalType goalType)
         {
