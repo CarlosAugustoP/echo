@@ -28,9 +28,9 @@ namespace EchoProject.Domain.ProjectAggregate
             Title = title.Length < 100 && title.Length > 0 
                 ? title 
                 : throw new ArgumentException("O título deve ter entre 1 e 100 caracteres.");
-            Description = (description.Length < 500 && description.Length > 0)  
+            Description = (description.Length < 2000 && description.Length > 0)  
                 ? description
-                : throw new ArgumentException("A descrição deve ter entre 1 e 500 caracteres.");
+                : throw new ArgumentException("A descrição deve ter entre 1 e 2000 caracteres.");
             ManagerId = managerId;
             SmartContractAddress = new SmartContractAddress("TemporaryAddress");
         }
