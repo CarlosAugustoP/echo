@@ -180,5 +180,49 @@ namespace EchoProject.Api.Controllers
             var blogPosts = await _service.GetBlogPostsForYouAsync(CurrentUser!, pageRequest);
             return Success(blogPosts);
         }
+
+        /// <summary>
+        /// Update the main image of a project. Only accessible by the project manager (NGO user who created the project).
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPut("{projectId}/main-image")]
+        [MandatoryUserFilter([UserRole.NGO])]
+        public async Task<IActionResult> UpdateMainImage(Guid projectId, [FromBody] DocumentRequest request)
+        {
+            var project = await _service.UpdateMainImageAsync(projectId, request.Base64String, CurrentUser!);
+            return Success(project);
+        }
+
+        /// <summary>
+        /// Add an image to the project. Only accessible by the project manager (NGO user who created the project).
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("{projectId}/images")]
+        [MandatoryUserFilter([UserRole.NGO])]
+        public async Task<IActionResult> AddImage(Guid projectId, [FromBody] DocumentRequest request)
+        {
+            var project = await _service.AddImageAsync(projectId, request.Base64String, CurrentUser!);
+            return Success(project);
+        }
+
+        /// <summary>
+        /// Remove an image from the project. Only accessible by the project manager (NGO user who created the project).
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpDelete("{projectId}/images")]
+        [MandatoryUserFilter([UserRole.NGO])]
+        public async Task<IActionResult> RemoveImage(Guid projectId, [FromBody] DocumentRemoveRequest request)
+        {
+            var project = await _service.RemoveImageAsync(projectId, request.ImageUrl, CurrentUser!);
+            return Success(project);
+        }
+
+        
     }
 }

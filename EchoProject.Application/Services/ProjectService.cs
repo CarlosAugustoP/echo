@@ -157,13 +157,14 @@ namespace EchoProject.Application.Services
             }
             else
             {
-                project.AddOrUpdateMainImage(mainImage);
+                var url = await _storage.UploadFileAsync($"project_{projectId}_mainimage_{Guid.NewGuid()}", mainImage.ToStream());
+                project.AddOrUpdateMainImage(url);
             }
             await _unitOfWork.CommitAsync();
             return _mapper.Map<ProjectDTO>(project);
         }
 
-        public async Task<ProjectDTO> AddImageAsync(Guid projectId, string imageUrl, UserDTO user)
+        public async Task<ProjectDTO> AddImageAsync(Guid projectId, string imgBase64, UserDTO user)
         {
             var project = await _unitOfWork.Projects.FindByIdAsync(projectId)
                 ?? throw new NotFoundException($"Projeto com ID {projectId} não encontrado.");
@@ -171,7 +172,8 @@ namespace EchoProject.Application.Services
             if (project.ManagerId != user.Id)
                 throw new UnauthorizedException("Apenas o gestor do projeto pode adicionar imagens ao projeto.");
 
-            project.AddImage(imageUrl);
+            var url = await _storage.UploadFileAsync($"project_{projectId}_image_{Guid.NewGuid()}", imgBase64.ToStream());
+            project.AddImage(url);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<ProjectDTO>(project);
         }
@@ -184,7 +186,7 @@ namespace EchoProject.Application.Services
             if (project.ManagerId != user.Id)
                 throw new UnauthorizedException("Apenas o gestor do projeto pode remover imagens do projeto.");
 
-            project.RemoveImage(imageUrl); //TODO test this!!!
+            project.RemoveImage(imageUrl); 
             await _unitOfWork.CommitAsync();
             return _mapper.Map<ProjectDTO>(project);
         }
