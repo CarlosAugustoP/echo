@@ -131,7 +131,7 @@ namespace EchoProject.Application.Services
                 throw new UnauthorizedException("Apenas o gestor do projeto pode remover metas do projeto.");
 
             var goal = project.RemoveGoal(goalId);
-            _unitOfWork.Goals.Remove(goal);
+            _unitOfWork.Goals.Update(goal);
             await _unitOfWork.CommitAsync();
         }
 
