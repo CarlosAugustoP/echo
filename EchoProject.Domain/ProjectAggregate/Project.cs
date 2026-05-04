@@ -20,7 +20,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public IReadOnlyCollection<ImageUrl> Images => _images.AsReadOnly();
         private readonly List<Goal> _goals = [];
         private readonly List<ProjectBlogPost> _blogPosts = [];
-        public IReadOnlyCollection<Goal> Goals => _goals.AsReadOnly();
+        public IReadOnlyCollection<Goal> Goals => _goals.Where(g => g.DeletedAt is null).ToList().AsReadOnly();
         public IReadOnlyCollection<ProjectBlogPost> BlogPosts => _blogPosts.AsReadOnly();
         private Project() { } // EF Core
         public Project(string title, string description, Guid managerId)
@@ -61,10 +61,10 @@ namespace EchoProject.Domain.ProjectAggregate
 
         public Goal RemoveGoal(Guid goalId)
         {
-            var goal = _goals.FirstOrDefault(g => g.Id == goalId);
+            var goal = _goals.FirstOrDefault(g => g.Id == goalId && g.DeletedAt is null);
             if (goal is not null)
             { 
-                _goals.Remove(goal);
+                goal.Delete();
                 return goal;
             }
             throw new ArgumentException("Meta não encontrada.");

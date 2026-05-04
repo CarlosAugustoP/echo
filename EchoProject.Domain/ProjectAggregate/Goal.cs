@@ -23,6 +23,7 @@ namespace EchoProject.Domain.ProjectAggregate
         public virtual ICollection<Donation> Donations { get; private set; } = [];
         public bool IsAchieved => CurrentAmount >= TargetAmount && !IsMoney();
         public string? Description { get; private set; }
+        public DateTime? DeletedAt { get; private set; }
 
         // Construtor atualizado
         internal Goal(Guid projectId, string title, decimal target, GoalType goalType, decimal? costPerUnit = null, string? description = null)
@@ -80,6 +81,11 @@ namespace EchoProject.Domain.ProjectAggregate
         public void RegisterDonation(decimal amount)
         {
             CurrentAmount += amount;
+        }
+
+        public void Delete()
+        {
+            DeletedAt ??= DateTime.UtcNow;
         }
     }
 }

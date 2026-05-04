@@ -52,6 +52,12 @@ namespace EchoProject.Infrastructure.Configuration
                 .HasColumnType("decimal(38,18)")
                 .IsRequired(false);
 
+            builder.Property(g => g.DeletedAt)
+                .HasColumnName("deleted_at")
+                .IsRequired(false);
+
+            builder.HasQueryFilter(g => g.DeletedAt == null);
+
             builder.HasMany(g => g.Vendors)
                 .WithMany()
                 .UsingEntity<Dictionary<string, object>>(
