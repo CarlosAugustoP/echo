@@ -39,18 +39,18 @@ namespace EchoProject.Application.Services
         public async Task<VendorDTO> CreateAsync(VendorRequest request)
         {
             var existingByTaxId = await _unitOfWork.Vendors.FindAsync(x => x.Document.Value == request.TaxId);
-            
+
             if (existingByTaxId != null)
             {
                 existingByTaxId.Reavaluate();
-                return _mapper.Map<VendorDTO>(existingByTaxId);   
+                return _mapper.Map<VendorDTO>(existingByTaxId);
             }
 
             var vendor = new Vendor
             (
                 request.Name,
-                new TaxId(request.TaxId), 
-                new WalletAddress(request.WalletAddress), 
+                new TaxId(request.TaxId),
+                new WalletAddress(request.WalletAddress),
                 request.TypeItemSupply
             );
             await _unitOfWork.Vendors.AddAsync(vendor);
@@ -76,10 +76,10 @@ namespace EchoProject.Application.Services
         {
             var vendor = await _unitOfWork.Vendors.FindByIdAsync(vendorId)
                 ?? throw new NotFoundException($"Fornecedor com ID {vendorId} não encontrado.");
-            
+
             var goal = await _unitOfWork.Goals.FindByIdAsync(goalId)
                 ?? throw new NotFoundException($"Meta com ID {goalId} não encontrada.");
-            
+
             if (goal.Project.ManagerId != ngo.Id)
                 throw new UnauthorizedException("Apenas o gestor do projeto pode vincular fornecedores às metas.");
 
@@ -97,12 +97,21 @@ namespace EchoProject.Application.Services
             return goal.Vendors.Select(v => _mapper.Map<VendorDTO>(v)).ToList();
         }
 
-        public PaginatedList<VendorDTO> GetAll(PageRequest p, string? sr)
+        public VendorSearchResponseDTO GetAll(PageRequest p, string? sr)
         {
-            return _unitOfWork.Vendors
-                .FindAll(x => sr == null || x.Name.ToLower().Trim().Contains(sr.ToLower().Trim()))
-                .Paginate(p.PageNumber, p.PageSize)
-                .Select(x => _mapper.Map<VendorDTO>(x));
+            var query = _unitOfWork.Vendors
+                .FindAll(x => sr == null || x.Name.ToLower().Trim().Contains(sr.ToLower().Trim()));
+            
+            int totalPending = query.Count(x => x.Status == VendorStatus.Pending); 
+            int totalApproved = query.Count(x => x.Status == VendorStatus.Approved);
+
+            return new VendorSearchResponseDTO
+            (
+                query.Paginate(p.PageNumber, p.PageSize)
+                    .Select(x => _mapper.Map<VendorDTO>(x)),
+                totalPending,
+                totalApproved
+            );
         }
     }
 }
