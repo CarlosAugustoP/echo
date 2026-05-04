@@ -100,6 +100,10 @@ namespace EchoProject.Api.Controllers
             return Success(result);
         }
 
-        
+        [HttpGet("search")]
+        public IActionResult SearchVendors([FromQuery] PageRequest p, [FromQuery] string? sr)
+        {
+            return Success(_vendorService.GetAll(p, sr));
+        }
     }
 }

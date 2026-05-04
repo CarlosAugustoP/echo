@@ -96,5 +96,13 @@ namespace EchoProject.Application.Services
 
             return goal.Vendors.Select(v => _mapper.Map<VendorDTO>(v)).ToList();
         }
+
+        public PaginatedList<VendorDTO> GetAll(PageRequest p, string? sr)
+        {
+            return _unitOfWork.Vendors
+                .FindAll(x => sr == null || x.Name.ToLower().Trim().Contains(sr.ToLower().Trim()))
+                .Paginate(p.PageNumber, p.PageSize)
+                .Select(x => _mapper.Map<VendorDTO>(x));
+        }
     }
 }
