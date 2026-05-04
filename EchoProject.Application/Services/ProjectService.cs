@@ -118,6 +118,7 @@ namespace EchoProject.Application.Services
                 ?? throw new NotFoundException($"Tipo de meta com ID {goalRequest.GoalTypeId} não encontrado.");
 
             var goal = project.AddGoal(goalRequest.Title, goalRequest.TargetAmount, goalType, goalRequest.CostPerUnit);
+            await _unitOfWork.Goals.AddAsync(goal);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<GoalDTO>(goal);
         }
