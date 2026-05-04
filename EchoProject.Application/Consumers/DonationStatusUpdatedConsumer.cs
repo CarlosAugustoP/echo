@@ -1,6 +1,7 @@
 using EchoProject.Application.Events;
 using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Interfaces;
+using EchoProject.Domain.Notifications;
 using Microsoft.Extensions.Logging;
 using Rebus.Handlers; 
 
@@ -45,7 +46,12 @@ namespace EchoProject.Application.Consumers
 
                 donation.UpdateStatus(message.NewStatus);
                 var statusEvent = donation.AddEvent(message.NewStatus);
-                _unitOfWork.Donations.AddDonationEvent(statusEvent);                
+                _unitOfWork.Donations.AddDonationEvent(statusEvent);
+
+                foreach (var notification in BuildNotifications(donation, message.NewStatus))
+                {
+                    await _unitOfWork.Notifications.AddAsync(notification);
+                }
 
                 await _unitOfWork.CommitAsync();
 
@@ -56,6 +62,42 @@ namespace EchoProject.Application.Consumers
                 _logger.LogError(ex, "Erro ao processar atualização da doação {Id} no Consumer.", message.DonationId);
                 throw; 
             }
+        }
+
+        private static List<Notification> BuildNotifications(Donation donation, DonationStatus newStatus)
+        {
+            return newStatus switch
+            {
+                DonationStatus.TransferredToVendorConfirmed => CreateVendorConfirmedNotifications(donation),
+                DonationStatus.ImmediateTransferToNGOConfirmed => CreateNgoConfirmedNotifications(donation),
+                _ => []
+            };
+        }
+
+        private static List<Notification> CreateVendorConfirmedNotifications(Donation donation)
+        {
+            var notification = NotificationFactory.Create(NotificationType.SendToVendorConfirmed);
+            notification.Store(new SendToVendorConfirmedNotification.SendToVendorConfirmedNotificationModel(
+                donation.DonorId,
+                donation.Goal.Project.ManagerId,
+                donation.Amount,
+                donation.Goal.Project.Title,
+                donation.Goal.Title,
+                donation.TransferredToVendor?.Name ?? "fornecedor vinculado"));
+
+            return notification.GetNotifications();
+        }
+
+        private static List<Notification> CreateNgoConfirmedNotifications(Donation donation)
+        {
+            var notification = NotificationFactory.Create(NotificationType.SendToNGOConfirmed);
+            notification.Store(new SendToNGOConfirmedNotification.SendToNGOConfirmedNotificationModel(
+                donation.DonorId,
+                donation.Goal.Project.ManagerId,
+                donation.Amount,
+                donation.Goal.Project.Title));
+
+            return notification.GetNotifications();
         }
     }
 }

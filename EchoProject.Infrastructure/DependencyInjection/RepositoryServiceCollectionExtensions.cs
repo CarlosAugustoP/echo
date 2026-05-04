@@ -1,4 +1,5 @@
 using EchoProject.Domain.Interfaces;
+using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Repositories;
 using EchoProject.Infrastructure.Repositories;
 using EchoProject.Infrastructure.UnitOfWork;
@@ -15,6 +16,7 @@ namespace EchoProject.Infrastructure.DependencyInjection
             services.AddScoped<IGoalRepository, GoalRepository>();
             services.AddScoped<IDonationRepository, DonationRepository>();
             services.AddScoped<IVendorRepository, VendorRepository>();
+            services.AddScoped<IRepository<Notification>, EfRepository<Notification>>();
             services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
 
             return services;

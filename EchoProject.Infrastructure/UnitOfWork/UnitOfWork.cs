@@ -1,4 +1,5 @@
 using System.Data;
+using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Interfaces;
 using EchoProject.Domain.Repositories;
 using EchoProject.Infrastructure.Database;
@@ -15,6 +16,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
         public IUserRepository Users { get; }
         public IDonationRepository Donations { get; }
         public IVendorRepository Vendors { get; }
+        public IRepository<Notification> Notifications { get; }
 
 
         public UnitOfWork(
@@ -23,7 +25,8 @@ namespace EchoProject.Infrastructure.UnitOfWork
             IProjectRepository projects,
             IUserRepository users,
             IDonationRepository donations,
-            IVendorRepository vendors
+            IVendorRepository vendors,
+            IRepository<Notification> notifications
         )
         {
             _context = context;
@@ -32,6 +35,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
             Users = users;
             Donations = donations;
             Vendors = vendors;
+            Notifications = notifications;
 
         }
 

@@ -10,6 +10,7 @@ namespace EchoProject.Infrastructure.Database
     {
         public required DbSet<User> Users { get; set; }
         public required DbSet<Donation> Donations { get; set; }
+        public required DbSet<Notification> Notifications { get; set; }
         public required DbSet<Goal> Goals { get; set; }
         public required DbSet<Project> Projects { get; set; }
         public required DbSet<Vendor> Vendors { get; set; }
