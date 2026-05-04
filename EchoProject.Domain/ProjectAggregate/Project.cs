@@ -20,7 +20,8 @@ namespace EchoProject.Domain.ProjectAggregate
         public IReadOnlyCollection<ImageUrl> Images => _images.AsReadOnly();
         private readonly List<Goal> _goals = [];
         private readonly List<ProjectBlogPost> _blogPosts = [];
-        public IReadOnlyCollection<Goal> Goals => _goals.Where(g => g.DeletedAt is null).ToList().AsReadOnly();
+        public IReadOnlyCollection<Goal> Goals => _goals.AsReadOnly();
+        public IReadOnlyCollection<Goal> ActiveGoals => _goals.Where(g => g.DeletedAt is null).ToList().AsReadOnly();
         public IReadOnlyCollection<ProjectBlogPost> BlogPosts => _blogPosts.AsReadOnly();
         private Project() { } // EF Core
         public Project(string title, string description, Guid managerId)
@@ -42,7 +43,7 @@ namespace EchoProject.Domain.ProjectAggregate
         }
         public decimal GetProgress()
         {
-            var g = Goals.Where(x => x.GoalType.Name != PresetName.Money).ToDictionary(g => g.Id, g => g.CurrentAmount / g.TargetAmount);
+            var g = ActiveGoals.Where(x => x.GoalType.Name != PresetName.Money).ToDictionary(g => g.Id, g => g.CurrentAmount / g.TargetAmount);
             return g.Count > 0 ? g.Values.Average() * 100 : 0;
         }
 
@@ -77,7 +78,7 @@ namespace EchoProject.Domain.ProjectAggregate
 
         public bool HasPendingDonations()
         {
-            return Goals.Any(g => g.Donations.Any(d => d.Status == DonationStatus.TransferredToContract));
+            return ActiveGoals.Any(g => g.Donations.Any(d => d.Status == DonationStatus.TransferredToContract));
         }
         
         public void RemoveMainImage()

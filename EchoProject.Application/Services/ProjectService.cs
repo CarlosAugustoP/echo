@@ -117,7 +117,9 @@ namespace EchoProject.Application.Services
             var goalType = await _unitOfWork.Goals.FindGoalTypeByIdAsync(goalRequest.GoalTypeId)
                 ?? throw new NotFoundException($"Tipo de meta com ID {goalRequest.GoalTypeId} não encontrado.");
 
-            var goal = project.AddGoal(goalRequest.Title, goalRequest.TargetAmount, goalType, goalRequest.CostPerUnit);
+            var goal = project.AddGoal(goalRequest.Title, goalRequest.TargetAmount, goalType, goalRequest.CostPerUnit, goalRequest.Description);
+            var vendors = await FetchVendorsAsync(goalRequest.VendorIds);
+            goal.AssignVendors(vendors);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<GoalDTO>(goal);
         }
