@@ -7,6 +7,11 @@ namespace EchoProject.Infrastructure.Repositories
 {
     public class VendorRepository(EchoDbContext context) : EfRepository<Vendor>(context), IVendorRepository
     {
-        
+        public async Task<Vendor?> FindByTaxIdAsync(string taxId, CancellationToken ct = default)
+        {
+            return await Query.FirstOrDefaultAsync(
+                v => EF.Property<string>(v, nameof(Vendor.Document)) == taxId,
+                ct);
+        }
     };
 }
