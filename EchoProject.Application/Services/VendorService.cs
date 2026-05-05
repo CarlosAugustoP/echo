@@ -39,7 +39,7 @@ namespace EchoProject.Application.Services
         public async Task<VendorDTO> CreateAsync(VendorRequest request)
         {
             var taxId = new TaxId(request.TaxId);
-            var existingByTaxId = await _unitOfWork.Vendors.FindByTaxIdAsync(taxId.Value);
+            var existingByTaxId = await _unitOfWork.Vendors.FindByTaxIdAsync(taxId);
 
             if (existingByTaxId != null)
             {
