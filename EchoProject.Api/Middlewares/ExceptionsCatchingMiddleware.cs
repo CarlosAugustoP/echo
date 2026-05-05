@@ -52,7 +52,7 @@ namespace EchoProject.Api.Middlewares
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
                 var response = ApiResult<string?>
-                    .Failure("Ocorreu um erro inesperado.", "INTERNAL_SERVER_ERROR");
+                    .Failure("Ocorreu um erro inesperado.", "INTERNAL_SERVER_ERROR", ex.StackTrace);
 
                 await context.Response.WriteAsJsonAsync(response);
             }
