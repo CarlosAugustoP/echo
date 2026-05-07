@@ -9,6 +9,7 @@ using EchoProject.Application.Requests.Pagination;
 using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.Interfaces;
+using EchoProject.Domain.Notifications;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
@@ -50,6 +51,16 @@ namespace EchoProject.Application.Services
                 var donationEvent = donation.AddEvent(donation.Status);
                 
                 _unitOfWork.Donations.AddDonationEvent(donationEvent);
+
+                var notificationRequest = donation.GetNotificationRequest();
+                if (notificationRequest is not null)
+                {
+                    foreach (var notification in NotificationFactory.Create(notificationRequest.Type, notificationRequest.Model))
+                    {
+                        await _unitOfWork.Notifications.AddAsync(notification);
+                    }
+                }
+
                 await _unitOfWork.CommitAsync();
             }
             catch (Exception ex)

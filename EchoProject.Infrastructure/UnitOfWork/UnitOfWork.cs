@@ -16,7 +16,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
         public IUserRepository Users { get; }
         public IDonationRepository Donations { get; }
         public IVendorRepository Vendors { get; }
-        public IRepository<Notification> Notifications { get; }
+        public INotificationRepository Notifications { get; }
 
 
         public UnitOfWork(
@@ -26,7 +26,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
             IUserRepository users,
             IDonationRepository donations,
             IVendorRepository vendors,
-            IRepository<Notification> notifications
+            INotificationRepository notifications
         )
         {
             _context = context;

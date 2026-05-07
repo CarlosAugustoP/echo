@@ -10,6 +10,7 @@ namespace EchoProject.Domain.DonationAggregate
         public DateTime CreatedAt { get; private set; } = DateTime.Now;
         public Guid SentTo { get; private set; }
         public virtual User SentToUser { get; private set; }
+        public bool IsRead { get; private set; } = false;
 
         private Notification() { }
 
@@ -18,6 +19,11 @@ namespace EchoProject.Domain.DonationAggregate
             Message = message;
             Description = description;
             SentTo = sentTo;
+        }
+
+        public void Read()
+        {
+            IsRead = true;
         }
     }
 }

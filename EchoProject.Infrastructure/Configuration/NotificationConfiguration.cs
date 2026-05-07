@@ -33,6 +33,10 @@ namespace EchoProject.Infrastructure.Configuration
                 .HasColumnName("sent_to")
                 .IsRequired();
 
+            builder.Property(n => n.IsRead)
+                .HasColumnName("is_read")
+                .IsRequired();
+
             builder.HasOne(n => n.SentToUser)
                 .WithMany()
                 .HasForeignKey(n => n.SentTo)

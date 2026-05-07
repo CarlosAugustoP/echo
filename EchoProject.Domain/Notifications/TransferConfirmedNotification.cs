@@ -1,31 +1,25 @@
-
 using EchoProject.Domain.DonationAggregate;
+using EchoProject.Domain.Notifications.Models;
 
 namespace EchoProject.Domain.Notifications
 {
-    public class TransferConfirmedNotification : INotification
+    public class TransferConfirmedNotification : NotificationBase<TransferConfirmedNotificationModel>
     {
-        private readonly List<Notification> _notifications = [];
+        public override NotificationType Type => NotificationType.TransferConfirmed;
 
-        public record TransferConfirmedNotificationModel(Guid DonorId, Guid RecipientId, decimal Amount, string ProjectName);
-
-        public void Store(object model)
+        protected override List<Notification> CreateCore(TransferConfirmedNotificationModel model)
         {
-            if (model is not TransferConfirmedNotificationModel transferModel)
-                throw new ArgumentException("Invalid model for TransferConfirmedNotification");
-
-            const string donorMessage = "Sua doação foi transferida com sucesso!";
-            string donorDescription = $"Agradecemos por sua generosidade. Sua doação de {transferModel.Amount} para o projeto {transferModel.ProjectName} foi transferida para o Smart Contract e está aguardando a transferência para um fornecedor confiável.";          
-
-            _notifications.Add
-            (
-                new Notification(donorMessage, donorDescription, transferModel.DonorId)   
-            );
-        }
-
-        public List<Notification> GetNotifications()
-        {
-            return _notifications;
+            const string donorMessage = "Sua doacao foi transferida com sucesso!";
+            string donorDescription =
+                $"Agradecemos por sua generosidade. Sua doacao de {model.Amount} para o projeto {model.ProjectName} foi transferida para o Smart Contract e esta aguardando a transferencia para um fornecedor confiavel.";
+            const string ngoMessage = "Nova doação recebida!";
+            string ngoDescription =
+                $"O projeto {model.ProjectName} recebeu uma nova doacao de {model.Amount}. Realiza a transferência para o fornecedor e continue fortalecendo o living ledger!";
+            return
+            [
+                new(donorMessage, donorDescription, model.DonorId),
+                new(ngoMessage, ngoDescription, model.NgoId)
+            ];
         }
     }
 }

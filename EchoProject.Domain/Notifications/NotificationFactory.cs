@@ -1,10 +1,9 @@
 namespace EchoProject.Domain.Notifications
 {
-    public class NotificationFactory
+    public static class NotificationFactory
     {
         public static INotification Create(NotificationType type)
         {
-            //TODO
             return type switch
             {
                 NotificationType.TransferConfirmed => new TransferConfirmedNotification(),
@@ -12,6 +11,11 @@ namespace EchoProject.Domain.Notifications
                 NotificationType.SendToNGOConfirmed => new SendToNGOConfirmedNotification(),
                 _ => throw new ArgumentException("Invalid notification type")
             };
+        }
+
+        public static List<DonationAggregate.Notification> Create(NotificationType type, INotificationModel model)
+        {
+            return Create(type).Create(model);
         }
     }
 }

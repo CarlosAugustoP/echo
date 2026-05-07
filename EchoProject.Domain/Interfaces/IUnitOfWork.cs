@@ -11,7 +11,7 @@ namespace EchoProject.Domain.Interfaces
         IUserRepository Users { get; }
         IDonationRepository Donations { get; }
         IVendorRepository Vendors { get; }
-        IRepository<Notification> Notifications { get; }
+        INotificationRepository Notifications { get; }
 
         int Commit();
         Task<int> CommitAsync(CancellationToken ct = default);

@@ -4,7 +4,7 @@ namespace EchoProject.Domain.Notifications
 {
     public interface INotification
     {
-        void Store(object model);
-        List<Notification> GetNotifications();
+        NotificationType Type { get; }
+        List<Notification> Create(INotificationModel model);
     }
 }

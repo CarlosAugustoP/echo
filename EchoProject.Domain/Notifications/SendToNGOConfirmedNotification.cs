@@ -1,37 +1,27 @@
 using EchoProject.Domain.DonationAggregate;
+using EchoProject.Domain.Notifications.Models;
 
 namespace EchoProject.Domain.Notifications
 {
-    public class SendToNGOConfirmedNotification : INotification
+    public class SendToNGOConfirmedNotification : NotificationBase<SendToNGOConfirmedNotificationModel>
     {
-        private readonly List<Notification> _notifications = [];
+        public override NotificationType Type => NotificationType.SendToNGOConfirmed;
 
-        public record SendToNGOConfirmedNotificationModel(
-            Guid DonorId,
-            Guid NgoId,
-            decimal Amount,
-            string ProjectName);
-
-        public void Store(object model)
+        protected override List<Notification> CreateCore(SendToNGOConfirmedNotificationModel model)
         {
-            if (model is not SendToNGOConfirmedNotificationModel ngoModel)
-                throw new ArgumentException("Invalid model for SendToNGOConfirmedNotification");
-
-            const string donorMessage = "Sua doação foi entregue à ONG com sucesso!";
+            const string donorMessage = "Sua doacao foi entregue a ONG com sucesso!";
             string donorDescription =
-                $"Sua doação de {ngoModel.Amount} para o projeto {ngoModel.ProjectName} foi confirmada na blockchain e recebida pela ONG responsável.";
+                $"Sua doacao de {model.Amount} para o projeto {model.ProjectName} foi confirmada na blockchain e recebida pela ONG responsavel.";
 
-            const string ngoMessage = "Transferência para a ONG confirmada!";
+            const string ngoMessage = "Transferencia para a ONG confirmada!";
             string ngoDescription =
-                $"A doação de {ngoModel.Amount} para o projeto {ngoModel.ProjectName} foi confirmada na blockchain e já está disponível para a ONG.";
+                $"A doacao de {model.Amount} para o projeto {model.ProjectName} foi confirmada na blockchain e ja esta disponivel para sua carteira.";
 
-            _notifications.Add(new Notification(donorMessage, donorDescription, ngoModel.DonorId));
-            _notifications.Add(new Notification(ngoMessage, ngoDescription, ngoModel.NgoId));
-        }
-
-        public List<Notification> GetNotifications()
-        {
-            return _notifications;
+            return
+            [
+                new Notification(donorMessage, donorDescription, model.DonorId),
+                new Notification(ngoMessage, ngoDescription, model.NgoId)
+            ];
         }
     }
 }
