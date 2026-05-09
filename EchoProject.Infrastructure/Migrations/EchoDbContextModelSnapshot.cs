@@ -114,6 +114,95 @@ namespace EchoProject.Infrastructure.Migrations
                     b.ToTable("donation_events", (string)null);
                 });
 
+            modelBuilder.Entity("EchoProject.Domain.DonationAggregate.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_read");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("message");
+
+                    b.Property<Guid>("SentTo")
+                        .HasColumnType("uuid")
+                        .HasColumnName("sent_to");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SentTo");
+
+                    b.HasIndex("SentTo", "IsRead");
+
+                    b.ToTable("notifications", (string)null);
+                });
+
+            modelBuilder.Entity("EchoProject.Domain.Notifications.PushDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_used_at");
+
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("platform");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("token");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "IsActive");
+
+                    b.ToTable("push_devices", (string)null);
+                });
+
             modelBuilder.Entity("EchoProject.Domain.ProjectAggregate.Goal", b =>
                 {
                     b.Property<Guid>("Id")
@@ -435,6 +524,28 @@ namespace EchoProject.Infrastructure.Migrations
                     b.Navigation("GoalType");
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("EchoProject.Domain.DonationAggregate.Notification", b =>
+                {
+                    b.HasOne("EchoProject.Domain.UserAggregate.User", "SentToUser")
+                        .WithMany()
+                        .HasForeignKey("SentTo")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SentToUser");
+                });
+
+            modelBuilder.Entity("EchoProject.Domain.Notifications.PushDevice", b =>
+                {
+                    b.HasOne("EchoProject.Domain.UserAggregate.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EchoProject.Domain.ProjectAggregate.Project", b =>

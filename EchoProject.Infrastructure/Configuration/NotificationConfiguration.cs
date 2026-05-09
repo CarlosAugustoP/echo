@@ -37,6 +37,9 @@ namespace EchoProject.Infrastructure.Configuration
                 .HasColumnName("is_read")
                 .IsRequired();
 
+            builder.HasIndex(n => n.SentTo);
+            builder.HasIndex(n => new { n.SentTo, n.IsRead });
+
             builder.HasOne(n => n.SentToUser)
                 .WithMany()
                 .HasForeignKey(n => n.SentTo)

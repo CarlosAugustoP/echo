@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using EchoProject.Api.DependencyInjection;
+using EchoProject.Api.Hubs;
 using EchoProject.Application.DependencyInjection;
 using EchoProject.Infrastructure.DependencyInjection;
 
@@ -19,6 +20,7 @@ builder.Services.AddLogging(config =>
 builder.Services.AddCorsPolicy();
 builder.Services.ConfigureSwagger();
 builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddNotificationsInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 var app = builder.Build();
 
@@ -33,4 +35,5 @@ app.UseAuthorization();
 await app.SubscribeRebusEventsAsync();
 app.AddMiddlewares();
 app.MapControllers();
+app.MapHub<NotificationHub>("/hubs/notifications");
 app.Run();

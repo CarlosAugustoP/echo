@@ -7,7 +7,7 @@ namespace EchoProject.Domain.DonationAggregate
     {
         public string Message { get; private set; }
         public string Description { get; private set; }
-        public DateTime CreatedAt { get; private set; } = DateTime.Now;
+        public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public Guid SentTo { get; private set; }
         public virtual User SentToUser { get; private set; }
         public bool IsRead { get; private set; } = false;

@@ -9,7 +9,6 @@ using EchoProject.Application.Requests.Pagination;
 using EchoProject.Domain.DonationAggregate;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
 using EchoProject.Domain.Interfaces;
-using EchoProject.Domain.Notifications;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Infrastructure.Blockchain.Interfaces;
@@ -18,12 +17,18 @@ using Microsoft.Extensions.Logging;
 namespace EchoProject.Application.Services
 {
     [AppService]
-    public class DonationService(IUnitOfWork unitOfWork, IEthereumService ethereumService, ILogger<DonationService> logger, IMapper mapper)
+    public class DonationService(
+        IUnitOfWork unitOfWork,
+        IEthereumService ethereumService,
+        ILogger<DonationService> logger,
+        IMapper mapper,
+        NotificationPipelineService notificationPipeline)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IEthereumService _ethereum = ethereumService;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<DonationService> _logger = logger;
+        private readonly NotificationPipelineService _notificationPipeline = notificationPipeline;
         
         public async Task<bool> DonateAsync(DonationRequest request, UserDTO donor)
         {
@@ -52,16 +57,10 @@ namespace EchoProject.Application.Services
                 
                 _unitOfWork.Donations.AddDonationEvent(donationEvent);
 
-                var notificationRequest = donation.GetNotificationRequest();
-                if (notificationRequest is not null)
-                {
-                    foreach (var notification in NotificationFactory.Create(notificationRequest.Type, notificationRequest.Model))
-                    {
-                        await _unitOfWork.Notifications.AddAsync(notification);
-                    }
-                }
+                var notifications = await _notificationPipeline.QueueAsync(donation.GetNotificationRequest());
 
                 await _unitOfWork.CommitAsync();
+                await _notificationPipeline.DeliverAsync(notifications);
             }
             catch (Exception ex)
             {

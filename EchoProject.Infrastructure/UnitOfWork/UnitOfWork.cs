@@ -17,6 +17,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
         public IDonationRepository Donations { get; }
         public IVendorRepository Vendors { get; }
         public INotificationRepository Notifications { get; }
+        public IPushDeviceRepository PushDevices { get; }
 
 
         public UnitOfWork(
@@ -26,7 +27,8 @@ namespace EchoProject.Infrastructure.UnitOfWork
             IUserRepository users,
             IDonationRepository donations,
             IVendorRepository vendors,
-            INotificationRepository notifications
+            INotificationRepository notifications,
+            IPushDeviceRepository pushDevices
         )
         {
             _context = context;
@@ -36,7 +38,7 @@ namespace EchoProject.Infrastructure.UnitOfWork
             Donations = donations;
             Vendors = vendors;
             Notifications = notifications;
-
+            PushDevices = pushDevices;
         }
 
         public int Commit() => _context.SaveChanges();

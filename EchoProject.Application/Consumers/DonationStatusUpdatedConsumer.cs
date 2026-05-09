@@ -1,6 +1,6 @@
 using EchoProject.Application.Events;
+using EchoProject.Application.Services;
 using EchoProject.Domain.Interfaces;
-using EchoProject.Domain.Notifications;
 using Microsoft.Extensions.Logging;
 using Rebus.Handlers;
 
@@ -10,11 +10,16 @@ namespace EchoProject.Application.Consumers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<DonationStatusUpdatedConsumer> _logger;
+        private readonly NotificationPipelineService _notificationPipeline;
 
-        public DonationStatusUpdatedConsumer(IUnitOfWork unitOfWork, ILogger<DonationStatusUpdatedConsumer> logger)
+        public DonationStatusUpdatedConsumer(
+            IUnitOfWork unitOfWork,
+            ILogger<DonationStatusUpdatedConsumer> logger,
+            NotificationPipelineService notificationPipeline)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _notificationPipeline = notificationPipeline;
         }
 
         public async Task Handle(DonationStatusUpdatedMessage message)
@@ -49,16 +54,10 @@ namespace EchoProject.Application.Consumers
                 var statusEvent = donation.AddEvent(message.NewStatus);
                 _unitOfWork.Donations.AddDonationEvent(statusEvent);
 
-                var notificationRequest = donation.GetNotificationRequest();
-                if (notificationRequest is not null)
-                {
-                    foreach (var notification in NotificationFactory.Create(notificationRequest.Type, notificationRequest.Model))
-                    {
-                        await _unitOfWork.Notifications.AddAsync(notification);
-                    }
-                }
+                var notifications = await _notificationPipeline.QueueAsync(donation.GetNotificationRequest());
 
                 await _unitOfWork.CommitAsync();
+                await _notificationPipeline.DeliverAsync(notifications);
 
                 _logger.LogInformation(">>> [Consumer] Sucesso: Banco de dados atualizado para a doacao {Id}.",
                     message.DonationId);

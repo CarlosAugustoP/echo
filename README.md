@@ -211,6 +211,8 @@ Required GitHub repository **secrets**:
 - `AUTOMAPPER_LICENSE_KEY` -> `AutoMapper:LicenseKey`
 - `SUPABASE_URL` -> `Supabase:Url`
 - `SUPABASE_KEY` -> `Supabase:Key`
+- `FIREBASE_PROJECT_ID` -> `FirebasePushNotifications:ProjectId`
+- `FIREBASE_CREDENTIALS_BASE64` -> `FirebasePushNotifications:CredentialsBase64`
 - `RABBITMQ_USERNAME` -> `RabbitMqSettings:Username`
 - `RABBITMQ_PASSWORD` -> `RabbitMqSettings:Password`
 
