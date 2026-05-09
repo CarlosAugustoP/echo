@@ -1,12 +1,14 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace EchoProject.Infrastructure.Migrations
 {
+    /// <inheritdoc />
     public partial class AddNotificationsAndPushDevices : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -77,6 +79,7 @@ namespace EchoProject.Infrastructure.Migrations
                 columns: new[] { "user_id", "is_active" });
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

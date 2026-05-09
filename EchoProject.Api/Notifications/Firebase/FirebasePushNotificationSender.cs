@@ -66,6 +66,12 @@ namespace EchoProject.Api.Notifications.Firebase
                     return null;
                 }
 
+                if (_settings.CredentialsBase64 is null)
+                {
+                    _logger.LogError("Firebase Push desabilitado: CredentialsBase64 nao fornecido.");
+                    return null;
+                }
+
                 try
                 {
                     var json = Encoding.UTF8.GetString(Convert.FromBase64String(_settings.CredentialsBase64));
