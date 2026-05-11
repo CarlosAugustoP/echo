@@ -52,6 +52,8 @@ namespace EchoProject.Api.Notifications.Firebase
 
         private FirebaseApp? GetOrCreateApp()
         {
+            _logger.LogDebug("Obtendo instância do FirebaseApp para envio de push notifications.");
+            
             if (_firebaseApp is not null)
                 return _firebaseApp;
 
