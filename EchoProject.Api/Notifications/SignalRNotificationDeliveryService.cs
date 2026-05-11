@@ -34,7 +34,9 @@ namespace EchoProject.Api.Notifications
             {
                 var dto = _mapper.Map<NotificationDTO>(notification);
                 var unreadCount = await _unitOfWork.Notifications.CountUnreadByUserIdAsync(notification.SentTo, ct);
-
+                
+                _logger.LogInformation("[SIGNALR] Enviando notificação {NotificationId} para o usuário {UserId}. Unread count: {UnreadCount}.", notification.Id, notification.SentTo, unreadCount);
+                
                 await _hubContext.Clients.User(notification.SentTo.ToString()).NotificationReceived(dto);
                 await _hubContext.Clients.User(notification.SentTo.ToString()).UnreadCountUpdated(
                     new UnreadNotificationsCountDTO { Count = unreadCount });

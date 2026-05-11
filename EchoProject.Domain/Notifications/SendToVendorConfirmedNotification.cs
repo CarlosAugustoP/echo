@@ -11,11 +11,11 @@ namespace EchoProject.Domain.Notifications
         {
             const string donorMessage = "Sua doacao chegou ao fornecedor com sucesso!";
             string donorDescription =
-                $"Sua doacao de {model.Amount} para o projeto {model.ProjectName} foi confirmada na blockchain e enviada ao fornecedor {model.VendorName} para atender a meta {model.GoalTitle}.";
+                $"Sua doacao de {model.Amount.ToString("F2")} para o projeto {model.ProjectName} foi confirmada na blockchain e enviada ao fornecedor {model.VendorName} para atender a meta {model.GoalTitle}.";
 
             const string ngoMessage = "Transferencia para o fornecedor confirmada!";
             string ngoDescription =
-                $"A doacao de {model.Amount} do projeto {model.ProjectName} foi confirmada na blockchain e recebida pelo fornecedor {model.VendorName} para a meta {model.GoalTitle}.";
+                $"A doacao de {model.Amount.ToString("F2")} do projeto {model.ProjectName} foi confirmada na blockchain e recebida pelo fornecedor {model.VendorName} para a meta {model.GoalTitle}.";
 
             return
             [
