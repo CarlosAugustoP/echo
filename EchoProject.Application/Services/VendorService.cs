@@ -38,7 +38,8 @@ namespace EchoProject.Application.Services
 
         public async Task<VendorDTO> CreateAsync(VendorRequest request)
         {
-            var existingByTaxId = await _unitOfWork.Vendors.FindAsync(x => x.Document.Value == request.TaxId);
+            var taxId = new TaxId(request.TaxId);
+            var existingByTaxId = await _unitOfWork.Vendors.FindByTaxIdAsync(taxId);
 
             if (existingByTaxId != null)
             {
@@ -49,7 +50,7 @@ namespace EchoProject.Application.Services
             var vendor = new Vendor
             (
                 request.Name,
-                new TaxId(request.TaxId),
+                taxId,
                 new WalletAddress(request.WalletAddress),
                 request.TypeItemSupply
             );

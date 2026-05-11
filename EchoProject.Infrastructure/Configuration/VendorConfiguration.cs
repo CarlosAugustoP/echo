@@ -31,16 +31,15 @@ namespace EchoProject.Infrastructure.Configuration
                 .HasForeignKey(v => v.ApprovedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(v => v.Document)
-                .HasColumnName("tax_id")
-                .HasConversion(
-                    taxId => taxId.Value,
-                    value => new TaxId(value)
-                )
-                .HasMaxLength(14)
-                .IsRequired();
+            builder.OwnsOne(v => v.Document, d =>
+            {
+                d.Property(p => p.Value)
+                    .HasColumnName("tax_id")
+                    .HasMaxLength(14)
+                    .IsRequired();
 
-            builder.HasIndex("Document").IsUnique();
+                d.HasIndex(p => p.Value).IsUnique();
+            });
 
             builder.Property(v => v.TypeItemSupply)
                 .HasColumnName("type_item_supply")
