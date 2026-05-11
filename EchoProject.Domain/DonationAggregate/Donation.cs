@@ -140,7 +140,7 @@ namespace EchoProject.Domain.DonationAggregate
                     new SendToVendorConfirmedNotificationModel(
                         DonorId,
                         Goal.Project.ManagerId,
-                        Amount,
+                        TotalCost,
                         Goal.Project.Title,
                         Goal.Title,
                         TransferredToVendor?.Name ?? "fornecedor vinculado")),
