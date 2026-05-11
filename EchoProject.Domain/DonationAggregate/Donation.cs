@@ -1,5 +1,7 @@
 using EchoProject.Domain.Common;
 using EchoProject.Domain.Exception.EchoProject.Domain.Common;
+using EchoProject.Domain.Notifications;
+using EchoProject.Domain.Notifications.Models;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Domain.VendorAggregate;
@@ -119,6 +121,37 @@ namespace EchoProject.Domain.DonationAggregate
             var evt = DonationEventFactory.Create(this, status);
             Events.Add(evt);
             return evt;
+        }
+
+        public NotificationRequest? GetNotificationRequest()
+        {
+            return Status switch
+            {
+                DonationStatus.TransferredToContract => new NotificationRequest(
+                    NotificationType.TransferConfirmed,
+                    new TransferConfirmedNotificationModel(
+                        DonorId,
+                        Goal.Project.ManagerId,
+                        Amount,
+                        Goal.Project.Title)),
+                DonationStatus.TransferredToVendorConfirmed => new NotificationRequest(
+                    NotificationType.SendToVendorConfirmed,
+                    new SendToVendorConfirmedNotificationModel(
+                        DonorId,
+                        Goal.Project.ManagerId,
+                        Amount,
+                        Goal.Project.Title,
+                        Goal.Title,
+                        TransferredToVendor?.Name ?? "fornecedor vinculado")),
+                DonationStatus.ImmediateTransferToNGOConfirmed => new NotificationRequest(
+                    NotificationType.SendToNGOConfirmed,
+                    new SendToNGOConfirmedNotificationModel(
+                        DonorId,
+                        Goal.Project.ManagerId,
+                        Amount,
+                        Goal.Project.Title)),
+                _ => null
+            };
         }
 
         public void UpdateStatus(DonationStatus newStatus)

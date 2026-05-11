@@ -1,4 +1,5 @@
 using EchoProject.Domain.DonationAggregate;
+using EchoProject.Domain.Notifications;
 using EchoProject.Domain.ProjectAggregate;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Domain.VendorAggregate;
@@ -10,6 +11,8 @@ namespace EchoProject.Infrastructure.Database
     {
         public required DbSet<User> Users { get; set; }
         public required DbSet<Donation> Donations { get; set; }
+        public required DbSet<Notification> Notifications { get; set; }
+        public required DbSet<PushDevice> PushDevices { get; set; }
         public required DbSet<Goal> Goals { get; set; }
         public required DbSet<Project> Projects { get; set; }
         public required DbSet<Vendor> Vendors { get; set; }
