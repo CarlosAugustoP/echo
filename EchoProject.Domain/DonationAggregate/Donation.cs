@@ -133,6 +133,7 @@ namespace EchoProject.Domain.DonationAggregate
                         DonorId,
                         Goal.Project.ManagerId,
                         Amount,
+                        TotalCost,
                         Goal.Project.Title)),
                 DonationStatus.TransferredToVendorConfirmed => new NotificationRequest(
                     NotificationType.SendToVendorConfirmed,
