@@ -11,6 +11,8 @@ namespace EchoProject.Api.DependencyInjection
                     builder.AllowAnyOrigin()
                            .AllowAnyHeader()
                            .AllowAnyMethod();
+                    
+                    builder.WithOrigins("http://localhost:8081");
                 });
             });
 
