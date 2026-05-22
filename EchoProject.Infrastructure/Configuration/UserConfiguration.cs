@@ -21,6 +21,10 @@ using Microsoft.EntityFrameworkCore;
                     .HasColumnName("email")
                     .IsRequired()
                     .HasMaxLength(100);
+
+                builder.Property(u => u.Bio)
+                    .HasColumnName("bio")
+                    .HasMaxLength(1000);
                     
                 builder.Property(u => u.PasswordHash)
                     .HasColumnName("password_hash")

@@ -1,10 +1,12 @@
 using AutoMapper;
 using EchoProject.Application.Common;
 using EchoProject.Application.Common.Auth;
+using EchoProject.Application.Common.PaginatedList;
 using EchoProject.Application.Common.Password;
 using EchoProject.Application.DTO;
 using EchoProject.Application.Exceptions;
 using EchoProject.Application.Requests.Login;
+using EchoProject.Application.Requests.Pagination;
 using EchoProject.Application.Requests.Signup;
 using EchoProject.Application.Requests.Users;
 using EchoProject.Domain.Common;
@@ -160,7 +162,8 @@ namespace EchoProject.Application.Services
                         request.Address.CountryCode,
                         request.Address.Number
                     ) : userEntity.Address,
-                    profilePictureUrl
+                    profilePictureUrl,
+                    request.Bio
                 );
 
             _unitOfWork.Users.Update(userEntity);
@@ -194,6 +197,13 @@ namespace EchoProject.Application.Services
                 ?? throw new NotFoundException("Usuário não encontrado.");
 
             return _mapper.Map<UserDTO>(user);
+        }
+
+        public PaginatedList<UserDTO> SearchNgos(PageRequest pageRequest, string? search)
+        {
+            return _unitOfWork.Users.SearchNgos(search)
+                .Paginate(pageRequest.PageNumber, pageRequest.PageSize)
+                .Select(_mapper.Map<UserDTO>);
         }
     }
 }

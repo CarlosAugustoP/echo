@@ -8,5 +8,6 @@ namespace EchoProject.Domain.Repositories
         Task<User?> FindByWalletAddressAsync(string walletAddress, CancellationToken ct = default);
         Task<User?> FindByTaxId(string taxId, CancellationToken ct = default);
         IQueryable<User> FindByRole(UserRole role, CancellationToken ct = default);
+        IQueryable<User> SearchNgos(string? search, CancellationToken ct = default);
     }
 }

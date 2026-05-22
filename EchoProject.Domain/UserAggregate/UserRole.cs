@@ -4,4 +4,5 @@ namespace EchoProject.Domain.UserAggregate
     {
         Donor = 1, NGO = 2, EchoAdmin = 3
     }
+    
 }
