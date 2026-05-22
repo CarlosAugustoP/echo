@@ -108,6 +108,13 @@ namespace EchoProject.Api.Controllers
             return Success(projects);
         }
 
+        [HttpGet("search")]
+        public IActionResult Search([FromQuery] PageRequest pageRequest, [FromQuery] string? search)
+        {
+            var projects = _service.Search(pageRequest, search);
+            return Success(projects);
+        }
+
         /// <summary>
         /// Get personalized project recommendations for the current donor user based on their donation history and preferences.
         /// </summary>

@@ -7,6 +7,7 @@ namespace EchoProject.Domain.Repositories
     {
         IQueryable<Project> FindByManager(Guid managerId);
         IQueryable<Project> FindTrendingProjects();
+        IQueryable<Project> Search(string? search);
         Task<IQueryable<Project>> FindForYou(Guid userId);
         IQueryable<ProjectBlogPost> FindBlogPostByUserInvolvement(Guid userId);
         IQueryable<ProjectBlogPost> FindAllProjectBlogPosts();

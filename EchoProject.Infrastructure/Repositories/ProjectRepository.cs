@@ -36,6 +36,20 @@ namespace EchoProject.Infrastructure.Repositories
                     .FirstOrDefault());
         }
 
+        public IQueryable<Project> Search(string? search)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+                return Query.OrderByDescending(p => p.CreatedAt);
+
+            var term = search.Trim().ToLower();
+            return Query
+                .Where(p =>
+                    p.Title.ToLower().Contains(term) ||
+                    p.Description.ToLower().Contains(term) ||
+                    p.Manager.Name.ToLower().Contains(term))
+                .OrderByDescending(p => p.CreatedAt);
+        }
+
         public async Task<IQueryable<Project>> FindForYou(Guid userId)
         {
             var userPreferences = await _db.Donations

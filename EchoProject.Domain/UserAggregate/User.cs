@@ -7,6 +7,7 @@ namespace EchoProject.Domain.UserAggregate
     public class User : Entity
     {
         public string Name { get; private set; }
+        public string? Bio { get; private set; }
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
         public TaxId TaxId { get; private set; }
@@ -15,7 +16,7 @@ namespace EchoProject.Domain.UserAggregate
         public WalletAddress WalletAddress { get; private set; }
         public ImageUrl? ProfilePicture { get; private set; } = null;
 
-        public User(string? name, string? email, string? passwordHash, TaxId taxId, WalletAddress walletAddress, Address address, UserRole role)
+        public User(string? name, string? email, string? passwordHash, TaxId taxId, WalletAddress walletAddress, Address address, UserRole role, string? bio = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("O nome não pode estar vazio.");
@@ -36,6 +37,7 @@ namespace EchoProject.Domain.UserAggregate
                 throw new ArgumentException("ONGs devem possuir um CNPJ.");
 
             Name = name;
+            Bio = string.IsNullOrWhiteSpace(bio) ? null : bio.Trim();
             Address = address;
             Role = role;
             Email = email.ToLower();
@@ -51,7 +53,7 @@ namespace EchoProject.Domain.UserAggregate
             WalletAddress = newWalletAddress;
         }
 
-        public void UpdateInformation(string? name, string? email, Address address, ImageUrl? profilePicture)
+        public void UpdateInformation(string? name, string? email, Address address, ImageUrl? profilePicture, string? bio)
         {
             if (!string.IsNullOrWhiteSpace(name))
                 Name = name;
@@ -66,6 +68,9 @@ namespace EchoProject.Domain.UserAggregate
 
             if (address != null)
                 Address = address;
+
+            if (bio != null)
+                Bio = string.IsNullOrWhiteSpace(bio) ? null : bio.Trim();
 
             ProfilePicture = profilePicture;
         }

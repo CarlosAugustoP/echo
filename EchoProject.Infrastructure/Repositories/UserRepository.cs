@@ -27,6 +27,19 @@ namespace EchoProject.Infrastructure.Repositories
             return Query.Where(u => u.Role == role);
         }
 
-       
+        public IQueryable<User> SearchNgos(string? search, CancellationToken ct = default)
+        {
+            var ngos = Query.Where(u => u.Role == UserRole.NGO);
+
+            if (string.IsNullOrWhiteSpace(search))
+                return ngos.OrderBy(u => u.Name);
+
+            var term = search.Trim().ToLower();
+            return ngos
+                .Where(u =>
+                    u.Name.ToLower().Contains(term) ||
+                    (u.Bio ?? string.Empty).ToLower().Contains(term))
+                .OrderBy(u => u.Name);
+        }
     }
 }

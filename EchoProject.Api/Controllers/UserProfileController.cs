@@ -1,5 +1,6 @@
 using EchoProject.Api.Common;
 using EchoProject.Api.Middlewares;
+using EchoProject.Application.Requests.Pagination;
 using EchoProject.Application.Requests.Users;
 using EchoProject.Application.Services;
 using EchoProject.Domain.UserAggregate;
@@ -40,6 +41,13 @@ namespace EchoProject.Api.Controllers
         {
             var user = await _userService.UpdateWalletAddressAsync(CurrentUser!.Id, request.WalletAddress);
             return Success(user);
+        }
+
+        [HttpGet("ngos")]
+        public IActionResult SearchNgos([FromQuery] PageRequest pageRequest, [FromQuery] string? search)
+        {
+            var users = _userService.SearchNgos(pageRequest, search);
+            return Success(users);
         }
 
         [HttpGet("{id}")]
