@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Globalization;
 using EchoProject.Application.DTO;
 using EchoProject.Domain.UserAggregate;
 using EchoProject.Domain.ValueObjects;
@@ -26,10 +27,19 @@ namespace EchoProject.Api.Middlewares
                 var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString();
                 var wallet = user.FindFirst("walletAddress")?.Value ?? string.Empty;
                 var taxId = user.FindFirst("taxId")?.Value ?? string.Empty;
+                var verifiedAtValue = user.FindFirst("verifiedAt")?.Value;
                 var bio = user.FindFirst("bio")?.Value;
                 var profilePicture = user.FindFirst("profilePicture")?.Value;
+                
                 if (Enum.TryParse<UserRole>(userRoleStr, true, out var roleEnum))
                 {
+                    DateTime? verifiedAt = null;
+                    if (!string.IsNullOrWhiteSpace(verifiedAtValue) &&
+                        DateTime.TryParse(verifiedAtValue, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsedVerifiedAt))
+                    {
+                        verifiedAt = parsedVerifiedAt;
+                    }
+
                     ImageUrl? img;
                     if (string.IsNullOrEmpty(profilePicture))
                     {
@@ -39,7 +49,7 @@ namespace EchoProject.Api.Middlewares
                     {
                         img = new ImageUrl(profilePicture);
                     }
-                    var userDto = new UserDTO(Guid.Parse(id), userName, userEmail, wallet, new TaxId(taxId), roleEnum, string.IsNullOrWhiteSpace(bio) ? null : bio, img);
+                    var userDto = new UserDTO(Guid.Parse(id), userName, userEmail, wallet, new TaxId(taxId), roleEnum, verifiedAt, string.IsNullOrWhiteSpace(bio) ? null : bio, img);
                     context.Items["User"] = userDto;
                 }
             }
