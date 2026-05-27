@@ -38,6 +38,12 @@ using Microsoft.EntityFrameworkCore;
                     .HasConversion<int>()
                     .IsRequired();
 
+                builder.Property(u => u.VerifiedAt)
+                    .HasColumnName("verified_at")
+                    .HasColumnType("timestamp with time zone");
+
+                builder.Ignore(u => u.IsVerified);
+
                 builder.OwnsOne(u => u.TaxId, t =>
                 {
                     t.Property(p => p.Value).HasColumnName("tax_id").HasMaxLength(14).IsRequired();

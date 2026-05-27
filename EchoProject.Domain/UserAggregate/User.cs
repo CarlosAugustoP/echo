@@ -12,6 +12,8 @@ namespace EchoProject.Domain.UserAggregate
         public string PasswordHash { get; private set; }
         public TaxId TaxId { get; private set; }
         public UserRole Role { get; private set;}
+        public DateTime? VerifiedAt { get; private set; }
+        public bool IsVerified => VerifiedAt != null;
         public Address Address { get; private set; }
         public WalletAddress WalletAddress { get; private set; }
         public ImageUrl? ProfilePicture { get; private set; } = null;
@@ -51,6 +53,11 @@ namespace EchoProject.Domain.UserAggregate
         public void UpdateWalletAddress(WalletAddress newWalletAddress)
         {
             WalletAddress = newWalletAddress;
+        }
+
+        public void Verify()
+        {
+            VerifiedAt ??= DateTime.UtcNow;
         }
 
         public void UpdateInformation(string? name, string? email, Address address, ImageUrl? profilePicture, string? bio)

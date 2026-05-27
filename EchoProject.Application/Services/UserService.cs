@@ -199,6 +199,18 @@ namespace EchoProject.Application.Services
             return _mapper.Map<UserDTO>(user);
         }
 
+        public async Task<UserDTO> VerifyUserAsync(Guid id)
+        {
+            var user = await _unitOfWork.Users.FindByIdAsync(id)
+                ?? throw new NotFoundException("UsuÃ¡rio nÃ£o encontrado.");
+
+            user.Verify();
+            _unitOfWork.Users.Update(user);
+            await _unitOfWork.CommitAsync();
+
+            return _mapper.Map<UserDTO>(user);
+        }
+
         public PaginatedList<UserDTO> SearchNgos(PageRequest pageRequest, string? search)
         {
             return _unitOfWork.Users.SearchNgos(search)
