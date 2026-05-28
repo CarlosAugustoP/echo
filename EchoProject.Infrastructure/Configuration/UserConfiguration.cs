@@ -38,6 +38,11 @@ using Microsoft.EntityFrameworkCore;
                     .HasConversion<int>()
                     .IsRequired();
 
+                builder.Property(u => u.IsFirstAccess)
+                    .HasColumnName("is_first_access")
+                    .HasDefaultValue(true)
+                    .IsRequired();
+
                 builder.Property(u => u.VerifiedAt)
                     .HasColumnName("verified_at")
                     .HasColumnType("timestamp with time zone");

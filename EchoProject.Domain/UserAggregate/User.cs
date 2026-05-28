@@ -12,6 +12,7 @@ namespace EchoProject.Domain.UserAggregate
         public string PasswordHash { get; private set; }
         public TaxId TaxId { get; private set; }
         public UserRole Role { get; private set;}
+        public bool IsFirstAccess { get; private set; } = true;
         public DateTime? VerifiedAt { get; private set; }
         public bool IsVerified => VerifiedAt != null;
         public Address Address { get; private set; }
@@ -53,6 +54,11 @@ namespace EchoProject.Domain.UserAggregate
         public void UpdateWalletAddress(WalletAddress newWalletAddress)
         {
             WalletAddress = newWalletAddress;
+        }
+
+        public void CompleteFirstAccess()
+        {
+            IsFirstAccess = false;
         }
 
         public void Verify()

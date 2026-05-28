@@ -104,7 +104,16 @@ namespace EchoProject.Application.Services
                 throw new UnauthorizedException("E-mail ou senha inválidos.", "INVALID_CREDENTIALS");
             }
 
+            var isFirstAccess = user.IsFirstAccess;
+            if (isFirstAccess)
+            {
+                user.CompleteFirstAccess();
+                _unitOfWork.Users.Update(user);
+                await _unitOfWork.CommitAsync();
+            }
+
             var userDto = _mapper.Map<UserDTO>(user);
+            userDto.IsFirstAccess = isFirstAccess;
 
             return _jwt.GenerateToken(userDto);
         }

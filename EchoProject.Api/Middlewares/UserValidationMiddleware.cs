@@ -27,12 +27,20 @@ namespace EchoProject.Api.Middlewares
                 var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString();
                 var wallet = user.FindFirst("walletAddress")?.Value ?? string.Empty;
                 var taxId = user.FindFirst("taxId")?.Value ?? string.Empty;
+                var isFirstAccessValue = user.FindFirst("isFirstAccess")?.Value;
                 var verifiedAtValue = user.FindFirst("verifiedAt")?.Value;
                 var bio = user.FindFirst("bio")?.Value;
                 var profilePicture = user.FindFirst("profilePicture")?.Value;
                 
                 if (Enum.TryParse<UserRole>(userRoleStr, true, out var roleEnum))
                 {
+                    var isFirstAccess = true;
+                    if (!string.IsNullOrWhiteSpace(isFirstAccessValue) &&
+                        bool.TryParse(isFirstAccessValue, out var parsedIsFirstAccess))
+                    {
+                        isFirstAccess = parsedIsFirstAccess;
+                    }
+
                     DateTime? verifiedAt = null;
                     if (!string.IsNullOrWhiteSpace(verifiedAtValue) &&
                         DateTime.TryParse(verifiedAtValue, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsedVerifiedAt))
@@ -49,7 +57,7 @@ namespace EchoProject.Api.Middlewares
                     {
                         img = new ImageUrl(profilePicture);
                     }
-                    var userDto = new UserDTO(Guid.Parse(id), userName, userEmail, wallet, new TaxId(taxId), roleEnum, verifiedAt, string.IsNullOrWhiteSpace(bio) ? null : bio, img);
+                    var userDto = new UserDTO(Guid.Parse(id), userName, userEmail, wallet, new TaxId(taxId), roleEnum, isFirstAccess, verifiedAt, string.IsNullOrWhiteSpace(bio) ? null : bio, img);
                     context.Items["User"] = userDto;
                 }
             }
