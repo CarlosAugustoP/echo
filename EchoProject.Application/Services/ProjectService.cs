@@ -283,5 +283,14 @@ namespace EchoProject.Application.Services
                 .Select(_mapper.Map<ProjectBlogPostHeaderDTO>);
         }
 
+        public PaginatedList<ProjectBlogPostHeaderDTO> GetBlogPostsByNGO(Guid ngoId, PageRequest pr)
+        {
+            return _unitOfWork.Projects.FindAllProjectBlogPosts()
+                .Where(x => x.Project.ManagerId == ngoId)
+                .OrderByDescending(x => x.CreatedAt)
+                .Paginate(pr.PageNumber, pr.PageSize)
+                .Select(_mapper.Map<ProjectBlogPostHeaderDTO>);
+        }
+
     }
 }

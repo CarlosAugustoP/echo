@@ -189,6 +189,19 @@ namespace EchoProject.Api.Controllers
         }
 
         /// <summary>
+        /// Get all blog posts for projects managed by a specific NGO with pagination.
+        /// </summary>
+        /// <param name="ngoId"></param>
+        /// <param name="pageRequest"></param>
+        /// <returns></returns>
+        [HttpGet("blog-post/manager/{ngoId}")]
+        public IActionResult GetBlogPostsByNgo([FromRoute] Guid ngoId, [FromQuery] PageRequest pageRequest)
+        {
+            var blogPosts = _service.GetBlogPostsByNGO(ngoId, pageRequest);
+            return Success(blogPosts);
+        }
+
+        /// <summary>
         /// Update the main image of a project. Only accessible by the project manager (NGO user who created the project).
         /// </summary>
         /// <param name="projectId"></param>
